@@ -1,0 +1,2449 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, minimum-scale=1, user-scalable=no">
+<title>GiftSniper</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<!-- Проигрыватель анимаций моделей. Модели приходят от Telegram в формате .tgs -
+     это сжатый Lottie, картинкой его не показать. Скрипт необязательный: если он
+     не загрузится, приложение нарисует значок из названия и продолжит работать. -->
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie_light.min.js"></script>
+<style>
+/* GiftSniper - только мобильная вёрстка. Иконки свои, эмодзи не используются. */
+:root{
+  --bg:#07070a; --bg-soft:#0e0e13; --card:#131319; --card-2:#191922;
+  --line:#2b2415; --line-2:#3a3120;
+  --gold:#d9b45a; --gold-2:#f6e2a6; --gold-3:#a8843a;
+  --text:#f4f1ea; --muted:#8f887d; --ok:#59a97a; --wait:#d9b45a; --bad:#c05b45;
+  --r:18px; --nav-h:76px;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0;background:var(--bg);color:var(--text);
+  font:15px/1.45 -apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,sans-serif;
+  overscroll-behavior-y:none;
+  /* Щипок и двойное касание не должны менять масштаб: приложение свёрстано под
+     ширину экрана, и «уехавшая» страница выглядит как поломка. Одного meta мало -
+     iOS его игнорирует, поэтому ещё touch-action и обработчики ниже. */
+  touch-action:pan-y;-webkit-text-size-adjust:100%;text-size-adjust:100%}
+body{padding-bottom:calc(var(--nav-h) + env(safe-area-inset-bottom))}
+.num{font-variant-numeric:tabular-nums;font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+svg{display:block}
+.ico{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.6;
+  stroke-linecap:round;stroke-linejoin:round}
+button{font:inherit;cursor:pointer;color:inherit;background:none;border:none}
+
+.glow{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.glow i{position:absolute;border-radius:50%;filter:blur(70px);opacity:.13}
+.glow i:nth-child(1){width:280px;height:280px;background:#d9b45a;top:-90px;left:-60px;
+  animation:float1 18s ease-in-out infinite}
+.glow i:nth-child(2){width:220px;height:220px;background:#8a6a20;bottom:60px;right:-70px;
+  animation:float2 22s ease-in-out infinite}
+@keyframes float1{50%{transform:translate(40px,60px) scale(1.15)}}
+@keyframes float2{50%{transform:translate(-30px,-50px) scale(1.1)}}
+
+/* ---------- загрузка ----------
+   Заставок пять, показывается выбранная владельцем; если выбрано несколько -
+   случайная при каждом заходе. Разметка каждой рисуется на лету, поэтому в DOM
+   всегда живёт ровно одна: пять анимаций сразу - это лишняя работа телефона на
+   самом чувствительном экране. */
+#boot{position:fixed;inset:0;z-index:100;background:#07070a;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:26px;
+  transition:opacity .5s ease,visibility .5s}
+#boot.gone{opacity:0;visibility:hidden}
+.boot-title{font-size:23px;font-weight:700;letter-spacing:.4px;text-align:center}
+.boot-title b{background:linear-gradient(95deg,var(--gold),var(--gold-2) 60%,var(--gold-3));
+  -webkit-background-clip:text;background-clip:text;color:transparent}
+.boot-sub{margin-top:9px;font-size:13px;color:var(--muted);text-align:center;letter-spacing:.3px}
+.bar{width:132px;height:3px;border-radius:2px;background:#241f14;overflow:hidden;margin:15px auto 0}
+.bar i{display:block;height:100%;width:40%;border-radius:2px;
+  background:linear-gradient(90deg,transparent,var(--gold),var(--gold-2),transparent);
+  animation:slide 1.25s ease-in-out infinite}
+@keyframes slide{0%{transform:translateX(-120%)}100%{transform:translateX(320%)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+/* ---------- 1. Коробка с подарком ---------- */
+.v1 .ring-out{transform-origin:center;animation:spin 14s linear infinite}
+.v1 .ring-in{transform-origin:center;animation:spin 20s linear infinite reverse}
+.v1 .lid{transform-origin:60% 70%;animation:lid 3.2s cubic-bezier(.36,.9,.35,1) infinite}
+@keyframes lid{0%,12%{transform:translateY(0) rotate(0)}32%{transform:translateY(-26px) rotate(-13deg)}
+  70%{transform:translateY(-22px) rotate(-10deg)}92%,100%{transform:translateY(0) rotate(0)}}
+.v1 .card-up{transform-origin:center bottom;filter:drop-shadow(0 6px 14px rgba(217,180,90,.45));
+  animation:cardup 3.2s cubic-bezier(.36,.9,.35,1) infinite}
+@keyframes cardup{0%,14%{transform:translateY(26px) scale(.94)}38%{transform:translateY(-4px) scale(1)}
+  72%{transform:translateY(-8px) scale(1)}94%,100%{transform:translateY(26px) scale(.94)}}
+.v1 .rays{animation:rays 3.2s ease-in-out infinite;transform-origin:center}
+@keyframes rays{0%,18%{opacity:.25;transform:scale(.7)}45%{opacity:1;transform:scale(1)}
+  75%{opacity:.8}95%,100%{opacity:.25;transform:scale(.7)}}
+.v1 .spark{animation:spark 2.4s ease-in-out infinite}
+.v1 .spark:nth-of-type(2){animation-delay:.5s}.v1 .spark:nth-of-type(3){animation-delay:1.1s}
+@keyframes spark{0%,100%{opacity:.45;transform:scale(.85)}50%{opacity:1;transform:scale(1.2)}}
+
+/* ---------- 2. Прицел ---------- */
+.v2 .aim{transform-origin:center;animation:aim 2.6s cubic-bezier(.4,0,.2,1) infinite}
+@keyframes aim{0%{transform:scale(1.5) rotate(-25deg);opacity:.25}
+  55%{transform:scale(1) rotate(0);opacity:1}80%{transform:scale(.97)}100%{transform:scale(1.5) rotate(-25deg);opacity:.25}}
+.v2 .aim2{transform-origin:center;animation:aim 2.6s cubic-bezier(.4,0,.2,1) infinite;animation-delay:.12s}
+.v2 .flash{transform-origin:center;animation:flash 2.6s ease-out infinite}
+@keyframes flash{0%,52%{opacity:0;transform:scale(.4)}62%{opacity:.95;transform:scale(1.35)}
+  85%,100%{opacity:0;transform:scale(1.7)}}
+.v2 .tick{animation:tick 2.6s ease-in-out infinite}
+@keyframes tick{0%,50%{opacity:.3}60%{opacity:1}100%{opacity:.3}}
+.v2 .gift{animation:bob 2.6s ease-in-out infinite}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+
+/* ---------- 3. Алмаз ---------- */
+.v3 .gem{transform-origin:center;animation:flip3 3s cubic-bezier(.45,0,.25,1) infinite}
+@keyframes flip3{0%{transform:rotateY(0) scale(1)}50%{transform:rotateY(180deg) scale(1.06)}
+  100%{transform:rotateY(360deg) scale(1)}}
+.v3 .halo{transform-origin:center;animation:halo3 3s ease-in-out infinite}
+@keyframes halo3{0%,100%{opacity:.18;transform:scale(.9)}50%{opacity:.5;transform:scale(1.08)}}
+.v3 .orbit{transform-origin:center;animation:spin 6s linear infinite}
+.v3 .orbit2{transform-origin:center;animation:spin 9s linear infinite reverse}
+.v3 .dust{animation:dust 2.2s ease-in infinite}
+.v3 .dust:nth-of-type(2){animation-delay:.6s}.v3 .dust:nth-of-type(3){animation-delay:1.2s}
+.v3 .dust:nth-of-type(4){animation-delay:1.7s}
+@keyframes dust{0%{opacity:0;transform:translateY(14px) scale(.5)}
+  40%{opacity:1}100%{opacity:0;transform:translateY(-26px) scale(1.1)}}
+
+/* ---------- 4. Чертёж ---------- */
+.v4 path,.v4 rect,.v4 circle{stroke-dasharray:var(--len,400);stroke-dashoffset:var(--len,400);
+  animation:draw 3.4s ease-in-out infinite}
+@keyframes draw{0%{stroke-dashoffset:var(--len,400);fill-opacity:0}
+  45%{stroke-dashoffset:0;fill-opacity:0}62%{fill-opacity:.92}
+  88%{fill-opacity:.92;stroke-dashoffset:0}100%{stroke-dashoffset:var(--len,400);fill-opacity:0}}
+.v4 .grid line{stroke:#241f14;stroke-width:.6}
+.v4 .scan{animation:scan 3.4s ease-in-out infinite}
+@keyframes scan{0%{transform:translateY(-70px);opacity:0}20%{opacity:.85}
+  55%{transform:translateY(70px);opacity:.85}70%,100%{opacity:0}}
+
+/* ---------- 5. Волна ---------- */
+.v5 .w{transform-origin:center;animation:wave 2.8s cubic-bezier(.2,.7,.3,1) infinite;opacity:0}
+.v5 .w:nth-of-type(2){animation-delay:.7s}.v5 .w:nth-of-type(3){animation-delay:1.4s}
+@keyframes wave{0%{transform:scale(.55);opacity:.9}100%{transform:scale(1.5);opacity:0}}
+.v5 .core{transform-origin:center;animation:beat 2.8s ease-in-out infinite}
+@keyframes beat{0%,100%{transform:scale(1)}45%{transform:scale(1.08)}}
+.v5 .up{animation:up5 2.4s ease-in infinite}
+.v5 .up:nth-of-type(2){animation-delay:.5s}.v5 .up:nth-of-type(3){animation-delay:1s}
+.v5 .up:nth-of-type(4){animation-delay:1.5s}
+@keyframes up5{0%{opacity:0;transform:translateY(20px)}35%{opacity:1}100%{opacity:0;transform:translateY(-34px)}}
+.v5 .arc{transform-origin:center;animation:spin 8s linear infinite}
+
+
+/* ---------- 6. Ловушка снайпера: сетка, скан, захват ---------- */
+.v6 .scan-line{animation:v6scan 3.4s cubic-bezier(.4,0,.2,1) infinite}
+@keyframes v6scan{0%{transform:translateY(-72px);opacity:0}12%{opacity:1}
+  46%{transform:translateY(72px);opacity:1}58%,100%{opacity:0}}
+.v6 .lock{transform-origin:center;animation:v6lock 3.4s cubic-bezier(.3,1.4,.5,1) infinite}
+@keyframes v6lock{0%,52%{transform:scale(1.9);opacity:0}64%{transform:scale(1);opacity:1}
+  88%{transform:scale(1);opacity:1}96%,100%{transform:scale(.8);opacity:0}}
+.v6 .grid line{stroke:#2b2415;stroke-width:.7}
+.v6 .tick{animation:v6tick 3.4s steps(1) infinite}
+@keyframes v6tick{0%,60%{opacity:0}66%{opacity:1}92%,100%{opacity:0}}
+.v6 .gift-core{animation:v6core 3.4s ease-in-out infinite}
+@keyframes v6core{0%,55%{opacity:.35}68%{opacity:1}100%{opacity:.35}}
+
+/* ---------- 7. Монеты: падают в стопку ---------- */
+.v7 .coin{transform-origin:center;animation:v7fall 2.8s cubic-bezier(.4,0,.3,1) infinite}
+.v7 .coin:nth-of-type(2){animation-delay:.35s}
+.v7 .coin:nth-of-type(3){animation-delay:.7s}
+@keyframes v7fall{0%{transform:translateY(-96px) scaleY(.55);opacity:0}
+  18%{opacity:1}42%{transform:translateY(0) scaleY(1)}
+  50%{transform:translateY(-7px) scaleY(1.06)}58%{transform:translateY(0) scaleY(1)}
+  92%,100%{transform:translateY(0);opacity:1}}
+.v7 .shine{animation:v7shine 2.8s ease-in-out infinite}
+@keyframes v7shine{0%,45%{opacity:0}60%{opacity:.9}100%{opacity:0}}
+.v7 .ring{transform-origin:center;animation:spin 11s linear infinite}
+
+/* ---------- 8. Волчок-алмаз: вращение с бликом ---------- */
+.v8 .spinner{transform-origin:100px 108px;animation:v8spin 2.2s cubic-bezier(.5,0,.5,1) infinite}
+@keyframes v8spin{0%{transform:rotate(0) scale(1)}50%{transform:rotate(180deg) scale(1.05)}
+  100%{transform:rotate(360deg) scale(1)}}
+.v8 .glint{animation:v8glint 2.2s ease-in-out infinite}
+@keyframes v8glint{0%,100%{opacity:.15}30%{opacity:1}60%{opacity:.3}}
+.v8 .shadow{animation:v8sh 2.2s ease-in-out infinite}
+@keyframes v8sh{0%,100%{transform:scaleX(1);opacity:.5}50%{transform:scaleX(1.25);opacity:.25}}
+.v8 .arcs{transform-origin:center;animation:spin 7s linear infinite reverse}
+
+/* ---------- 9. Пульс уведомления: сигнал от колокола ---------- */
+.v9 .bell{transform-origin:100px 74px;animation:v9ring 2.6s ease-in-out infinite}
+@keyframes v9ring{0%,60%,100%{transform:rotate(0)}66%{transform:rotate(13deg)}
+  74%{transform:rotate(-11deg)}82%{transform:rotate(7deg)}90%{transform:rotate(-4deg)}}
+.v9 .wave{transform-origin:100px 100px;animation:v9wave 2.6s ease-out infinite;opacity:0}
+.v9 .wave:nth-of-type(2){animation-delay:.35s}
+.v9 .wave:nth-of-type(3){animation-delay:.7s}
+@keyframes v9wave{0%{transform:scale(.5);opacity:.85}100%{transform:scale(1.55);opacity:0}}
+.v9 .dot{animation:v9dot 2.6s ease-in-out infinite}
+@keyframes v9dot{0%,58%{transform:scale(0);opacity:0}70%{transform:scale(1.25);opacity:1}
+  86%{transform:scale(1)}100%{transform:scale(1);opacity:1}}
+
+/* ---------- 10. Лента подарков: карточки едут и вспыхивает выгодная ---------- */
+.v10 .belt{animation:v10move 4s linear infinite}
+@keyframes v10move{0%{transform:translateX(46px)}100%{transform:translateX(-46px)}}
+.v10 .hit{transform-origin:center;animation:v10hit 4s ease-in-out infinite}
+@keyframes v10hit{0%,38%{opacity:0;transform:scale(.6)}48%{opacity:1;transform:scale(1.15)}
+  62%{opacity:1;transform:scale(1)}78%,100%{opacity:0;transform:scale(.9)}}
+.v10 .tag{animation:v10tag 4s ease-in-out infinite}
+@keyframes v10tag{0%,40%{opacity:0;transform:translateY(6px)}52%{opacity:1;transform:translateY(0)}
+  76%{opacity:1}88%,100%{opacity:0}}
+.v10 .rail{opacity:.5}
+
+/* выбор заставки в админке */
+.boot-pick{display:grid;grid-template-columns:repeat(2,1fr);gap:9px}
+.boot-opt{border:1px solid var(--line);border-radius:16px;padding:10px;background:#0b0b0f;
+  display:flex;flex-direction:column;align-items:center;gap:7px;transition:.16s;position:relative}
+.boot-opt svg{width:74px;height:74px}
+.boot-opt span{font-size:12px;color:var(--muted);text-align:center;line-height:1.3}
+.boot-opt.on{border-color:var(--gold-3);background:rgba(217,180,90,.09)}
+.boot-opt.on span{color:var(--gold-2)}
+.boot-opt.on::after{content:"";position:absolute;top:7px;right:7px;width:14px;height:14px;
+  border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--gold-2));
+  box-shadow:0 0 0 2px #0b0b0f}
+.boot-opt:active{transform:scale(.96)}
+
+/* ---------- шапка ---------- */
+header{position:sticky;top:0;z-index:30;display:flex;align-items:center;gap:11px;
+  padding:calc(11px + var(--tg-content-safe-area-inset-top,0px)) 15px 11px;
+  background:linear-gradient(180deg,rgba(7,7,10,.97) 62%,rgba(7,7,10,0))}
+.ava{width:39px;height:39px;border-radius:50%;flex:0 0 39px;overflow:hidden;
+  border:1.5px solid var(--gold-3);background:linear-gradient(140deg,#221d12,#0d0c0a);
+  display:grid;place-items:center;color:var(--gold);transition:.2s}
+.ava:active{transform:scale(.93)}
+/* Фото профиля приходит любых пропорций. cover обрезает по краям, center держит
+   лицо в середине: у прошлой версии верх кадра срезался. */
+.ava img{width:100%;height:100%;object-fit:cover;object-position:center;display:block}
+.who{flex:1;min-width:0;text-align:left}
+.who b{display:block;font-size:14.5px;font-weight:640}
+.who span{display:block;font-size:11.5px;color:var(--muted);letter-spacing:.4px;text-transform:uppercase}
+.top-act{width:37px;height:37px;border-radius:12px;border:1px solid var(--line);
+  background:var(--card);color:var(--gold);display:grid;place-items:center;transition:.18s}
+.top-act:active{transform:scale(.92)}
+.burger{width:19px;height:13px;position:relative}
+.burger i{position:absolute;left:0;right:0;height:1.8px;border-radius:2px;background:currentColor;
+  transition:.25s}
+.burger i:nth-child(1){top:0}.burger i:nth-child(2){top:5.6px;width:74%}.burger i:nth-child(3){top:11.2px}
+
+/* ---------- общее ---------- */
+main{position:relative;z-index:1;padding:2px 15px 18px}
+.view{display:none;animation:in .32s cubic-bezier(.2,.8,.3,1)}
+.view.on{display:block}
+@keyframes in{from{opacity:0;transform:translateY(11px)}to{opacity:1;transform:none}}
+.h1{margin:6px 0 4px;font-size:25px;font-weight:720;letter-spacing:-.3px}
+.h1 b{background:linear-gradient(95deg,var(--gold),var(--gold-2));-webkit-background-clip:text;
+  background-clip:text;color:transparent}
+.lead{margin:0 0 16px;font-size:13.5px;color:var(--muted);line-height:1.5}
+.sec{margin:22px 0 10px;font-size:11.5px;letter-spacing:1.1px;text-transform:uppercase;color:var(--muted)}
+.card{background:linear-gradient(165deg,var(--card),var(--bg-soft));border:1px solid var(--line);
+  border-radius:var(--r);padding:15px;margin-bottom:11px;position:relative;overflow:hidden}
+.card::before{content:"";position:absolute;inset:0 0 auto;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(217,180,90,.45),transparent)}
+.row{display:flex;justify-content:space-between;gap:12px;font-size:13.5px;padding:3px 0}
+.row .k{color:var(--muted)}
+.row .v{text-align:right}
+.gold{color:var(--gold-2)}
+.hint{font-size:12px;color:var(--muted);margin-top:8px;line-height:1.5}
+
+/* ---------- баннер акции ---------- */
+.promo{display:flex;gap:12px;align-items:center;border-radius:var(--r);padding:14px;margin-bottom:12px;
+  border:1px solid var(--gold-3);position:relative;overflow:hidden;
+  background:linear-gradient(120deg,#241d0f,#12100b 70%)}
+.promo::after{content:"";position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(100deg,transparent 30%,rgba(246,226,166,.16) 46%,transparent 62%);
+  background-size:250% 100%;animation:shine 3.4s linear infinite}
+@keyframes shine{to{background-position:-160% 0}}
+.promo .ic{width:40px;height:40px;flex:0 0 40px;border-radius:13px;display:grid;place-items:center;
+  color:#1a1408;background:linear-gradient(135deg,var(--gold),var(--gold-2))}
+.promo b{display:block;font-size:14.5px;margin-bottom:2px}
+.promo span{font-size:12.3px;color:var(--muted);line-height:1.45}
+
+/* ---------- карточки модулей ---------- */
+.mod{display:block;width:100%;text-align:left;padding:0;border:1px solid var(--line);
+  border-radius:22px;background:linear-gradient(150deg,var(--card-2),#0b0b0f 70%);
+  margin-bottom:13px;overflow:hidden;position:relative;transition:.2s}
+.mod:active{transform:scale(.985)}
+.mod .art{position:absolute;right:-6px;top:-6px;width:118px;height:118px;opacity:.9;pointer-events:none}
+.mod .in{padding:17px 16px 15px;position:relative}
+.mod h3{margin:0 0 6px;font-size:17.5px;font-weight:700;display:flex;align-items:center;gap:9px}
+.mod p{margin:0 0 12px;font-size:12.8px;color:var(--muted);line-height:1.5;max-width:74%}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{display:inline-flex;align-items:center;gap:5px;padding:5px 10px;border-radius:9px;font-size:11.5px;
+  background:rgba(217,180,90,.09);border:1px solid var(--line);color:var(--gold-2);white-space:nowrap}
+.chip .ico{width:13px;height:13px;stroke-width:1.8}
+.chip.mute{color:var(--muted);background:rgba(255,255,255,.03)}
+
+/* статусы отслеживания */
+.st{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:8px;font-size:11px;
+  font-weight:620;letter-spacing:.2px}
+.st.on{background:rgba(89,169,122,.14);color:#7fc79b}
+.st.off{background:rgba(255,255,255,.05);color:var(--muted)}
+.st.wait{background:rgba(217,180,90,.14);color:var(--gold-2)}
+.st .pulse{width:6px;height:6px;border-radius:50%;background:currentColor;
+  animation:pulse 1.4s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:.35;transform:scale(.8)}50%{opacity:1;transform:scale(1.25)}}
+
+/* ---------- список записей ---------- */
+.item{width:100%;text-align:left;display:flex;gap:12px;align-items:flex-start;
+  background:linear-gradient(160deg,var(--card),var(--bg-soft));border:1px solid var(--line);
+  border-radius:var(--r);padding:13px 14px;margin-bottom:10px;transition:.18s;position:relative}
+.item:active{transform:scale(.99);border-color:var(--line-2)}
+.item.off{opacity:.55}
+.item .body{flex:1;min-width:0}
+.item .name{font-size:15px;font-weight:640;display:flex;align-items:center;gap:7px;margin-bottom:3px;
+  flex-wrap:wrap}
+.item .sub{font-size:12.3px;color:var(--muted);white-space:nowrap;overflow:hidden;
+  text-overflow:ellipsis;margin-bottom:7px}
+.pic{width:46px;height:46px;flex:0 0 46px;border-radius:14px;overflow:hidden;
+  border:1px solid var(--line);background:#0c0b09}
+.pic svg{width:100%;height:100%}
+.mkico{display:inline-flex;align-items:center;justify-content:center}
+.mkico img{width:100%;height:100%;object-fit:contain;border-radius:5px}
+.mkpic .mkico{width:100%;height:100%;color:var(--gold)}
+.chip .mkico{width:15px;height:15px}
+.pic.lot{display:grid;place-items:center;overflow:hidden}
+.pic.lot > div{width:100%;height:100%}
+.empty{text-align:center;color:var(--muted);font-size:13px;padding:34px 18px;
+  border:1px dashed var(--line-2);border-radius:var(--r);line-height:1.6}
+
+/* ---------- кнопки ---------- */
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:14px;
+  border-radius:15px;border:1px solid var(--line);background:var(--card-2);font-size:14.5px;
+  font-weight:640;transition:.18s}
+.btn:active{transform:scale(.98)}
+.btn.gold{border:none;color:#1a1408;
+  background:linear-gradient(135deg,var(--gold-3),var(--gold) 40%,var(--gold-2));
+  box-shadow:0 6px 20px rgba(217,180,90,.22)}
+.btn.ghost{background:transparent;color:var(--muted)}
+.btn.danger{background:transparent;color:var(--bad);border-color:#3d2119}
+.btn:disabled{opacity:.42}
+.two{display:flex;gap:9px}
+.fab{position:fixed;right:16px;bottom:calc(var(--nav-h) + 16px + env(safe-area-inset-bottom));
+  z-index:29;width:54px;height:54px;border-radius:50%;display:grid;place-items:center;color:#1a1408;
+  background:linear-gradient(135deg,var(--gold),var(--gold-2));
+  box-shadow:0 10px 26px rgba(217,180,90,.3);transition:.2s;animation:pop .3s cubic-bezier(.2,1.3,.4,1)}
+.fab:active{transform:scale(.9) rotate(90deg)}
+@keyframes pop{from{transform:scale(.4);opacity:0}}
+
+/* ---------- навигация ---------- */
+nav{position:fixed;left:0;right:0;bottom:0;z-index:31;
+  height:calc(var(--nav-h) + env(safe-area-inset-bottom));padding-bottom:env(safe-area-inset-bottom);
+  display:grid;grid-template-columns:1fr 92px 1fr;align-items:center;
+  background:linear-gradient(180deg,rgba(9,9,12,.86),rgba(6,6,9,.99));backdrop-filter:blur(16px);
+  border-top:1px solid var(--line)}
+nav::before{content:"";position:absolute;top:-1px;left:12%;right:12%;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(217,180,90,.5),transparent)}
+.tab{display:flex;flex-direction:column;align-items:center;gap:5px;padding:9px 4px;color:var(--muted);
+  transition:.2s;font-size:10.5px;font-weight:600;text-align:center;line-height:1.15}
+.tab .ico{width:25px;height:25px;transition:.2s}
+.tab.on{color:var(--gold-2)}
+.tab.on .ico{filter:drop-shadow(0 0 9px rgba(217,180,90,.55));transform:translateY(-1px)}
+.tab:active{transform:scale(.93)}
+.home-wrap{display:grid;place-items:center;position:relative}
+.home{width:62px;height:62px;border-radius:50%;display:grid;place-items:center;color:#1a1408;
+  margin-top:-24px;border:4px solid var(--bg);transition:.22s;
+  background:linear-gradient(140deg,var(--gold-3),var(--gold) 45%,var(--gold-2));
+  box-shadow:0 8px 24px rgba(217,180,90,.32)}
+.home .ico{width:27px;height:27px;stroke-width:1.9}
+.home:active{transform:scale(.9)}
+.home.on{box-shadow:0 8px 30px rgba(217,180,90,.5)}
+
+/* ---------- панель ---------- */
+.sheet{position:fixed;inset:0;z-index:60;display:none}
+.sheet.on{display:block}
+.veil{position:absolute;inset:0;background:rgba(0,0,0,.72);backdrop-filter:blur(4px);animation:fade .25s}
+@keyframes fade{from{opacity:0}}
+.panel{position:absolute;left:0;right:0;bottom:0;max-height:93vh;overflow-y:auto;
+  background:linear-gradient(180deg,#15151b,#0a0a0d 40%);border-top:1px solid var(--gold-3);
+  border-radius:24px 24px 0 0;padding:9px 15px calc(26px + env(safe-area-inset-bottom));
+  animation:up .34s cubic-bezier(.2,.9,.3,1)}
+@keyframes up{from{transform:translateY(60px);opacity:.5}}
+.grip{width:42px;height:4px;border-radius:2px;background:#332c1c;margin:6px auto 15px}
+.panel h2{margin:0 0 4px;font-size:19px;font-weight:700;display:flex;align-items:center;gap:10px}
+.panel h2 .pic{width:34px;height:34px;flex:0 0 34px;border-radius:11px}
+.panel .sub{margin:0 0 16px;font-size:12.5px;color:var(--muted)}
+label{display:block;font-size:11.5px;color:var(--muted);margin:18px 0 8px;letter-spacing:1px;
+  text-transform:uppercase}
+input[type=text],input[type=number],select{width:100%;padding:13px 14px;border-radius:13px;
+  border:1px solid var(--line);background:#0a0a0e;color:var(--text);font:inherit;transition:.18s}
+input:focus,select:focus{outline:none;border-color:var(--gold-3);box-shadow:0 0 0 3px rgba(217,180,90,.09)}
+.err{font-size:13px;color:var(--bad);margin-top:11px;min-height:17px}
+
+/* поиск с бегущей подсказкой */
+.search{position:relative}
+.search .ico{position:absolute;left:13px;top:50%;transform:translateY(-50%);width:17px;height:17px;
+  color:var(--muted);pointer-events:none}
+.search input{padding-left:39px}
+.search .ph{position:absolute;left:39px;top:50%;transform:translateY(-50%);color:#5f5a53;font-size:14px;
+  pointer-events:none;white-space:nowrap}
+.search .ph i{display:inline-block;width:1px;height:15px;background:var(--gold);margin-left:2px;
+  vertical-align:-2px;animation:caret .9s steps(1) infinite}
+@keyframes caret{50%{opacity:0}}
+
+/* Выдвижной блок выбора. Раньше сетка моделей висела в панели целиком: у
+   коллекции их бывает по полсотни, и всё остальное — фоны, монохромы, номер —
+   уезжало далеко вниз. Теперь строка со сводкой, по нажатию раскрывается. */
+.drawer{border:1px solid var(--line);border-radius:14px;background:#0b0b0f;overflow:hidden;
+  margin-top:8px}
+.drawer-head{display:flex;align-items:center;gap:11px;padding:13px 14px;width:100%;
+  text-align:left;transition:.15s}
+.drawer-head:active{background:rgba(217,180,90,.06)}
+.drawer-head .t{flex:1;min-width:0}
+.drawer-head b{display:block;font-size:14.5px;font-weight:620}
+.drawer-head span{display:block;font-size:12.3px;color:var(--muted);white-space:nowrap;
+  overflow:hidden;text-overflow:ellipsis}
+.drawer-head .arr{width:20px;height:20px;color:var(--muted);transition:transform .25s}
+.drawer.on .drawer-head .arr{transform:rotate(180deg);color:var(--gold)}
+.drawer-body{max-height:0;overflow:hidden;transition:max-height .3s cubic-bezier(.3,.9,.4,1)}
+.drawer.on .drawer-body{max-height:420px}
+.drawer-body .in{padding:0 12px 13px}
+.count{display:inline-flex;align-items:center;justify-content:center;min-width:22px;height:22px;
+  padding:0 6px;border-radius:8px;font-size:12px;font-weight:640;color:#1a1408;
+  background:linear-gradient(135deg,var(--gold),var(--gold-2))}
+
+/* выбор с картинками */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:8px;
+  max-height:250px;overflow-y:auto;padding:2px}
+.opt{display:flex;flex-direction:column;align-items:center;gap:6px;padding:10px 6px;border-radius:14px;
+  border:1px solid var(--line);background:#0b0b0f;color:var(--muted);font-size:11.8px;
+  transition:.16s;text-align:center;position:relative;line-height:1.25}
+.opt .pic{width:38px;height:38px;flex:0 0 38px;border-radius:11px}
+.opt .swatch{width:34px;height:34px;border-radius:50%;border:1px solid rgba(255,255,255,.12)}
+.opt.on{color:var(--gold-2);border-color:var(--gold-3);background:rgba(217,180,90,.1)}
+.opt.on::after{content:"";position:absolute;top:6px;right:6px;width:15px;height:15px;border-radius:50%;
+  background:linear-gradient(135deg,var(--gold),var(--gold-2));
+  box-shadow:0 0 0 2px #0b0b0f}
+.opt:active{transform:scale(.95)}
+.opt .pct{font-size:10px;opacity:.65}
+
+/* переключатели */
+.sw{display:flex;justify-content:space-between;align-items:center;gap:13px;padding:14px 0;
+  border-bottom:1px solid var(--line)}
+.sw:last-child{border-bottom:none}
+.sw .t b{display:block;font-size:14.5px;font-weight:620}
+.sw .t span{font-size:12px;color:var(--muted);line-height:1.4;display:block}
+.tgl{width:50px;height:29px;border-radius:15px;border:1px solid var(--line);background:#0a0a0e;
+  position:relative;flex:0 0 50px;transition:.22s}
+.tgl::after{content:"";position:absolute;top:3px;left:3px;width:21px;height:21px;border-radius:50%;
+  background:#57514a;transition:.22s cubic-bezier(.3,1.4,.5,1)}
+.tgl.on{background:rgba(217,180,90,.2);border-color:var(--gold-3)}
+.tgl.on::after{left:24px;background:linear-gradient(135deg,var(--gold),var(--gold-2))}
+.seg{display:flex;gap:7px;flex-wrap:wrap}
+.seg button{flex:1;min-width:60px;padding:11px 6px;border-radius:13px;border:1px solid var(--line);
+  background:#0b0b0f;color:var(--muted);font-size:13px;font-weight:620;transition:.16s}
+.seg button.on{color:#1a1408;border-color:transparent;
+  background:linear-gradient(135deg,var(--gold),var(--gold-2))}
+.mode-note{font-size:12px;color:var(--muted);margin-top:9px;line-height:1.5}
+.mode-note b{color:var(--gold-2);font-weight:620}
+
+/* ползунок */
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:26px;
+  background:transparent;margin:6px 0 2px}
+input[type=range]::-webkit-slider-runnable-track{height:7px;border-radius:4px;
+  background:var(--track,#1c1a14)}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:24px;height:24px;
+  border-radius:50%;margin-top:-8.5px;border:2px solid #0b0b0f;
+  background:linear-gradient(135deg,var(--gold),var(--gold-2));
+  box-shadow:0 3px 12px rgba(217,180,90,.45)}
+input[type=range]::-moz-range-track{height:7px;border-radius:4px;background:var(--track,#1c1a14)}
+input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;border:2px solid #0b0b0f;
+  background:linear-gradient(135deg,var(--gold),var(--gold-2))}
+.mono-scale{display:flex;justify-content:space-between;font-size:11px;color:var(--muted)}
+
+/* монохромы */
+.mono-box{border:1px solid var(--line);border-radius:16px;padding:14px;background:#0b0b0f}
+.mono-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.mono-val{font-size:27px;font-weight:740;letter-spacing:-.5px}
+.mono-val small{font-size:14px;color:var(--muted);font-weight:500;margin-left:2px}
+.mono-bar{height:7px;border-radius:4px;background:#1c1a14;overflow:hidden;margin:10px 0 13px}
+.mono-bar i{display:block;height:100%;border-radius:4px;transition:width .35s cubic-bezier(.3,1,.4,1);
+  background:linear-gradient(90deg,var(--gold-3),var(--gold),var(--gold-2))}
+
+/* пример номера */
+.numex{margin-top:12px;padding:12px 14px;border-radius:13px;border:1px dashed var(--line-2);
+  background:#0b0b0f}
+.numex .cap{font-size:11.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px}
+.numex .pair{display:flex;gap:18px;margin-top:9px}
+.numex .one{display:flex;align-items:center;gap:7px}
+.numex b{font-size:19px;letter-spacing:2px;color:var(--gold-2);font-variant-numeric:tabular-nums;
+  font-family:ui-monospace,Menlo,monospace}
+.numex .mk{width:18px;height:18px;color:var(--gold);stroke-width:2.4}
+.numex .no b{color:#6f6a62}
+.digits{display:flex;flex-wrap:wrap;gap:6px}
+.digits button{width:38px;height:38px;border-radius:11px;border:1px solid var(--line);background:#0b0b0f;
+  color:var(--muted);font-size:15px;font-weight:640;transition:.15s}
+.digits button.on{color:#1a1408;border-color:transparent;
+  background:linear-gradient(135deg,var(--gold),var(--gold-2))}
+
+/* профиль */
+.stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-bottom:11px}
+.stat{background:linear-gradient(160deg,var(--card),var(--bg-soft));border:1px solid var(--line);
+  border-radius:15px;padding:13px 10px;text-align:center}
+.stat b{display:block;font-size:22px;font-weight:730}
+.stat span{font-size:10.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.6px}
+.tx{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--line)}
+.tx:last-child{border-bottom:none}
+.tx .ic{width:38px;height:38px;flex:0 0 38px;border-radius:12px;display:grid;place-items:center;
+  background:rgba(217,180,90,.09);border:1px solid var(--line);color:var(--gold)}
+.tx .t{flex:1;min-width:0}
+.tx .t b{display:block;font-size:14px;font-weight:620}
+.tx .t span{font-size:11.5px;color:var(--muted)}
+.tx .amt{font-size:14px;font-weight:660;color:var(--gold-2);white-space:nowrap}
+
+.toast{position:fixed;left:15px;right:15px;bottom:calc(var(--nav-h) + 20px + env(safe-area-inset-bottom));
+  z-index:80;background:#1b1913;border:1px solid var(--gold-3);color:var(--gold-2);border-radius:14px;
+  padding:13px 15px;font-size:13.5px;text-align:center;opacity:0;transform:translateY(10px);
+  transition:.25s;pointer-events:none;display:flex;align-items:center;justify-content:center;gap:9px}
+.toast.on{opacity:1;transform:none}
+.skel{height:74px;border-radius:var(--r);margin-bottom:10px;
+  background:linear-gradient(100deg,#101016 30%,#1b1b23 50%,#101016 70%);background-size:220% 100%;
+  animation:sk 1.4s linear infinite}
+@keyframes sk{to{background-position:-120% 0}}
+#conf{position:fixed;inset:0;z-index:90;pointer-events:none;display:none}
+#conf.on{display:block}
+.cf{position:absolute;width:9px;height:14px;border-radius:2px;animation:fall linear forwards}
+@keyframes fall{0%{transform:translateY(-20px) rotate(0);opacity:1}
+  100%{transform:translateY(105vh) rotate(720deg);opacity:.15}}
+@media (prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+</style>
+</head>
+<body>
+<div class="glow"><i></i><i></i></div>
+
+<!-- ===================== ЭКРАН ЗАГРУЗКИ ===================== -->
+<div id="boot">
+  <div id="boot-art"></div>
+  <div>
+    <div class="boot-title">Gift<b>Sniper</b></div>
+    <div class="boot-sub" id="boot-sub">Загрузка</div>
+    <div class="bar"><i></i></div>
+  </div>
+</div>
+
+<!-- ===================== НАБОР ИКОНОК ===================== -->
+<svg style="display:none">
+  <symbol id="i-home" viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5"/><path d="M5.5 9.5V20h13V9.5"/><path d="M9.5 20v-6h5v6"/></symbol>
+  <symbol id="i-scope" viewBox="0 0 24 24"><circle cx="12" cy="12" r="7.5"/><circle cx="12" cy="12" r="2.6"/><path d="M12 1.8v4M12 18.2v4M1.8 12h4M18.2 12h4"/></symbol>
+  <symbol id="i-flip" viewBox="0 0 24 24"><path d="M4 8h13l-3.2-3.4"/><path d="M20 16H7l3.2 3.4"/></symbol>
+  <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.6"/><path d="M4.8 20c.9-3.9 3.8-5.8 7.2-5.8s6.3 1.9 7.2 5.8"/></symbol>
+  <symbol id="i-gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.1"/><path d="M19.2 14.6a1.5 1.5 0 0 0 .3 1.7l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.5 1.5 0 0 0-2.6 1v.2a2 2 0 1 1-4 0v-.1a1.5 1.5 0 0 0-2.6-1l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.5 1.5 0 0 0-1-2.6H3.6a2 2 0 1 1 0-4h.1a1.5 1.5 0 0 0 1-2.6l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.5 1.5 0 0 0 1.7.3h.1a1.5 1.5 0 0 0 .9-1.4V3.6a2 2 0 1 1 4 0v.1a1.5 1.5 0 0 0 2.6 1l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.5 1.5 0 0 0 1 2.6h.2a2 2 0 1 1 0 4h-.1a1.5 1.5 0 0 0-1.4.9z"/></symbol>
+  <symbol id="i-gift" viewBox="0 0 24 24"><path d="M3.5 11h17v9.5a1 1 0 0 1-1 1h-15a1 1 0 0 1-1-1z"/><rect x="2.6" y="6.6" width="18.8" height="4.4" rx="1.2"/><path d="M12 6.6v14.9"/><path d="M12 6.6C10.6 4 8.8 2.2 7.3 3.1 5.7 4 7.4 6.2 12 6.6zM12 6.6c1.4-2.6 3.2-4.4 4.7-3.5 1.6.9-.1 3.1-4.7 3.5z"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5.5v13M5.5 12h13" stroke-width="2.2"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M4.5 12.6l5 5L19.5 7"/></symbol>
+  <symbol id="i-back" viewBox="0 0 24 24"><path d="M14.5 5.5 8 12l6.5 6.5"/></symbol>
+  <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4.5 7h15M9.5 7V5.2A1.2 1.2 0 0 1 10.7 4h2.6a1.2 1.2 0 0 1 1.2 1.2V7"/><path d="M6.6 7l.9 12.1a1.4 1.4 0 0 0 1.4 1.3h6.2a1.4 1.4 0 0 0 1.4-1.3L17.4 7"/></symbol>
+  <symbol id="i-model" viewBox="0 0 24 24"><path d="M12 3l7.5 4.3v8.6L12 20.2 4.5 15.9V7.3z"/><path d="M12 12l7.5-4.3M12 12v8.2M12 12L4.5 7.7"/></symbol>
+  <symbol id="i-drop" viewBox="0 0 24 24"><path d="M12 3.4s6.2 6.7 6.2 10.7a6.2 6.2 0 1 1-12.4 0C5.8 10.1 12 3.4 12 3.4z"/></symbol>
+  <symbol id="i-hash" viewBox="0 0 24 24"><path d="M9.4 4 7.6 20M16.4 4l-1.8 16M4.5 9h15M3.8 15h15"/></symbol>
+  <symbol id="i-shop" viewBox="0 0 24 24"><path d="M4 8h16l-1.2 11.2a1.4 1.4 0 0 1-1.4 1.3H6.6a1.4 1.4 0 0 1-1.4-1.3z"/><path d="M8.6 8V6.4a3.4 3.4 0 0 1 6.8 0V8"/></symbol>
+  <symbol id="i-ton" viewBox="0 0 24 24"><path d="M12 3.2 21 8v.4L12 20.8 3 8.4V8z"/><path d="M3.4 8.2h17.2M12 3.4v17"/></symbol>
+  <symbol id="i-mono" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.6"/><path d="M12 3.4a8.6 8.6 0 0 1 0 17.2z" fill="currentColor" stroke="none"/></symbol>
+  <symbol id="i-chart" viewBox="0 0 24 24"><path d="M4 20h16"/><path d="M7 20v-6.5M12 20V7M17 20v-9.5"/></symbol>
+  <symbol id="i-star" viewBox="0 0 24 24"><path d="m12 3.6 2.6 5.6 6.1.8-4.5 4.3 1.2 6.1L12 17.5l-5.4 2.9 1.2-6.1-4.5-4.3 6.1-.8z"/></symbol>
+  <symbol id="i-bell" viewBox="0 0 24 24"><path d="M18 15.4V10a6 6 0 1 0-12 0v5.4L4.4 18h15.2z"/><path d="M9.8 18.4a2.4 2.4 0 0 0 4.4 0"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="10.8" cy="10.8" r="6.4"/><path d="m15.6 15.6 4 4"/></symbol>
+  <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3.2 19.4 6v6c0 4.4-3 7.6-7.4 9-4.4-1.4-7.4-4.6-7.4-9V6z"/><path d="m9 12.2 2.2 2.2 4-4.2"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.4"/><path d="M12 7.4V12l3 2"/></symbol>
+</svg>
+
+<svg style="display:none">
+  <!-- Portals: портал-кольцо и проходящая сквозь него стрелка -->
+  <symbol id="m-portals" viewBox="0 0 32 32">
+    <ellipse cx="16" cy="16" rx="7" ry="10.5"/>
+    <ellipse cx="16" cy="16" rx="3" ry="5" opacity=".65"/>
+    <path d="M5 16h6M21 16h6" stroke-linecap="round"/>
+    <path d="M24 12.6 27.4 16 24 19.4"
+          stroke-linecap="round" stroke-linejoin="round"/>
+  </symbol>
+
+  <!-- Tonnel: свод тоннеля с уходящими вглубь кольцами -->
+  <symbol id="m-tonnel" viewBox="0 0 32 32">
+    <path d="M4 26V16a12 12 0 0 1 24 0v10"
+          stroke-linecap="round"/>
+    <path d="M9 26v-9a7 7 0 0 1 14 0v9"
+          opacity=".75"/>
+    <path d="M13.5 26v-8a2.5 2.5 0 0 1 5 0v8" opacity=".55"/>
+    <path d="M3 26h26" stroke-linecap="round"/>
+  </symbol>
+
+  <!-- MRKT: прилавок с навесом -->
+  <symbol id="m-mrkt" viewBox="0 0 32 32">
+    <path d="M5 12h22l-2 3.4a3.4 3.4 0 0 1-6 0 3.4 3.4 0 0 1-6 0 3.4 3.4 0 0 1-6 0z" stroke-linejoin="round"/>
+    <path d="M7.2 12 9 6.5h14L24.8 12"
+          stroke-linejoin="round"/>
+    <path d="M7 18v8h18v-8"
+          stroke-linecap="round"/>
+    <path d="M13 26v-5h6v5" opacity=".8"/>
+  </symbol>
+
+  <!-- Getgems: гранёный камень -->
+  <symbol id="m-getgems" viewBox="0 0 32 32">
+    <path d="M10 6h12l5 7-11 13L5 13z"
+          stroke-linejoin="round"/>
+    <path d="M5 13h22M12.5 13 16 26M19.5 13 16 26M10 6l2.5 7M22 6l-2.5 7" opacity=".7"/>
+  </symbol>
+
+  <!-- Fragment: бумажный самолётик (площадка Telegram) -->
+  <symbol id="m-fragment" viewBox="0 0 32 32">
+    <path d="M28 5 3.5 14.6l7.4 2.6L26 7.6 14.4 19.4l9.1 7.2z" stroke-linejoin="round"/>
+    <path d="M10.9 17.2v6.6l3.5-4.4"
+          stroke-linejoin="round" opacity=".8"/>
+  </symbol>
+  <symbol id="i-chev" viewBox="0 0 24 24"><path d="m6 9.5 6 6 6-6"/></symbol>
+  <symbol id="i-cross" viewBox="0 0 24 24"><path d="M6.5 6.5l11 11M17.5 6.5l-11 11"/></symbol>
+  <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 7h16M4 12h12M4 17h16"/></symbol>
+  <symbol id="i-life" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="3.4"/><path d="m6 6 3.6 3.6M18 6l-3.6 3.6M6 18l3.6-3.6M18 18l-3.6-3.6"/></symbol>
+  <symbol id="i-help" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M9.6 9.4a2.5 2.5 0 1 1 3.4 2.3c-.7.3-1 .9-1 1.6v.3"/><path d="M12 17.2h.01" stroke-width="2.2"/></symbol>
+  <symbol id="i-doc" viewBox="0 0 24 24"><path d="M13.5 3.5H7a1.5 1.5 0 0 0-1.5 1.5v14A1.5 1.5 0 0 0 7 20.5h10a1.5 1.5 0 0 0 1.5-1.5V8.5z"/><path d="M13.5 3.5v5h5M9 13h6M9 16.5h4"/></symbol>
+  <symbol id="i-card" viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="12" rx="2.4"/><path d="M3 10h18M6.5 14.5h3"/></symbol>
+  <symbol id="i-users" viewBox="0 0 24 24"><circle cx="9" cy="8.4" r="3.2"/><path d="M3 19.4c.7-3.3 3.1-5 6-5s5.3 1.7 6 5"/><path d="M16 5.6a3.2 3.2 0 0 1 0 6.2M17.4 14.9c2 .7 3.2 2.2 3.6 4.5"/></symbol>
+  <symbol id="i-eye-off" viewBox="0 0 24 24"><path d="M4 4l16 16"/><path d="M9.6 5.3A9.6 9.6 0 0 1 12 5c5 0 8.5 4 9.5 7-.4 1.2-1.3 2.7-2.7 4"/><path d="M6.2 7.3C4.4 8.6 3 10.6 2.5 12c1 3 4.5 7 9.5 7 1.3 0 2.5-.3 3.6-.7"/><path d="M10.2 10.4a2.4 2.4 0 0 0 3.3 3.4"/></symbol>
+  <symbol id="i-tune" viewBox="0 0 24 24"><path d="M4 7h9M17.5 7H20M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2.4"/><circle cx="9" cy="17" r="2.4"/></symbol>
+  <symbol id="i-mega" viewBox="0 0 24 24"><path d="M4 10v4a1.6 1.6 0 0 0 1.6 1.6H8l7 4.2V4.2L8 8.4H5.6A1.6 1.6 0 0 0 4 10z"/><path d="M18 9.2a4 4 0 0 1 0 5.6"/></symbol>
+  <symbol id="i-ban" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="m6.2 6.2 11.6 11.6"/></symbol>
+  <symbol id="i-broom" viewBox="0 0 24 24"><path d="M15.5 4.5 9 11M7.5 12.5l4 4"/><path d="M5.5 14.5 9.5 18.5 6 21H3v-3z"/><path d="M13 9.5 18 4.5"/></symbol>
+</svg>
+
+<header>
+  <button class="ava" id="ava"><svg class="ico" style="width:20px;height:20px"><use href="#i-user"/></svg></button>
+  <button class="who" id="who"><b id="who-name">Профиль</b><span>профиль</span></button>
+  <button class="top-act" id="btn-menu" aria-label="Меню">
+    <span class="burger"><i></i><i></i><i></i></span></button>
+</header>
+
+<main>
+  <!-- ГЛАВНАЯ -->
+  <section class="view on" id="v-home">
+    <h1 class="h1">Привет, <b id="hi-name">друг</b></h1>
+    <div id="home-promo"></div>
+
+    <button class="mod" data-go="sniper">
+      <svg class="art" viewBox="0 0 120 120">
+        <circle cx="72" cy="46" r="30" fill="none" stroke="url(#g-gold)" stroke-width="1.5" opacity=".35"/>
+        <circle cx="72" cy="46" r="19" fill="none" stroke="url(#g-gold)" stroke-width="1.2" opacity=".5"/>
+        <circle cx="72" cy="46" r="5" fill="url(#g-gold)" opacity=".8"/>
+        <path d="M72 8v14M72 70v14M34 46h14M96 46h14" stroke="url(#g-gold)" stroke-width="1.5" opacity=".55"/>
+      </svg>
+      <div class="in">
+        <h3><svg class="ico" style="color:var(--gold)"><use href="#i-scope"/></svg>Upgrade Sniper</h3>
+        <p>Уведомление в тот момент, когда подарок улучшили с нужной моделью, фоном или красивым номером.</p>
+        <div class="chips">
+          <span class="chip"><svg class="ico"><use href="#i-gift"/></svg><b id="c-colls">0</b></span>
+          <span class="chip mute">бесплатно</span>
+        </div>
+      </div>
+    </button>
+
+    <button class="mod" data-go="flip">
+      <svg class="art" viewBox="0 0 120 120">
+        <path d="M40 40h44l-11-11" fill="none" stroke="url(#g-gold)" stroke-width="2" opacity=".5"/>
+        <path d="M92 62H48l11 11" fill="none" stroke="url(#g-gold)" stroke-width="2" opacity=".5"/>
+        <path d="M66 84 78 96 66 108 54 96z" fill="url(#g-gold)" opacity=".3"/>
+      </svg>
+      <div class="in">
+        <h3><svg class="ico" style="color:var(--gold)"><use href="#i-flip"/></svg>Flip Master</h3>
+        <p>Зарабатывайте на перепродаже NFT-подарков. Ловит листинги на маркетах дешевле последних продаж.</p>
+        <div class="chips">
+          <span class="chip"><svg class="ico"><use href="#i-shop"/></svg><b id="c-slots">0/0</b></span>
+          <span class="chip mute" id="c-flip-state">нужен слот</span>
+        </div>
+      </div>
+    </button>
+
+    <div class="sec">Ещё</div>
+    <button class="item" data-go="profile">
+      <div class="pic" style="display:grid;place-items:center;color:var(--gold)">
+        <svg class="ico"><use href="#i-chart"/></svg></div>
+      <div class="body"><div class="name">Профиль</div>
+        <div class="sub">слоты, статистика, история покупок</div></div>
+    </button>
+    <button class="item" data-go="settings">
+      <div class="pic" style="display:grid;place-items:center;color:var(--gold)">
+        <svg class="ico"><use href="#i-gear"/></svg></div>
+      <div class="body"><div class="name">Настройки</div>
+        <div class="sub">язык приложения</div></div>
+    </button>
+    <button class="item" id="row-admin" data-go="admin" style="display:none">
+      <div class="pic" style="display:grid;place-items:center;color:var(--gold)">
+        <svg class="ico"><use href="#i-shield"/></svg></div>
+      <div class="body"><div class="name">Админка</div>
+        <div class="sub">люди, платежи, акции, рассылка</div></div>
+    </button>
+  </section>
+
+  <!-- UPGRADE SNIPER -->
+  <section class="view" id="v-sniper">
+    <h1 class="h1">Upgrade <b>Sniper</b></h1>
+    <p class="lead">Уведомление в тот момент, когда подарок улучшили с нужной моделью,
+      фоном или красивым номером.</p>
+    <div id="sniper-list"></div>
+  </section>
+
+  <!-- FLIP MASTER -->
+  <section class="view" id="v-flip">
+    <h1 class="h1">Flip <b>Master</b></h1>
+    <p class="lead">Отслеживание листингов на маркетах.</p>
+    <div id="flip-top"></div>
+    <div id="flip-list"></div>
+    <div id="flip-settings"></div>
+  </section>
+
+  <!-- ПРОФИЛЬ -->
+  <section class="view" id="v-profile">
+    <h1 class="h1">Профиль</h1>
+    <p class="lead" id="prof-lead"></p>
+    <div class="stat-grid" id="prof-stats"></div>
+    <div class="sec">Приглашения</div>
+    <div class="card" id="prof-ref"></div>
+    <div class="sec">История транзакций</div>
+    <div class="card" id="prof-tx"></div>
+  </section>
+
+  <!-- НАСТРОЙКИ -->
+  <section class="view" id="v-settings">
+    <h1 class="h1">Настройки</h1>
+    <div id="set-body"></div>
+  </section>
+
+  <!-- АДМИНКА -->
+  <section class="view" id="v-admin">
+    <h1 class="h1">Админка</h1>
+    <p class="lead">Только для владельца бота.</p>
+    <div id="admin-body"></div>
+  </section>
+</main>
+
+<button class="fab" id="fab" style="display:none" aria-label="Добавить">
+  <svg class="ico" style="width:26px;height:26px"><use href="#i-plus"/></svg></button>
+
+<nav>
+  <button class="tab" data-go="sniper">
+    <svg class="ico"><use href="#i-scope"/></svg>Upgrade<br>Sniper</button>
+  <div class="home-wrap">
+    <button class="home on" data-go="home" aria-label="Главная">
+      <svg class="ico"><use href="#i-home"/></svg></button>
+  </div>
+  <button class="tab" data-go="flip">
+    <svg class="ico"><use href="#i-flip"/></svg>Flip<br>Master</button>
+</nav>
+
+<div class="sheet" id="sheet"><div class="veil" id="veil"></div><div class="panel" id="panel"></div></div>
+<div class="toast" id="toast"></div>
+<div id="conf"></div>
+<script>
+"use strict";
+const TG = window.Telegram && window.Telegram.WebApp ? window.Telegram.WebApp : null;
+const P = new URLSearchParams(location.search);
+const API_FALLBACK = "";
+const API = ((P.get("api") || API_FALLBACK) || "").replace(/\/$/, "");
+const DEMO = P.get("demo") === "1";
+
+const DEFS = `<defs>
+  <linearGradient id="gg" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0" stop-color="#a8843a"/><stop offset="45%" stop-color="#f6e2a6"/>
+    <stop offset="100%" stop-color="#c9a24d"/></linearGradient>
+  <linearGradient id="gb" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#26262c"/><stop offset="100%" stop-color="#0b0b0e"/></linearGradient>
+  <radialGradient id="gr"><stop offset="0" stop-color="#f6e2a6" stop-opacity=".95"/>
+    <stop offset="100%" stop-color="#f6e2a6" stop-opacity="0"/></radialGradient>
+</defs>`;
+
+const BOOTS = {};
+const BOOT_NAMES = {1:"Коробка с подарком",2:"Прицел снайпера",
+  3:"Алмаз на орбите",4:"Чертёж логотипа",5:"Золотая волна",
+  6:"Захват цели",7:"Стопка монет",8:"Вращение алмаза",
+  9:"Сигнал уведомления",10:"Лента листингов"};
+
+/* 1 - коробка открывается, карточка NFT выезжает */
+BOOTS[1] = `<svg class="v1" viewBox="0 0 200 200" width="190" height="190">${DEFS}
+  <circle class="ring-out" cx="100" cy="100" r="92" fill="none" stroke="url(#gg)" stroke-width="2.4" stroke-dasharray="150 40"/>
+  <circle class="ring-in" cx="100" cy="100" r="83" fill="none" stroke="#8a6a20" stroke-width="1" opacity=".65" stroke-dasharray="10 14"/>
+  <g class="rays"><circle cx="100" cy="96" r="52" fill="url(#gr)" opacity=".55"/></g>
+  <g class="card-up">
+    <rect x="76" y="52" width="48" height="62" rx="9" fill="url(#gb)" stroke="url(#gg)" stroke-width="2"/>
+    <text x="100" y="76" text-anchor="middle" font-family="Arial Black,Arial" font-size="15" font-weight="900" fill="url(#gg)">NFT</text>
+    <path d="M100 84l13 9-13 17-13-17z" fill="url(#gg)" opacity=".92"/></g>
+  <path d="M62 100h76v46a6 6 0 0 1-6 6H68a6 6 0 0 1-6-6z" fill="url(#gb)" stroke="url(#gg)" stroke-width="2"/>
+  <rect x="92" y="100" width="16" height="52" fill="url(#gg)" opacity=".92"/>
+  <g class="lid">
+    <rect x="56" y="84" width="88" height="20" rx="6" fill="url(#gb)" stroke="url(#gg)" stroke-width="2"/>
+    <rect x="92" y="84" width="16" height="20" fill="url(#gg)" opacity=".92"/>
+    <path d="M100 84c-9-3-19-9-19-17 0-6 8-8 12-3 3 4 5 11 7 20z" fill="url(#gg)"/>
+    <path d="M100 84c9-3 19-9 19-17 0-6-8-8-12-3-3 4-5 11-7 20z" fill="url(#gg)" opacity=".85"/></g>
+  <path class="spark" d="M158 58l3 8 8 3-8 3-3 8-3-8-8-3 8-3z" fill="url(#gg)"/>
+  <path class="spark" d="M42 74l2.4 6.4L51 83l-6.6 2.6L42 92l-2.4-6.4L33 83l6.6-2.6z" fill="url(#gg)"/>
+  <path class="spark" d="M166 118l2 5 5 2-5 2-2 5-2-5-5-2 5-2z" fill="url(#gg)"/></svg>`;
+
+/* 2 - прицел сводится на подарке и «выстрел» */
+BOOTS[2] = `<svg class="v2" viewBox="0 0 200 200" width="190" height="190">${DEFS}
+  <g class="gift">
+    <path d="M74 96h52v40a5 5 0 0 1-5 5H79a5 5 0 0 1-5-5z" fill="url(#gb)" stroke="url(#gg)" stroke-width="2"/>
+    <rect x="70" y="84" width="60" height="16" rx="5" fill="url(#gb)" stroke="url(#gg)" stroke-width="2"/>
+    <rect x="94" y="84" width="12" height="57" fill="url(#gg)" opacity=".9"/>
+    <path d="M100 84c-7-2-15-7-15-13 0-5 6-6 9-2 2 3 4 8 6 15z" fill="url(#gg)"/>
+    <path d="M100 84c7-2 15-7 15-13 0-5-6-6-9-2-2 3-4 8-6 15z" fill="url(#gg)" opacity=".85"/></g>
+  <g class="flash"><circle cx="100" cy="110" r="46" fill="url(#gr)"/></g>
+  <g class="aim" fill="none" stroke="url(#gg)">
+    <circle cx="100" cy="110" r="72" stroke-width="2" stroke-dasharray="34 18"/>
+    <path d="M100 26v22M100 172v22M16 110h22M162 110h22" stroke-width="2.4"/></g>
+  <g class="aim2" fill="none" stroke="url(#gg)" opacity=".85">
+    <circle cx="100" cy="110" r="52" stroke-width="1.4"/>
+    <circle cx="100" cy="110" r="34" stroke-width="1" opacity=".7"/></g>
+  <g class="tick" fill="url(#gg)">
+    <circle cx="100" cy="110" r="3.4"/>
+    <path d="M148 62l2.6 6.4 6.4 2.6-6.4 2.6L148 80l-2.6-6.4-6.4-2.6 6.4-2.6z"/></g></svg>`;
+
+/* 3 - алмаз вращается, вокруг орбиты и искры */
+BOOTS[3] = `<svg class="v3" viewBox="0 0 200 200" width="190" height="190">${DEFS}
+  <g class="halo"><circle cx="100" cy="100" r="66" fill="url(#gr)"/></g>
+  <g class="orbit"><ellipse cx="100" cy="100" rx="84" ry="34" fill="none" stroke="url(#gg)" stroke-width="1.4" opacity=".5"/>
+    <circle cx="184" cy="100" r="4" fill="url(#gg)"/></g>
+  <g class="orbit2"><ellipse cx="100" cy="100" rx="34" ry="84" fill="none" stroke="#8a6a20" stroke-width="1" opacity=".45"/>
+    <circle cx="100" cy="16" r="3" fill="url(#gg)"/></g>
+  <g class="gem">
+    <path d="M100 44l34 26-34 62-34-62z" fill="url(#gb)" stroke="url(#gg)" stroke-width="2.4"/>
+    <path d="M100 44l34 26H66zM66 70l34 62M134 70l-34 62M83 70l17-26 17 26" fill="none" stroke="url(#gg)" stroke-width="1.5" opacity=".8"/>
+    <path d="M83 70h34l-17 62z" fill="url(#gg)" opacity=".35"/></g>
+  <path class="dust" d="M60 140l2 5 5 2-5 2-2 5-2-5-5-2 5-2z" fill="url(#gg)"/>
+  <path class="dust" d="M140 132l2 5 5 2-5 2-2 5-2-5-5-2 5-2z" fill="url(#gg)"/>
+  <path class="dust" d="M100 152l2 5 5 2-5 2-2 5-2-5-5-2 5-2z" fill="url(#gg)"/>
+  <path class="dust" d="M124 150l1.6 4 4 1.6-4 1.6-1.6 4-1.6-4-4-1.6 4-1.6z" fill="url(#gg)"/></svg>`;
+
+/* 4 - логотип чертится линиями, затем заливается золотом */
+BOOTS[4] = `<svg class="v4" viewBox="0 0 200 200" width="190" height="190">${DEFS}
+  <g class="grid">${[...Array(9)].map((_,i)=>`<line x1="20" y1="${20+i*20}" x2="180" y2="${20+i*20}"/>
+    <line x1="${20+i*20}" y1="20" x2="${20+i*20}" y2="180"/>`).join("")}</g>
+  <circle cx="100" cy="100" r="88" fill="none" stroke="url(#gg)" stroke-width="1.6" style="--len:560"/>
+  <path d="M62 100h76v46a6 6 0 0 1-6 6H68a6 6 0 0 1-6-6z" fill="url(#gb)" stroke="url(#gg)" stroke-width="2" style="--len:250"/>
+  <rect x="56" y="80" width="88" height="20" rx="6" fill="url(#gb)" stroke="url(#gg)" stroke-width="2" style="--len:220"/>
+  <path d="M92 80v72" stroke="url(#gg)" stroke-width="14" style="--len:80" fill="none" opacity=".9"/>
+  <path d="M100 80c-9-3-19-9-19-17 0-6 8-8 12-3 3 4 5 11 7 20z" fill="url(#gg)" stroke="url(#gg)" stroke-width="1.5" style="--len:90"/>
+  <path d="M100 80c9-3 19-9 19-17 0-6-8-8-12-3-3 4-5 11-7 20z" fill="url(#gg)" stroke="url(#gg)" stroke-width="1.5" style="--len:90"/>
+  <g class="scan"><rect x="12" y="98" width="176" height="2" fill="url(#gg)" opacity=".8"/>
+    <rect x="12" y="94" width="176" height="10" fill="url(#gr)" opacity=".35"/></g></svg>`;
+
+/* 5 - золотая волна расходится от подарка */
+BOOTS[5] = `<svg class="v5" viewBox="0 0 200 200" width="190" height="190">${DEFS}
+  <circle class="w" cx="100" cy="100" r="60" fill="none" stroke="url(#gg)" stroke-width="2.2"/>
+  <circle class="w" cx="100" cy="100" r="60" fill="none" stroke="url(#gg)" stroke-width="1.8"/>
+  <circle class="w" cx="100" cy="100" r="60" fill="none" stroke="url(#gg)" stroke-width="1.4"/>
+  <g class="arc"><circle cx="100" cy="100" r="76" fill="none" stroke="url(#gg)" stroke-width="2.6"
+    stroke-linecap="round" stroke-dasharray="60 420" opacity=".9"/></g>
+  <g class="core">
+    <circle cx="100" cy="100" r="46" fill="url(#gb)" stroke="url(#gg)" stroke-width="2"/>
+    <path d="M78 96h44v26a4 4 0 0 1-4 4H82a4 4 0 0 1-4-4z" fill="#0d0c0a" stroke="url(#gg)" stroke-width="1.8"/>
+    <rect x="74" y="86" width="52" height="13" rx="4" fill="#0d0c0a" stroke="url(#gg)" stroke-width="1.8"/>
+    <rect x="95" y="86" width="10" height="40" fill="url(#gg)" opacity=".92"/>
+    <path d="M100 86c-6-2-13-6-13-11 0-4 5-5 8-2 2 3 3 7 5 13z" fill="url(#gg)"/>
+    <path d="M100 86c6-2 13-6 13-11 0-4-5-5-8-2-2 3-3 7-5 13z" fill="url(#gg)" opacity=".85"/></g>
+  <path class="up" d="M56 130l2 5 5 2-5 2-2 5-2-5-5-2 5-2z" fill="url(#gg)"/>
+  <path class="up" d="M144 126l2 5 5 2-5 2-2 5-2-5-5-2 5-2z" fill="url(#gg)"/>
+  <path class="up" d="M100 156l2 5 5 2-5 2-2 5-2-5-5-2 5-2z" fill="url(#gg)"/>
+  <path class="up" d="M124 146l1.6 4 4 1.6-4 1.6-1.6 4-1.6-4-4-1.6 4-1.6z" fill="url(#gg)"/></svg>`;
+
+
+/* Какие заставки разрешены - знает бот, но экран нужен ДО ответа сервера.
+   Поэтому запоминаем набор с прошлого захода: первый раз показывается первая
+   заставка, дальше - из выбранных владельцем. */
+BOOTS[6] = `<svg class="v6" viewBox="0 0 200 200" width="190" height="190">${DEFS}
+  <g class="grid"><line x1="24" y1="28" x2="176" y2="28"/><line x1="24" y1="28" x2="24" y2="172"/><line x1="24" y1="46" x2="176" y2="46"/><line x1="42" y1="28" x2="42" y2="172"/><line x1="24" y1="64" x2="176" y2="64"/><line x1="60" y1="28" x2="60" y2="172"/><line x1="24" y1="82" x2="176" y2="82"/><line x1="78" y1="28" x2="78" y2="172"/><line x1="24" y1="100" x2="176" y2="100"/><line x1="96" y1="28" x2="96" y2="172"/><line x1="24" y1="118" x2="176" y2="118"/><line x1="114" y1="28" x2="114" y2="172"/><line x1="24" y1="136" x2="176" y2="136"/><line x1="132" y1="28" x2="132" y2="172"/><line x1="24" y1="154" x2="176" y2="154"/><line x1="150" y1="28" x2="150" y2="172"/><line x1="24" y1="172" x2="176" y2="172"/><line x1="168" y1="28" x2="168" y2="172"/></g>
+  <circle cx="100" cy="100" r="86" fill="none" stroke="url(#gg)" stroke-width="1.4" opacity=".45"/>
+  <g class="gift-core">
+    <path d="M80 96h40v34a4 4 0 0 1-4 4H84a4 4 0 0 1-4-4z" fill="url(#gb)" stroke="url(#gg)" stroke-width="2"/>
+    <rect x="76" y="85" width="48" height="14" rx="4" fill="url(#gb)" stroke="url(#gg)" stroke-width="2"/>
+    <rect x="95" y="85" width="10" height="49" fill="url(#gg)" opacity=".9"/>
+    <path d="M100 85c-7-2-14-7-14-12 0-4 6-5 9-1 2 3 3 7 5 13z" fill="url(#gg)"/>
+    <path d="M100 85c7-2 14-7 14-12 0-4-6-5-9-1-2 3-3 7-5 13z" fill="url(#gg)" opacity=".85"/>
+  </g>
+  <g class="scan-line"><rect x="18" y="98" width="164" height="2.5" fill="url(#gg)"/>
+    <rect x="18" y="92" width="164" height="14" fill="url(#gr)" opacity=".4"/></g>
+  <g class="lock" fill="none" stroke="url(#gg)" stroke-width="2.6" stroke-linecap="round">
+    <path d="M52 62V48h14M148 62V48h-14M52 138v14h14M148 138v14h-14"/></g>
+  <g class="tick" fill="url(#gg)">
+    <path d="M156 44l2.6 6.6 6.6 2.6-6.6 2.6L156 62l-2.6-6.6L146.8 53l6.6-2.6z"/>
+    <circle cx="100" cy="100" r="3.2"/></g></svg>`;
+BOOTS[7] = `<svg class="v7" viewBox="0 0 200 200" width="190" height="190">${DEFS}
+  <g class="ring"><circle cx="100" cy="100" r="88" fill="none" stroke="url(#gg)"
+    stroke-width="1.6" stroke-dasharray="4 12" opacity=".6"/></g>
+  <ellipse class="shadow" cx="100" cy="156" rx="46" ry="7" fill="#000" opacity=".55"/>
+  <g class="coin"><ellipse cx="100" cy="140" rx="44" ry="13" fill="url(#gb)" stroke="url(#gg)" stroke-width="2"/>
+    <ellipse cx="100" cy="137" rx="44" ry="13" fill="url(#gg)" opacity=".9"/>
+    <ellipse cx="100" cy="137" rx="30" ry="8" fill="none" stroke="#0b0b0e" stroke-width="1.2" opacity=".5"/></g>
+  <g class="coin"><ellipse cx="100" cy="118" rx="44" ry="13" fill="url(#gb)" stroke="url(#gg)" stroke-width="2"/>
+    <ellipse cx="100" cy="115" rx="44" ry="13" fill="url(#gg)" opacity=".82"/>
+    <ellipse cx="100" cy="115" rx="30" ry="8" fill="none" stroke="#0b0b0e" stroke-width="1.2" opacity=".5"/></g>
+  <g class="coin"><ellipse cx="100" cy="96" rx="44" ry="13" fill="url(#gb)" stroke="url(#gg)" stroke-width="2"/>
+    <ellipse cx="100" cy="93" rx="44" ry="13" fill="url(#gg)" opacity=".95"/>
+    <path d="M86 93h28M100 86v14" stroke="#0b0b0e" stroke-width="2" opacity=".55"/></g>
+  <g class="shine"><path d="M62 84l76-26" stroke="#fff" stroke-width="7" opacity=".35"
+    stroke-linecap="round"/></g></svg>`;
+BOOTS[8] = `<svg class="v8" viewBox="0 0 200 200" width="190" height="190">${DEFS}
+  <g class="arcs" fill="none" stroke="url(#gg)">
+    <circle cx="100" cy="100" r="84" stroke-width="2" stroke-dasharray="70 260" stroke-linecap="round"/>
+    <circle cx="100" cy="100" r="72" stroke-width="1.2" stroke-dasharray="30 200" opacity=".6"/></g>
+  <ellipse class="shadow" cx="100" cy="164" rx="34" ry="6" fill="#000" opacity=".5"/>
+  <g class="spinner">
+    <path d="M100 40l30 30-30 68-30-68z" fill="url(#gb)" stroke="url(#gg)" stroke-width="2.4"
+      stroke-linejoin="round"/>
+    <path d="M70 70h60M100 40l-14 30M100 40l14 30M86 70l14 68M114 70l-14 68"
+      stroke="url(#gg)" stroke-width="1.4" opacity=".75" fill="none"/>
+    <path d="M86 70h28l-14 68z" fill="url(#gg)" opacity=".3"/>
+    <path class="glint" d="M92 52l6 12-6 4-6-10z" fill="#fff" opacity=".8"/></g>
+  <path class="spark" d="M158 66l2.6 6.6 6.6 2.6-6.6 2.6L158 84l-2.6-6.6-6.6-2.6 6.6-2.6z" fill="url(#gg)"/>
+  <path class="spark" d="M42 116l2 5 5 2-5 2-2 5-2-5-5-2 5-2z" fill="url(#gg)"/></svg>`;
+BOOTS[9] = `<svg class="v9" viewBox="0 0 200 200" width="190" height="190">${DEFS}
+  <circle class="wave" cx="100" cy="100" r="58" fill="none" stroke="url(#gg)" stroke-width="2.4"/>
+  <circle class="wave" cx="100" cy="100" r="58" fill="none" stroke="url(#gg)" stroke-width="1.8"/>
+  <circle class="wave" cx="100" cy="100" r="58" fill="none" stroke="url(#gg)" stroke-width="1.4"/>
+  <circle cx="100" cy="100" r="52" fill="url(#gb)" stroke="url(#gg)" stroke-width="2"/>
+  <g class="bell">
+    <path d="M120 108V92a20 20 0 1 0-40 0v16l-6 9h52z" fill="none" stroke="url(#gg)"
+      stroke-width="2.6" stroke-linejoin="round"/>
+    <path d="M92 121a8 8 0 0 0 16 0" fill="none" stroke="url(#gg)" stroke-width="2.6"
+      stroke-linecap="round"/>
+    <path d="M100 72v-6" stroke="url(#gg)" stroke-width="2.6" stroke-linecap="round"/></g>
+  <g class="dot"><circle cx="128" cy="76" r="9" fill="url(#gg)"/>
+    <circle cx="128" cy="76" r="9" fill="none" stroke="#0b0b0e" stroke-width="2"/></g></svg>`;
+BOOTS[10] = `<svg class="v10" viewBox="0 0 200 200" width="190" height="190">${DEFS}
+  <rect class="rail" x="18" y="126" width="164" height="3" rx="1.5" fill="url(#gg)"/>
+  <g class="belt"><g transform="translate(-58 0)"><rect x="70" y="86" width="34" height="36" rx="7" fill="url(#gb)" stroke="url(#gg)" stroke-width="1.8"/><rect x="83" y="86" width="8" height="36" fill="url(#gg)" opacity=".8"/><rect x="66" y="80" width="42" height="11" rx="3.5" fill="url(#gb)" stroke="url(#gg)" stroke-width="1.6"/></g><g transform="translate(0 0)"><rect x="70" y="86" width="34" height="36" rx="7" fill="url(#gb)" stroke="url(#gg)" stroke-width="1.8"/><rect x="83" y="86" width="8" height="36" fill="url(#gg)" opacity=".8"/><rect x="66" y="80" width="42" height="11" rx="3.5" fill="url(#gb)" stroke="url(#gg)" stroke-width="1.6"/></g><g transform="translate(58 0)"><rect x="70" y="86" width="34" height="36" rx="7" fill="url(#gb)" stroke="url(#gg)" stroke-width="1.8"/><rect x="83" y="86" width="8" height="36" fill="url(#gg)" opacity=".8"/><rect x="66" y="80" width="42" height="11" rx="3.5" fill="url(#gb)" stroke="url(#gg)" stroke-width="1.6"/></g></g>
+  <g class="hit"><circle cx="100" cy="104" r="44" fill="url(#gr)" opacity=".55"/>
+    <circle cx="100" cy="104" r="40" fill="none" stroke="url(#gg)" stroke-width="2.4"
+      stroke-dasharray="26 14" stroke-linecap="round"/></g>
+  <g class="tag"><rect x="66" y="140" width="68" height="24" rx="8" fill="url(#gb)"
+      stroke="url(#gg)" stroke-width="1.8"/>
+    <path d="M78 152h10M94 146l6 6-6 6" stroke="url(#gg)" stroke-width="2"
+      stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    <circle cx="118" cy="152" r="5" fill="url(#gg)"/></g></svg>`;
+
+const BOOT_KEY = "gs_boot";
+function bootAllowed(){
+  try{
+    const raw = JSON.parse(localStorage.getItem(BOOT_KEY) || "[]");
+    const ok = raw.filter((x) => BOOTS[x]);
+    if(ok.length) return ok;
+  }catch(e){}
+  return [1];
+}
+function showBoot(){
+  const list = bootAllowed();
+  const pick = list[Math.floor(Math.random() * list.length)];
+  document.getElementById("boot-art").innerHTML = BOOTS[pick] || BOOTS[1];
+}
+
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s == null ? "" : s).replace(/[&<>"]/g,
+  (c) => ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c]));
+const ic = (n, c) => `<svg class="ico ${c || ""}"><use href="#i-${n}"/></svg>`;
+function haptic(k){ try{ TG && TG.HapticFeedback && TG.HapticFeedback.impactOccurred(k||"light"); }catch(e){} }
+
+/* Склонения: «3 коллекций» - это ошибка, которую видно сразу. */
+function plural(n, one, few, many){
+  const a = Math.abs(n) % 100, b = a % 10;
+  if(a > 10 && a < 20) return many;
+  if(b > 1 && b < 5) return few;
+  if(b === 1) return one;
+  return many;
+}
+const nColl = (n) => `${n} ${plural(n, "коллекция", "коллекции", "коллекций")}`;
+const nSlot = (n) => `${n} ${plural(n, "слот", "слота", "слотов")}`;
+
+let S = null, VIEW = "home", CATALOG = {}, COLLS = null;
+
+/* ---------- картинки ----------
+   Настоящие изображения берутся у Telegram через бота: в ответе на подарок приходят
+   и документ модели, и цвета фона. Бот отдаёт их по ссылке, а приложение показывает.
+   Собирать картинки моделей вручную не нужно и невозможно - их тысячи, и с каждой
+   новой коллекцией список растёт.
+   Пока ссылки нет (модель ещё не встречалась боту), рисуем картинку из названия:
+   цвет и форма у одного названия всегда одни и те же, поэтому в списке элементы
+   различаются с первого взгляда, а не сливаются в одинаковые квадраты. */
+function iconImg(url, alt){
+  // Адрес относительный: бот не знает, где лежит сайт. Дополняем адресом данных -
+  // иначе браузер пошёл бы за картинкой на хостинг страницы и получил 404.
+  const full = String(url).startsWith("/") ? API + url : url;
+  return `<img src="${esc(full)}" alt="${esc(alt || "")}" loading="lazy"
+    onerror="this.replaceWith(document.createRange().createContextualFragment(
+      window.__art(this.alt)))">`;
+}
+function hash(str){
+  let h = 0;
+  for(let i = 0; i < str.length; i++) h = (h * 31 + str.charCodeAt(i)) | 0;
+  return Math.abs(h);
+}
+const ART_HUES = [42, 18, 265, 205, 150, 330, 95, 15];
+function artFor(name, kind){
+  const h = hash(String(name || "?"));
+  const hue = ART_HUES[h % ART_HUES.length];
+  const hue2 = (hue + 38) % 360;
+  const shape = h % 4;
+  const letter = String(name || "?").replace(/[^A-Za-zА-Яа-я]/g, "").slice(0, 1).toUpperCase() || "G";
+  const id = "a" + h + (kind || "");
+  const body = shape === 0
+    ? `<circle cx="24" cy="25" r="13" fill="url(#${id})"/>`
+    : shape === 1
+    ? `<rect x="12" y="13" width="24" height="24" rx="7" fill="url(#${id})"/>`
+    : shape === 2
+    ? `<path d="M24 10l13 8v14l-13 8-13-8V18z" fill="url(#${id})"/>`
+    : `<path d="M24 10l4.6 9.6 10.4 1.4-7.6 7.2 1.9 10.4L24 33.6l-9.3 5 1.9-10.4L9 21l10.4-1.4z" fill="url(#${id})"/>`;
+  return `<svg viewBox="0 0 48 48">
+    <defs><linearGradient id="${id}" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="hsl(${hue} 62% 62%)"/>
+      <stop offset="100%" stop-color="hsl(${hue2} 55% 38%)"/></linearGradient></defs>
+    <rect width="48" height="48" rx="13" fill="#0e0d0b"/>
+    ${body}
+    <text x="24" y="30" text-anchor="middle" font-size="14" font-weight="700"
+      fill="#0b0a08" opacity=".72" font-family="Arial,sans-serif">${esc(letter)}</text>
+  </svg>`;
+}
+/* Цвет фона: настоящие цвета приходят вместе с фоном, здесь - известные названия. */
+window.__art = (name) => artFor(name, "m");
+const BD_COLORS = {
+  "black":"#1c1c1e","onyx black":"#141416","electric purple":"#b06ae0","lavender":"#a78bda",
+  "cyberpunk":"#7b7bf0","electric indigo":"#6a6ae8","satin gold":"#d9b45a","forest green":"#4a8f5f",
+  "midnight blue":"#2b3f7a","roseate":"#d97a9a","mint green":"#67c9a0","light blue":"#7fb6e8",
+};
+function bdColor(name, item){
+  // Цвет из ответа Telegram точнее любого списка: у фонов он приходит вместе с
+  // подарком. Список названий - только на случай, когда цвета ещё нет.
+  if(item && item.color) return item.color;
+  const k = String(name || "").toLowerCase();
+  if(BD_COLORS[k]) return BD_COLORS[k];
+  const h = hash(k);
+  return `hsl(${ART_HUES[h % ART_HUES.length]} 45% 45%)`;
+}
+/* Картинка коллекции или модели: ссылка от бота, иначе рисунок из названия. */
+/* Анимации моделей: Telegram отдаёт их в .tgs (сжатый Lottie), и тегом <img> они
+   не показываются. Кладём контейнер со значком-заглушкой внутри и запускаем
+   анимацию, только когда элемент реально виден на экране: список из полусотни
+   работающих анимаций телефон не тянет. */
+const LOTS = new WeakMap();
+let lotWatch = null;
+function lotObserver(){
+  if(lotWatch || !("IntersectionObserver" in window)) return lotWatch;
+  lotWatch = new IntersectionObserver((entries) => {
+    entries.forEach((e) => {
+      const anim = LOTS.get(e.target);
+      if(!anim) return;
+      if(e.isIntersecting) anim.play(); else anim.pause();
+    });
+  }, { rootMargin: "80px" });
+  return lotWatch;
+}
+function stopLotties(){
+  document.querySelectorAll("[data-lot]").forEach((el) => {
+    const anim = LOTS.get(el);
+    if(anim){ try{ anim.destroy(); }catch(e){} LOTS.delete(el); }
+    el.dataset.lotOn = "";
+  });
+  render();
+}
+function startLotties(root){
+  if(!animOn()) return;
+  if(typeof lottie === "undefined") return;      // скрипт не загрузился - и ладно
+  (root || document).querySelectorAll("[data-lot]").forEach((el) => {
+    if(el.dataset.lotOn) return;
+    el.dataset.lotOn = "1";
+    let anim;
+    try{
+      anim = lottie.loadAnimation({ container: el, renderer: "svg", loop: true,
+        autoplay: false, path: el.dataset.lot });
+    }catch(e){ return; }
+    // Значок-заглушку убираем только после успешной загрузки: если файл не
+    // откроется, в списке останется узнаваемый значок, а не пустой квадрат.
+    anim.addEventListener("DOMLoaded", () => {
+      const ph = el.querySelector(".lot-ph");
+      if(ph) ph.remove();
+    });
+    anim.addEventListener("data_failed", () => { el.dataset.lotOn = ""; });
+    LOTS.set(el, anim);
+    const w = lotObserver();
+    if(w) w.observe(el); else anim.play();
+  });
+}
+
+function animOn(){
+  // По умолчанию анимации включены: настройка приходит от бота, а до ответа
+  // сервера её ещё нет.
+  return !S || !S.settings || S.settings.anim !== false;
+}
+/* Иконка маркета. Сначала ищем ОФИЦИАЛЬНЫЙ логотип: файл markets/<ключ>.svg или
+   .png рядом с index.html. Рисовать чужие логотипы по памяти нельзя - выйдет
+   неточная копия товарного знака: и юридически спорно, и выглядит как подделка.
+   Файла нет - показываем свой значок в золотом стиле, он тоже узнаваем. */
+const MARKET_TRY = ["svg", "png"];
+/* Ключ площадки и имя значка совпадают не всегда: Fragment приходит из API под
+   ключом «telegram» - это его площадка. Сопоставление держим явно, иначе значок
+   молча не находится и на месте иконки остаётся пустота. */
+const MARKET_ART = { telegram: "fragment", tg: "fragment" };
+function marketIcon(key, cls){
+  const safe = String(key || "").replace(/[^a-z0-9_-]/gi, "");
+  const art = MARKET_ART[safe] || safe;
+  const own = `<svg class="${cls || "ico"}"><use href="#m-${esc(art)}"/></svg>`;
+  if(!safe) return own;
+  return `<span class="mkico ${cls || ""}" data-mk="${esc(safe)}">${own}</span>`;
+}
+/* Подмену делаем после отрисовки: пробуем форматы по очереди и молча остаёмся со
+   своим значком, если файлов нет. В консоль не сыплем - отсутствие файла тут
+   норма, а не поломка. */
+function loadMarketIcons(root){
+  (root || document).querySelectorAll("[data-mk]:not([data-mk-done])").forEach((el) => {
+    el.dataset.mkDone = "1";
+    const key = el.dataset.mk;
+    let i = 0;
+    const tryNext = () => {
+      if(i >= MARKET_TRY.length) return;
+      const img = new Image();
+      img.onload = () => { el.innerHTML = ""; img.alt = key; el.appendChild(img); };
+      img.onerror = () => { i++; tryNext(); };
+      img.src = `markets/${key}.${MARKET_TRY[i]}`;
+    };
+    tryNext();
+  });
+}
+
+function picOf(name, icon, kind){
+  if(icon && /[?&]f=tgs\b/i.test(icon) && animOn()){
+    const full = String(icon).startsWith("/") ? API + icon : icon;
+    return `<span class="lot" data-lot="${esc(full)}">
+      <span class="lot-ph">${artFor(name, kind)}</span></span>`;
+  }
+  if(icon && !/[?&]f=tgs\b/i.test(icon)) return iconImg(icon, name);
+  // Анимация выключена (или показывать нечем) - рисуем значок из названия.
+  return artFor(name, kind);
+}
+
+/* ---------- сообщения и конфетти ---------- */
+let tt = null;
+function toast(text, icon){
+  const el = $("toast");
+  el.innerHTML = ic(icon || "check") + "<span>" + esc(text) + "</span>";
+  el.classList.add("on");
+  clearTimeout(tt); tt = setTimeout(() => el.classList.remove("on"), 2200);
+}
+function confetti(){
+  const box = $("conf");
+  box.innerHTML = "";
+  box.classList.add("on");
+  const colors = ["#d9b45a","#f6e2a6","#a8843a","#fff3cf"];
+  for(let i = 0; i < 70; i++){
+    const d = document.createElement("i");
+    d.className = "cf";
+    d.style.left = Math.random() * 100 + "vw";
+    d.style.background = colors[i % colors.length];
+    d.style.animationDuration = (1.6 + Math.random() * 1.4) + "s";
+    d.style.animationDelay = (Math.random() * .35) + "s";
+    d.style.opacity = .75 + Math.random() * .25;
+    box.appendChild(d);
+  }
+  setTimeout(() => { box.classList.remove("on"); box.innerHTML = ""; }, 3200);
+  try{ TG && TG.HapticFeedback && TG.HapticFeedback.notificationOccurred("success"); }catch(e){}
+}
+
+/* ---------- связь ---------- */
+async function call(action, payload){
+  if(DEMO) return demoCall(action, payload);
+  const res = await fetch(`${API}/api/${action}`, {
+    method:"POST", headers:{"Content-Type":"text/plain;charset=UTF-8"},
+    body: JSON.stringify({ initData: TG ? TG.initData : "", payload: payload || {} })
+  });
+  let data = null;
+  try{ data = await res.json(); }catch(e){ data = null; }
+  if(!res.ok) throw new Error((data && data.error) || `ошибка ${res.status}`);
+  if(data && data.state) S = data.state;
+  return data;
+}
+async function save(action, payload, msg){
+  try{ haptic("medium"); await call(action, payload); render(); toast(msg || "Сохранено"); }
+  catch(e){ toast(e.message, "help"); }
+}
+
+/* ---------- навигация ---------- */
+function go(view){
+  VIEW = view;
+  ["home","sniper","flip","profile","settings","admin"].forEach((v) =>
+    $("v-" + v).classList.toggle("on", v === view));
+  document.querySelectorAll("nav .tab").forEach((t) => t.classList.toggle("on", t.dataset.go === view));
+  document.querySelector("nav .home").classList.toggle("on", view === "home");
+  $("fab").style.display = (view === "sniper") ? "grid" : "none";
+  window.scrollTo({ top: 0, behavior: "smooth" });
+  render();
+}
+
+/* ---------- отрисовка ---------- */
+function render(){
+  if(!S) return;
+  $("hi-name").textContent = S.name || "друг";
+  $("who-name").textContent = S.name || "Профиль";
+  if(S.photo) $("ava").innerHTML = `<img src="${esc(S.photo)}" alt="">`;
+  $("c-colls").textContent = nColl(S.collections.length);
+  const fl = S.flip;
+  $("c-slots").textContent = fl.slots_total === null
+    ? "слоты без ограничения" : `${nSlot(fl.slots_total)}, занято ${fl.slots_used}`;
+  $("c-flip-state").textContent = fl.has_access ? "активен" : "нужен слот";
+  $("row-admin").style.display = S.is_owner ? "flex" : "none";
+  $("home-promo").innerHTML = (S.announcements || []).map((a) => `
+    <div class="promo">
+      <div class="ic">${ic(a.kind === "promo" ? "star" : "mega")}</div>
+      <div><b>${esc(a.title)}</b><span>${esc(a.text)}</span></div>
+    </div>`).join("");
+
+  // анимации запускаем после отрисовки: до неё запускать нечего
+  setTimeout(() => { startLotties(); loadMarketIcons(); }, 0);
+  if(VIEW === "sniper") renderSniper();
+  else if(VIEW === "flip") renderFlip();
+  else if(VIEW === "profile") renderProfile();
+  else if(VIEW === "settings") renderSettings();
+  else if(VIEW === "admin") renderAdmin();
+}
+
+function fline(models, backdrops){
+  const m = models.length ? models.join(", ") : "любая модель";
+  const b = backdrops.length ? backdrops.join(", ") : "любой фон";
+  return `${esc(m)} · ${esc(b)}`;
+}
+function numLabel(v){
+  if(!v) return "";
+  if(String(v).startsWith("p:")) return String(v).slice(2).toUpperCase();
+  const p = String(v).split(":");
+  return (p[0] === "" ? "любая" : p[0]) + "×" + p[1] + (p[2] === "1" ? " подряд" : "");
+}
+/* Статус отслеживания: подписка в Gift Satellite создаётся не мгновенно, и молчание
+   в этот момент выглядит как поломка. Показываем «отслеживание создаётся». */
+function statusOf(x){
+  if(!x.enabled) return `<span class="st off">выключено</span>`;
+  if(x.pending) return `<span class="st wait"><i class="pulse"></i>отслеживание создаётся</span>`;
+  return `<span class="st on">активно</span>`;
+}
+
+function renderSniper(){
+  const list = S.collections.map((c) => `
+    <button class="item ${c.enabled ? "" : "off"}" data-coll="${c.cid}">
+      <div class="pic">${picOf(c.slug, c.icon, "c")}</div>
+      <div class="body">
+        <div class="name">${esc(c.title || c.slug)}${statusOf(c)}</div>
+        <div class="sub">${fline(c.models, c.backdrops)}</div>
+        <div class="chips">
+          ${c.number ? `<span class="chip">${ic("hash")}${esc(numLabel(c.number))}</span>` : ""}
+          ${c.numbers.length ? `<span class="chip">${ic("star")}${c.numbers.length}</span>` : ""}
+          ${c.mono_min ? `<span class="chip">${ic("mono")}${c.mono_min}%+</span>` : ""}
+          ${!c.number && !c.numbers.length && !c.mono_min
+            ? `<span class="chip mute">без доп. условий</span>` : ""}
+        </div>
+      </div>
+    </button>`).join("");
+  $("sniper-list").innerHTML = list || `<div class="empty">
+    Пока ни одной коллекции.<br>Добавьте ту, за улучшениями которой хотите следить.</div>`;
+  document.querySelectorAll("[data-coll]").forEach((el) =>
+    el.onclick = () => editColl(Number(el.dataset.coll)));
+}
+
+function renderFlip(){
+  const fl = S.flip;
+  const free = fl.slots_total === null || fl.slots_used < fl.slots_total;
+  $("flip-top").innerHTML = `
+    <div class="card">
+      <div class="row"><span class="k">Слоты</span>
+        <span class="v gold num">${fl.slots_used} / ${fl.slots_total === null ? "∞" : fl.slots_total}</span></div>
+      <div class="row"><span class="k">Цена слота</span>
+        <span class="v num">${fl.slot_stars} звёзд</span></div>
+      <button class="btn gold" style="margin-top:12px" id="buy">${ic("star")}Купить слот</button>
+      <div class="hint">Один слот - одна коллекция, навсегда. Оплата звёздами Telegram.</div>
+    </div>`;
+  $("buy").onclick = buySlot;
+  const list = fl.items.map((f) => `
+    <button class="item ${f.enabled ? "" : "off"}" data-flip="${f.id}">
+      <div class="pic">${picOf(f.slug, f.icon, "c")}</div>
+      <div class="body">
+        <div class="name">${esc(f.slug)}${f.paused
+          ? `<span class="st wait">не хватает слотов</span>` : statusOf(f)}</div>
+        <div class="sub">${fline(f.models, f.backdrops)}</div>
+        <div class="chips">
+          <span class="chip">${ic("ton")}${f.max_price ? f.max_price + " TON" : "без порога"}</span>
+          ${f.min_discount ? `<span class="chip">${ic("chart")}−${f.min_discount}%</span>` : ""}
+          <span class="chip ${f.markets.length ? "" : "mute"}">${
+            f.markets.length
+              ? f.markets.slice(0, 3).map((m) => marketIcon(m)).join("")
+                + (f.markets.length > 3 ? ` +${f.markets.length - 3}` : "")
+              : ic("shop") + "все"}</span>
+          ${f.mono_min ? `<span class="chip">${ic("mono")}${f.mono_min}%+</span>` : ""}
+        </div>
+      </div>
+    </button>`).join("");
+  $("flip-list").innerHTML = !fl.has_access
+    ? `<div class="empty">Нужен слот - купите его кнопкой выше.</div>`
+    : (list || `<div class="empty">Слоты есть, отслеживаний пока нет.</div>`);
+
+  /* Настройки модуля живут внутри модуля: в общих настройках им не место. */
+  const st = S.settings;
+  $("flip-settings").innerHTML = fl.has_access ? `
+    <div class="sec">Настройки модуля</div>
+    <div class="card">
+      <label>Окно последних продаж, дней</label>
+      <input type="number" class="num" id="s-days" min="1" max="365" value="${st.sales_days}">
+      <div class="hint">За сколько дней брать последние продажи, чтобы понять обычную цену.</div>
+      <label>Сколько продаж показывать в алерте</label>
+      <input type="number" class="num" id="s-show" min="0" max="10" value="${st.sales_show}">
+      <button class="btn gold" style="margin-top:14px" id="s-save">${ic("check")}Сохранить</button>
+    </div>` : "";
+  if(fl.has_access) $("s-save").onclick = () => save("settings", {
+    sales_days: Number($("s-days").value), sales_show: Number($("s-show").value) });
+
+  if(free && fl.has_access){
+    $("fab").style.display = "grid";
+  }
+  document.querySelectorAll("[data-flip]").forEach((el) =>
+    el.onclick = () => editFlip(Number(el.dataset.flip)));
+}
+
+/* Покупка слота прямо в приложении: счёт открывается средствами Telegram, и после
+   оплаты состояние перечитывается - иначе слот «появится» только после перезахода. */
+async function buySlot(){
+  haptic("medium");
+  try{
+    const r = await call("slot_invoice", {});
+    if(!TG || !TG.openInvoice){ toast("Оплата доступна только внутри Telegram", "card"); return; }
+    TG.openInvoice(r.link, async (status) => {
+      if(status === "paid"){
+        confetti();
+        toast("Слот успешно добавлен", "star");
+        /* Состояние перечитываем ЯВНО: ответ действия «state» - это само
+           состояние, без вложенного поля, и общий разбор его не подхватывал.
+           Из-за этого слот появлялся только после перезагрузки страницы.
+           Пробуем несколько раз: Telegram сообщает об оплате чуть раньше, чем
+           бот успевает её обработать и начислить слот. */
+        const before = S.flip.slots_total;
+        for(let i = 0; i < 6; i++){
+          const d = await call("state", {});
+          S = d.uid ? d : (d.state || S);
+          render();
+          if(S.flip.slots_total !== before) break;
+          await new Promise((ok) => setTimeout(ok, 700));
+        }
+      } else if(status === "failed"){
+        toast("Оплата не прошла", "card");
+      }
+    });
+  }catch(e){ toast(e.message, "card"); }
+}
+
+async function renderRef(){
+  /* Скидка за друга влияет на цену слота, поэтому её видно и здесь: иначе человек
+     не поймёт, почему счёт пришёл на другую сумму. */
+  let r = null;
+  try{ r = await call("referral", {}); }catch(e){ r = null; }
+  if(!r){ $("prof-ref").innerHTML = `<div class="hint">Не загрузилось</div>`; return; }
+  $("prof-ref").innerHTML = `
+    <div class="row"><span class="k">Скидка другу и вам</span>
+      <span class="v gold">${r.percent}%</span></div>
+    <div class="row"><span class="k">Пришли по ссылке</span>
+      <span class="v num">${r.invited}</span></div>
+    <div class="row"><span class="k">Из них купили слот</span>
+      <span class="v num">${r.paid}</span></div>
+    <div class="row"><span class="k">Накоплено скидок</span>
+      <span class="v num gold">${r.discounts}</span></div>
+    ${r.link ? `<button class="btn gold" style="margin-top:12px" id="ref-share">
+        ${ic("star")}Позвать друга</button>
+      <div class="hint" style="word-break:break-all">${esc(r.link)}</div>`
+      : `<div class="hint">Ссылка появится, когда бот сообщит своё имя.</div>`}`;
+  if($("ref-share")) $("ref-share").onclick = () => {
+    haptic("medium");
+    const text = "Лови апгрейды подарков раньше всех";
+    // Пересылку делает сам Telegram: своё окно «поделиться» в приложении было бы
+    // лишним шагом, а список чатов у Telegram и так под рукой.
+    if(TG && TG.openTelegramLink){
+      TG.openTelegramLink(`https://t.me/share/url?url=${encodeURIComponent(r.link)}` +
+        `&text=${encodeURIComponent(text)}`);
+    } else if(navigator.clipboard){
+      navigator.clipboard.writeText(r.link);
+      toast("Ссылка скопирована", "star");
+    }
+  };
+}
+
+function renderProfile(){
+  const fl = S.flip;
+  $("prof-lead").textContent = `${S.name || "Профиль"} · id ${S.uid}`;
+  $("prof-stats").innerHTML = `
+    <div class="stat"><b class="num gold">${fl.slots_total === null ? "∞" : fl.slots_total}</b><span>слотов</span></div>
+    <div class="stat"><b class="num">${fl.slots_used}</b><span>занято</span></div>
+    <div class="stat"><b class="num">${S.collections.length}</b><span>коллекций</span></div>`;
+  renderRef();
+  const tx = (S.transactions || []);
+  $("prof-tx").innerHTML = tx.length ? tx.map((t) => `
+    <div class="tx"><div class="ic">${ic(t.kind === "slot" ? "shop" : "star")}</div>
+      <div class="t"><b>${esc(t.title)}</b><span>${esc(t.date)}</span></div>
+      <div class="amt">${esc(t.amount)}</div></div>`).join("")
+    : `<div class="hint" style="text-align:center;padding:12px 0">Покупок ещё не было.</div>`;
+}
+
+function renderSettings(){
+  const st = S.settings || {};
+  $("set-body").innerHTML = `
+    <div class="sec">Внешний вид</div>
+    <div class="card">
+      <div class="sw"><div class="t"><b>Анимации моделей</b>
+        <span>двигающиеся картинки подарков. Выключите, если телефон греется
+        или связь слабая - вместо анимаций будут значки</span></div>
+        <button class="tgl ${st.anim === false ? "" : "on"}" id="s-anim"></button></div>
+    </div>
+    <div class="sec">Язык</div>
+    <div class="card"><div class="seg">
+      <button data-lang="ru" class="${S.lang === "ru" ? "on" : ""}">Русский</button>
+      <button data-lang="en" class="${S.lang === "en" ? "on" : ""}">English</button>
+    </div></div>`;
+  $("s-anim").onclick = () => {
+    const on = !$("s-anim").classList.contains("on");
+    $("s-anim").classList.toggle("on");
+    // Уже запущенные анимации останавливаем сразу: ждать перезахода ради
+    // настройки, которую только что выключили, - странно.
+    if(!on) stopLotties();
+    save("settings", { anim: on }, on ? "Анимации включены" : "Анимации выключены");
+  };
+  document.querySelectorAll("[data-lang]").forEach((b) => b.onclick = () =>
+    save("settings", { lang: b.dataset.lang }, "Язык изменён"));
+}
+
+/* ---------- админка ----------
+   Всё, что можно настроить кнопками в чате, доступно и здесь: два разных набора
+   возможностей означали бы, что часть настроек ищут не там. */
+function renderAdmin(){
+  const a = S.admin || {};
+  const rows = [
+    ["stats", "chart", "Статистика", "люди, платежи, активность"],
+    ["price", "card", "Цена слота", `сейчас ${a.slot_stars || 0} звёзд`],
+    ["give", "star", "Выдать слот", "подарить слот человеку"],
+    ["promo", "star", "Акция", "скидка, слоты в подарок, срок"],
+    ["notice", "mega", "Объявление", "показывается всем в приложении и в чате"],
+    ["bcast", "mega", "Рассылка", "сообщение всем пользователям"],
+    ["emoji", "tune", "Премиум-эмодзи", "значки в сообщениях бота"],
+    ["verb", "doc", "Подробность объяснений", VERB_NAMES[a.verbosity] || "полная"],
+    ["ntf", "bell", "Уведомления владельцу",
+     `новые люди: ${a.notify_new_users ? "вкл" : "выкл"}, оплаты: ${
+       a.notify_payments ? "вкл" : "выкл"}`],
+    ["boot", "star", "Выбор заставки", bootLabel(a.boot || [1])],
+    ["colls", "gift", "Коллекции в меню", `скрыто ${(a.hidden || []).length}`],
+    ["tickets", "life", "Обращения",
+     a.open_tickets ? `${a.open_tickets} без ответа` : "все отвечены"],
+    ["ban", "ban", "Чёрный список", "закрыть доступ человеку"],
+    ["purge", "broom", "Очистка", "удалить пустые профили"],
+  ];
+  $("admin-body").innerHTML = `
+    <div class="stat-grid">
+      <div class="stat"><b class="num gold">${a.users || 0}</b><span>людей</span></div>
+      <div class="stat"><b class="num">${a.payments || 0}</b><span>платежей</span></div>
+      <div class="stat"><b class="num">${a.slots || 0}</b><span>слотов</span></div>
+    </div>
+    <div class="card">
+      <div class="sw"><div class="t"><b>Скрыть управление кнопками</b>
+        <span>бот работает только через приложение: команды скрыты, кнопки в чате
+        неактивны, стартовое сообщение - с кнопкой Open</span></div>
+        <button class="tgl ${a.app_only ? "on" : ""}" id="a-apponly"></button></div>
+      <div class="sw"><div class="t"><b>Премиум-эмодзи в приветствии</b>
+        <span>доступно только владельцу</span></div>
+        <button class="tgl ${a.start_premium ? "on" : ""}" id="a-prem"></button></div>
+    </div>
+    <div class="sec">Действия</div>
+    ${rows.map(([k, icon, name, sub]) => `
+      <button class="item" data-adm="${k}">
+        <div class="pic" style="display:grid;place-items:center;color:var(--gold)">${ic(icon)}</div>
+        <div class="body"><div class="name">${name}</div><div class="sub">${esc(sub)}</div></div>
+      </button>`).join("")}`;
+  $("a-apponly").onclick = () => { $("a-apponly").classList.toggle("on"); haptic();
+    save("admin", { app_only: $("a-apponly").classList.contains("on") }, "Готово"); };
+  $("a-prem").onclick = () => { $("a-prem").classList.toggle("on"); haptic();
+    save("admin", { start_premium: $("a-prem").classList.contains("on") }, "Готово"); };
+  document.querySelectorAll("[data-adm]").forEach((b) => b.onclick = () => {
+    haptic();
+    const k = b.dataset.adm;
+    if(k === "colls") adminCollections();
+    else if(k === "boot") adminBoot();
+    else if(k === "bcast") adminBroadcast();
+    else if(k === "promo") adminPromo();
+    else if(k === "ban") adminBans();
+    else if(k === "give") adminGive();
+    else if(k === "price") adminPrice();
+    else if(k === "notice") adminNotice();
+    else if(k === "verb") adminVerb();
+    else if(k === "ntf") adminNtf();
+    else if(k === "tickets") adminTickets();
+    else toast("Экран «" + b.querySelector(".name").textContent + "» откроется здесь", "tune");
+  });
+}
+
+/* Экраны админки. Все действия проверяются ещё раз на сервере - экран можно и
+   не открывать, а запрос отправить напрямую. */
+function adminBroadcast(){
+  openSheet(`<h2>${ic("mega")}Рассылка</h2>
+    <p class="sub">Сообщение уйдёт всем выбранным. Отменить отправку нельзя.</p>
+    <label>Кому</label>
+    <div class="seg">
+      <button data-who="all" class="on">Всем</button>
+      <button data-who="flip">Только со слотами</button></div>
+    <label>Текст</label>
+    <input type="text" id="btext" placeholder="Что сообщить людям">
+    <div class="hint">Поддерживается разметка Telegram. До 3500 символов.</div>
+    <div class="err" id="err"></div>
+    <div class="two" style="margin-top:14px">
+      <button class="btn ghost" id="cancel">Отмена</button>
+      <button class="btn gold" id="ok">${ic("mega")}Отправить</button></div>`);
+  let who = "all";
+  document.querySelectorAll("[data-who]").forEach((b) => b.onclick = () => {
+    document.querySelectorAll("[data-who]").forEach((x) => x.classList.remove("on"));
+    b.classList.add("on"); who = b.dataset.who; haptic();
+  });
+  $("cancel").onclick = closeSheet;
+  $("ok").onclick = async () => {
+    const text = ($("btext").value || "").trim();
+    if(!text){ $("err").textContent = "Напишите текст"; return; }
+    const go = async (yes) => {
+      if(!yes) return;
+      try{
+        const r = await call("admin_broadcast", { text, who });
+        closeSheet(); render();
+        toast(`Отправляю ${r.targets} чел.`, "mega");
+      }catch(e){ $("err").textContent = e.message; }
+    };
+    // Отправку не отменить, поэтому спрашиваем подтверждение - как и в чате.
+    if(TG && TG.showConfirm) TG.showConfirm("Отправить сообщение? Отменить нельзя.", go);
+    else go(true);
+  };
+}
+
+function adminPromo(){
+  const a = S.admin || {};
+  openSheet(`<h2>${ic("star")}Акция</h2>
+    <p class="sub">${a.promo_active
+      ? `Идёт: −${a.promo_discount}%, ${a.promo_slots} слот(а), ещё ${a.promo_days} дн.`
+      : "Сейчас акции нет"}</p>
+    <label>Повод</label>
+    <input type="text" id="plabel" placeholder="День рождения" value="${esc(a.promo_label || "")}">
+    <label>Скидка на слот, %</label>
+    <input type="number" id="pdisc" class="num" min="0" max="90" value="${a.promo_discount || ""}">
+    <label>Бесплатных слотов</label>
+    <input type="number" id="pslots" class="num" min="0" max="100" value="${a.promo_slots || ""}">
+    <label>Сколько дней</label>
+    <input type="number" id="pdays" class="num" min="1" max="60" value="${a.promo_days || 7}">
+    <div class="hint">Нужно хотя бы одно: скидка или бесплатные слоты. Акция без
+      выгоды - это объявление, за которым ничего нет.</div>
+    <div class="err" id="err"></div>
+    <div class="two" style="margin-top:14px">
+      <button class="btn ghost" id="cancel">Отмена</button>
+      <button class="btn gold" id="ok">${ic("check")}Запустить</button></div>
+    ${a.promo_active ? `<button class="btn danger" style="margin-top:9px" id="stop">
+      Остановить акцию</button>` : ""}`);
+  $("cancel").onclick = closeSheet;
+  if($("stop")) $("stop").onclick = async () => {
+    closeSheet(); await save("admin_promo", { stop: true }, "Акция остановлена");
+  };
+  $("ok").onclick = async () => {
+    try{
+      await call("admin_promo", {
+        label: $("plabel").value, discount: Number($("pdisc").value || 0),
+        slots: Number($("pslots").value || 0), days: Number($("pdays").value || 7) });
+      closeSheet(); render(); toast("Акция запущена", "star");
+    }catch(e){ $("err").textContent = e.message; }
+  };
+}
+
+function adminBans(){
+  const list = ((S.admin || {}).bans) || [];
+  openSheet(`<h2>${ic("ban")}Чёрный список</h2>
+    <p class="sub">Закрытым доступ к боту закрыт, но обращение в поддержку - нет:
+      иначе забаненный по ошибке не может об этом сообщить.</p>
+    <label>Кого закрыть</label>
+    <input type="text" id="bwho" placeholder="id или @имя">
+    <label>Причина</label>
+    <input type="text" id="breason" placeholder="Необязательно">
+    <div class="err" id="err"></div>
+    <button class="btn gold" style="margin-top:12px" id="ok">${ic("ban")}Закрыть доступ</button>
+    <div class="sec">Сейчас закрыты (${list.length})</div>
+    <div id="blist">${list.length ? list.map((b) => `
+      <div class="item" style="align-items:center">
+        <div class="pic" style="display:grid;place-items:center;color:var(--gold)">${ic("ban")}</div>
+        <div class="body" style="padding-top:2px">
+          <div class="name">${esc(b.who || b.key || "?")}</div>
+          <div class="sub" style="margin:0">${esc(b.reason || "без причины")}</div></div>
+        <button class="btn mini" data-un="${esc(b.who || b.key || "")}"
+          style="width:auto;padding:8px 12px">Открыть</button>
+      </div>`).join("") : `<div class="hint">Список пуст</div>`}</div>
+    <button class="btn ghost" style="margin-top:12px" id="cancel">Закрыть</button>`);
+  $("cancel").onclick = closeSheet;
+  $("ok").onclick = async () => {
+    try{
+      await call("admin_ban", { who: $("bwho").value, reason: $("breason").value });
+      closeSheet(); render(); toast("Доступ закрыт", "ban");
+    }catch(e){ $("err").textContent = e.message; }
+  };
+  document.querySelectorAll("[data-un]").forEach((b) => b.onclick = async () => {
+    closeSheet();
+    await save("admin_ban", { who: b.dataset.un, unban: true }, "Доступ открыт");
+  });
+}
+
+function adminGive(){
+  openSheet(`<h2>${ic("star")}Выдать слот</h2>
+    <p class="sub">Слоты добавятся человеку сразу, оплата не требуется.</p>
+    <label>Кому (числовой id)</label>
+    <input type="text" id="gwho" class="num" placeholder="1204450614">
+    <label>Сколько слотов</label>
+    <input type="number" id="gn" class="num" min="1" max="50" value="1">
+    <div class="err" id="err"></div>
+    <div class="two" style="margin-top:14px">
+      <button class="btn ghost" id="cancel">Отмена</button>
+      <button class="btn gold" id="ok">${ic("check")}Выдать</button></div>`);
+  $("cancel").onclick = closeSheet;
+  $("ok").onclick = async () => {
+    try{
+      const r = await call("admin_give", { who: $("gwho").value,
+                                           slots: Number($("gn").value || 1) });
+      closeSheet(); render(); toast(`Теперь у него ${r.total} слот(ов)`, "star");
+    }catch(e){ $("err").textContent = e.message; }
+  };
+}
+
+function adminPrice(){
+  const a = S.admin || {};
+  openSheet(`<h2>${ic("card")}Цена слота</h2>
+    <p class="sub">Сколько звёзд стоит один слот Flip Master.</p>
+    <label>Звёзд за слот</label>
+    <input type="number" id="pr" class="num" min="1" max="100000" value="${a.slot_stars || 250}">
+    <div class="hint">Цена показывается человеку сразу и применяется к новым счетам.</div>
+    <div class="err" id="err"></div>
+    <div class="two" style="margin-top:14px">
+      <button class="btn ghost" id="cancel">Отмена</button>
+      <button class="btn gold" id="ok">${ic("check")}Сохранить</button></div>`);
+  $("cancel").onclick = closeSheet;
+  $("ok").onclick = async () => {
+    try{
+      await call("admin", { slot_stars: Number($("pr").value || 0) });
+      closeSheet(); render(); toast("Цена обновлена");
+    }catch(e){ $("err").textContent = e.message; }
+  };
+}
+
+function adminNotice(){
+  const a = S.admin || {};
+  openSheet(`<h2>${ic("mega")}Объявление</h2>
+    <p class="sub">Видно всем - и в приложении, и в чате. Пустое поле снимает его.</p>
+    <label>Текст</label>
+    <input type="text" id="nt" placeholder="Плановые работы в 20:00" value="${esc(a.notice || "")}">
+    <div class="two" style="margin-top:14px">
+      <button class="btn ghost" id="cancel">Отмена</button>
+      <button class="btn gold" id="ok">${ic("check")}Сохранить</button></div>`);
+  $("cancel").onclick = closeSheet;
+  $("ok").onclick = async () => {
+    closeSheet();
+    await save("admin", { notice: $("nt").value },
+               ($("nt") && $("nt").value) ? "Объявление показано" : "Объявление снято");
+  };
+}
+
+const VERB_NAMES = { full: "полная", short: "короткая", off: "без пояснений" };
+
+/* Обращения в поддержку: список и ответ. Ответ уходит человеку в чат - там он его
+   и ждёт, приложение он мог давно закрыть. */
+async function adminTickets(){
+  openSheet(`<h2>${ic("life")}Обращения</h2><div class="skel"></div><div class="skel"></div>`);
+  let items = [];
+  try{ items = (await call("tickets", {})).items || []; }catch(e){ items = []; }
+  openSheet(`<h2>${ic("life")}Обращения</h2>
+    <p class="sub">Сначала те, что без ответа. Ответ придёт человеку в чат.</p>
+    ${items.length ? items.map((t) => `
+      <div class="card">
+        <div class="row"><span class="k">#${t.id} от ${t.uid}</span>
+          <span class="v">${t.answered
+            ? `<span class="st on">отвечено</span>`
+            : `<span class="st wait"><i class="pulse"></i>ждёт</span>`}</span></div>
+        <div style="margin:8px 0;white-space:pre-line">${esc(t.text)}</div>
+        <div class="hint" style="margin:0 0 8px">${esc(t.date)}</div>
+        ${t.answered ? "" : `
+          <input type="text" id="ans-${t.id}" placeholder="Ответ">
+          <button class="btn gold mini" style="margin-top:8px;width:100%"
+            data-ans="${t.id}">${ic("check")}Ответить</button>`}
+      </div>`).join("") : `<div class="empty">Обращений нет</div>`}
+    <button class="btn ghost" style="margin-top:8px" id="cancel">Закрыть</button>`);
+  $("cancel").onclick = closeSheet;
+  document.querySelectorAll("[data-ans]").forEach((b) => b.onclick = async () => {
+    const id = Number(b.dataset.ans);
+    const text = ($(`ans-${id}`).value || "").trim();
+    if(!text){ toast("Напишите ответ", "help"); return; }
+    try{
+      await call("ticket_answer", { id, text });
+      closeSheet(); render(); toast(`Ответ на #${id} отправлен`, "life");
+    }catch(e){ toast(e.message, "help"); }
+  });
+}
+
+/* Подробность объяснений: сколько бот пишет рядом с алертом. Настройка общая для
+   всех, поэтому живёт в админке, а не в настройках человека. */
+function adminVerb(){
+  const cur = ((S.admin || {}).verbosity) || "full";
+  openSheet(`<h2>${ic("doc")}Подробность объяснений</h2>
+    <p class="sub">Сколько бот поясняет в уведомлениях: почему лот выгоден,
+      как считалась цена.</p>
+    <div class="seg" style="flex-direction:column">
+      ${["full", "short", "off"].map((k) => `
+        <button data-v="${k}" class="${cur === k ? "on" : ""}"
+          style="width:100%">${esc(VERB_NAMES[k])}</button>`).join("")}
+    </div>
+    <div class="hint">«Без пояснений» оставляет только суть: подарок, цена, ссылка.</div>
+    <button class="btn ghost" style="margin-top:14px" id="cancel">Закрыть</button>`);
+  $("cancel").onclick = closeSheet;
+  document.querySelectorAll("[data-v]").forEach((b) => b.onclick = async () => {
+    closeSheet();
+    await save("admin", { verbosity: b.dataset.v }, "Готово");
+  });
+}
+
+/* Уведомления владельцу: о новых людях и об оплатах. */
+function adminNtf(){
+  const a = S.admin || {};
+  openSheet(`<h2>${ic("bell")}Уведомления владельцу</h2>
+    <p class="sub">Приходят вам в чат. На работу бота не влияют.</p>
+    <div class="card">
+      <div class="sw"><div class="t"><b>Новые пользователи</b>
+        <span>кто-то запустил бота впервые</span></div>
+        <button class="tgl ${a.notify_new_users ? "on" : ""}" data-n="notify_new_users"></button></div>
+      <div class="sw"><div class="t"><b>Оплаты</b>
+        <span>покупка слота звёздами</span></div>
+        <button class="tgl ${a.notify_payments ? "on" : ""}" data-n="notify_payments"></button></div>
+    </div>
+    ${a.open_tickets ? `<div class="hint">Открытых обращений в поддержку:
+      ${a.open_tickets}. Отвечать на них пока можно только в чате.</div>` : ""}
+    <button class="btn ghost" style="margin-top:12px" id="cancel">Закрыть</button>`);
+  $("cancel").onclick = closeSheet;
+  document.querySelectorAll("[data-n]").forEach((b) => b.onclick = () => {
+    const on = !b.classList.contains("on");
+    b.classList.toggle("on"); haptic();
+    save("admin", { [b.dataset.n]: on }, on ? "Включено" : "Выключено");
+  });
+}
+
+function bootLabel(list){
+  if(!list || !list.length) return "не выбрана";
+  if(list.length === 1) return BOOT_NAMES[list[0]] || "заставка " + list[0];
+  return `${list.length} шт. - показываются по очереди случайно`;
+}
+
+/* Выбор заставки. Можно отметить одну или несколько: при нескольких приложение
+   выбирает случайную при каждом заходе. Ни одной выбрать нельзя - заставка
+   показывается всегда, пока грузятся данные. */
+function adminBoot(){
+  const picked = new Set(((S.admin || {}).boot) || [1]);
+  const draw = () => {
+    $("blist").innerHTML = [1,2,3,4,5,6,7,8,9,10].map((n) => `
+      <button class="boot-opt ${picked.has(n) ? "on" : ""}" data-b="${n}">
+        ${BOOTS[n]}<span>${esc(BOOT_NAMES[n])}</span></button>`).join("");
+    $("blist").querySelectorAll("[data-b]").forEach((b) => b.onclick = () => {
+      const n = Number(b.dataset.b);
+      if(picked.has(n)){
+        if(picked.size === 1){ toast("Нужна хотя бы одна заставка", "help"); return; }
+        picked.delete(n);
+      } else picked.add(n);
+      haptic(); draw();
+    });
+  };
+  openSheet(`<h2>${ic("star")}Выбор заставки</h2>
+    <p class="sub">Отметьте одну или несколько. Если выбрано несколько, при каждом
+      заходе показывается случайная.</p>
+    <div class="boot-pick" id="blist"></div>
+    <div class="two" style="margin-top:14px">
+      <button class="btn ghost" id="bcancel">Отмена</button>
+      <button class="btn gold" id="bok">${ic("check")}Сохранить</button></div>`);
+  draw();
+  $("bcancel").onclick = closeSheet;
+  $("bok").onclick = async () => {
+    const list = [...picked].sort();
+    closeSheet();
+    await save("admin", { boot: list }, "Заставка обновлена");
+    try{ localStorage.setItem(BOOT_KEY, JSON.stringify(list)); }catch(e){}
+  };
+}
+
+/* Коллекции в меню выбора. Улучшения выходят не у всех коллекций сразу, и пока их
+   нет, отслеживать нечего: такая коллекция в списке только сбивает с толку. Владелец
+   убирает её из меню, а когда улучшения выйдут - возвращает. Уже добавленные людьми
+   коллекции при этом продолжают работать: скрытие касается только выбора. */
+async function adminCollections(){
+  openSheet(`<h2>${ic("gift")}Коллекции в меню</h2>
+    <p class="sub">Выключенные не показываются при добавлении. Улучшения по ним ещё
+      не вышли - отслеживать нечего.</p>
+    ${searchField("as")}
+    <div id="alist" style="margin-top:11px"><div class="skel" style="height:46px"></div></div>
+    <button class="btn ghost" style="margin-top:12px" id="aclose">Закрыть</button>`);
+  let items = null;
+  const hidden = new Set(((S.admin || {}).hidden) || []);
+  const draw = (f) => {
+    if(!items) return;
+    const q = (f || "").toLowerCase();
+    const list = items.filter((x) => !q || String(x.name || x).toLowerCase().includes(q));
+    $("alist").innerHTML = list.map((x) => {
+      const name = x.name || x;
+      const off = hidden.has(name);
+      return `<div class="item" style="align-items:center">
+        <div class="pic">${picOf(name, x.icon, "c")}</div>
+        <div class="body" style="padding-top:2px">
+          <div class="name">${esc(name)}</div>
+          <div class="sub" style="margin:0">${off ? "скрыта - улучшений ещё нет" : "в меню"}</div>
+        </div>
+        <button class="tgl ${off ? "" : "on"}" data-h="${esc(name)}"></button>
+      </div>`;
+    }).join("") || `<div class="hint">Ничего не нашлось</div>`;
+    $("alist").querySelectorAll("[data-h]").forEach((b) => b.onclick = () => {
+      const n = b.dataset.h;
+      if(hidden.has(n)) hidden.delete(n); else hidden.add(n);
+      b.classList.toggle("on"); haptic();
+      save("admin", { hidden: [...hidden] }, hidden.has(n) ? "Скрыта" : "Возвращена в меню");
+    });
+  };
+  const stop = bindSearch("as", ["Plush Pepe", "Coffin", "Durov's Boots"], draw);
+  $("aclose").onclick = () => { stop(); closeSheet(); };
+  try{ items = (await call("collections", { all: true })).items; }catch(e){ items = []; }
+  draw("");
+}
+
+/* ---------- панель ---------- */
+function openSheet(html){
+  $("panel").innerHTML = `<div class="grip"></div>` + html;
+  setTimeout(() => { startLotties($("panel")); loadMarketIcons($("panel")); }, 0);
+  $("sheet").classList.add("on");
+  if(TG && TG.BackButton) TG.BackButton.show();
+}
+function closeSheet(){
+  $("sheet").classList.remove("on");
+  if(TG && TG.BackButton) TG.BackButton.hide();
+}
+
+/* Бегущая подсказка в поиске: печатается и стирается сама, показывая примеры того,
+   что сюда вписывают. */
+function runPlaceholder(el, samples){
+  let i = 0, pos = 0, del = false;
+  const tick = () => {
+    const word = samples[i % samples.length];
+    pos += del ? -1 : 1;
+    el.innerHTML = esc(word.slice(0, pos)) + '<i></i>';
+    let wait = del ? 45 : 85;
+    if(!del && pos === word.length){ del = true; wait = 1200; }
+    else if(del && pos === 0){ del = false; i++; wait = 350; }
+    el.__t = setTimeout(tick, wait);
+  };
+  tick();
+  return () => clearTimeout(el.__t);
+}
+function searchField(id, samples){
+  return `<div class="search">${ic("search")}
+    <input type="text" id="${id}" autocomplete="off">
+    <div class="ph" id="${id}-ph"></div></div>`;
+}
+function bindSearch(id, samples, onInput){
+  const inp = $(id), ph = $(id + "-ph");
+  const stop = runPlaceholder(ph, samples);
+  inp.oninput = () => {
+    ph.style.display = inp.value ? "none" : "block";
+    onInput(inp.value.trim());
+  };
+  return stop;
+}
+
+/* Выбор с картинками. Ручного ввода нет: значение должно совпадать с тем, что знает
+   Telegram, а опечатка давала бы фильтр, который молчит. */
+/* Обёртка над pickGrid: сводка в строке, сетка раскрывается по нажатию. */
+function drawerPick(id, title, items, selected, kind, samples){
+  const pick = pickGrid(id, items, selected, kind);
+  const summary = () => {
+    const v = pick.value();
+    if(!v.length) return kind === "bd" ? "любой фон" : "любая модель";
+    return v.slice(0, 3).join(", ") + (v.length > 3 ? ` и ещё ${v.length - 3}` : "");
+  };
+  return {
+    html: `<div class="drawer" id="${id}-dr">
+      <button class="drawer-head" id="${id}-head">
+        <span class="t"><b>${esc(title)}</b><span id="${id}-sum">${esc(summary())}</span></span>
+        <span class="count" id="${id}-cnt" style="${selected.length ? "" : "display:none"}">${
+          selected.length}</span>
+        <svg class="ico arr"><use href="#i-chev"/></svg>
+      </button>
+      <div class="drawer-body"><div class="in">
+        ${searchField(id + "-s")}${pick.html}
+      </div></div>
+    </div>`,
+    bind(){
+      pick.draw("");
+      const stop = bindSearch(id + "-s", samples || [], pick.draw);
+      const dr = $(id + "-dr");
+      $(id + "-head").onclick = () => {
+        dr.classList.toggle("on");
+        haptic();
+        // Сводку обновляем при закрытии: пока блок открыт, выбор виден и так.
+        if(!dr.classList.contains("on")) refresh();
+      };
+      const refresh = () => {
+        $(id + "-sum").textContent = summary();
+        const n = pick.value().length;
+        $(id + "-cnt").textContent = n;
+        $(id + "-cnt").style.display = n ? "" : "none";
+      };
+      // Сетка перерисовывается при поиске, поэтому слушаем нажатия на самом блоке,
+      // а не на кнопках: иначе после первого же поиска счётчик замирал бы.
+      dr.addEventListener("click", (e) => {
+        if(e.target.closest("[data-v]")) setTimeout(refresh, 0);
+      });
+      return stop;
+    },
+    value: pick.value,
+  };
+}
+
+function pickGrid(id, items, selected, kind){
+  const set = new Set(selected || []);
+  const draw = (filter) => {
+    const q = (filter || "").toLowerCase();
+    const list = items.filter((x) => !q || String(x.name).toLowerCase().includes(q));
+    $(id).innerHTML = list.length ? list.map((x) => `
+      <button class="opt ${set.has(x.name) ? "on" : ""}" data-v="${esc(x.name)}">
+        ${kind === "bd"
+          ? `<span class="swatch" style="background:${bdColor(x.name, x)}"></span>`
+          : (x.market
+              ? `<span class="pic mkpic">${marketIcon(x.market)}</span>`
+              : `<span class="pic">${picOf(x.name, x.icon, "m")}</span>`)}
+        <span>${esc(x.name)}</span>
+        ${x.pct ? `<span class="pct">${esc(x.pct)}%</span>` : ""}
+      </button>`).join("") : `<div class="hint">Ничего не нашлось</div>`;
+    $(id).querySelectorAll("[data-v]").forEach((b) => b.onclick = () => {
+      const v = b.dataset.v;
+      if(set.has(v)) set.delete(v); else set.add(v);
+      b.classList.toggle("on"); haptic();
+    });
+  };
+  return { html: `<div class="grid" id="${id}"></div>`, draw, value: () => [...set] };
+}
+
+/* ---------- монохромы ---------- */
+function monoRow(value){
+  const on = !!value;
+  const v = value || 70;
+  return `<div class="sw" style="margin-top:20px"><div class="t"><b>Монохромы</b>
+      <span>процент сочетания модели с фоном</span></div>
+      <button class="tgl ${on ? "on" : ""}" id="mono-on"></button></div>
+    <div id="mono-body" style="display:${on ? "block" : "none"}">
+      <div class="mono-box">
+        <div class="mono-head"><div class="mono-val" id="mv">${v}<small>%+</small></div>
+          <div style="color:var(--gold)">${ic("mono")}</div></div>
+        <input type="range" id="mono-range" min="50" max="90" step="1" value="${v}">
+        <div class="mono-scale"><span>50%</span><span>90%</span></div>
+        <div class="hint">Уведомление придёт, если сочетание модели с фоном не ниже
+          выбранного значения.</div>
+      </div>
+    </div>`;
+}
+function bindMonoRow(){
+  const range = $("mono-range");
+  let on = $("mono-on").classList.contains("on");
+  /* Заполненную часть ползунка красим сами: у ползунка в браузере нет своей
+     «пройденной» части, и без этого не видно, много выбрано или мало. */
+  const paint = () => {
+    const pct = ((range.value - range.min) / (range.max - range.min)) * 100;
+    range.style.setProperty("--track",
+      `linear-gradient(90deg,var(--gold-3),var(--gold) ${pct}%,#1c1a14 ${pct}%)`);
+    $("mv").innerHTML = range.value + "<small>%+</small>";
+  };
+  range.oninput = () => { paint(); haptic(); };
+  paint();
+  $("mono-on").onclick = () => {
+    on = !on; $("mono-on").classList.toggle("on");
+    $("mono-body").style.display = on ? "block" : "none"; haptic();
+  };
+  return () => (on ? Number(range.value) : 0);
+}
+
+/* ---------- красивый номер ----------
+   Тумблер сверху: выключен - настроек не видно вовсе. Цифр можно выбрать несколько.
+   Под настройками показывается пример номера, который подойдёт под фильтр. */
+function numberBlock(value){
+  const isPat = String(value || "").startsWith("p:");
+  const p = String(value || "").split(":");
+  const on = !!value;
+  const digits = (!isPat && p[0]) ? p[0].split("") : [];
+  return `<div class="sw" style="margin-top:20px"><div class="t"><b>Красивый номер</b>
+      <span>ловить подарки с особыми номерами</span></div>
+      <button class="tgl ${on ? "on" : ""}" id="n-on"></button></div>
+    <div id="n-body" style="display:${on ? "block" : "none"}">
+      <div class="seg" style="margin-top:6px">
+        <button data-nk="repeat" class="${!isPat ? "on" : ""}">Повторы</button>
+        <button data-nk="pattern" class="${isPat ? "on" : ""}">Шаблон</button>
+      </div>
+      <div id="nrep" style="display:${isPat ? "none" : "block"}">
+        <label>Цифры - можно выбрать несколько</label>
+        <div class="digits" id="ndig">${["0","1","2","3","4","5","6","7","8","9"].map((d) =>
+          `<button data-d="${d}" class="${digits.includes(d) ? "on" : ""}">${d}</button>`).join("")}</div>
+        <label>Сколько раз повторяется</label>
+        <div class="seg">${[2,3,4,5,6].map((n) =>
+          `<button data-cnt="${n}" class="${String(n) === (p[1] || "3") ? "on" : ""}">×${n}</button>`).join("")}</div>
+        <div class="sw"><div class="t"><b>Подряд</b><span>7777 подойдёт, 7177 нет</span></div>
+          <button class="tgl ${p[2] === "1" ? "on" : ""}" id="nrow"></button></div>
+      </div>
+      <div id="npat" style="display:${isPat ? "block" : "none"}">
+        <label>Свой шаблон</label>
+        <input type="text" id="npattern" placeholder="AAA, ABAB"
+          value="${isPat ? esc(String(value).slice(2)) : ""}">
+        <div class="hint">Разные буквы - разные цифры. Длина шаблона равна длине номера.</div>
+      </div>
+      <div class="numex"><div class="cap">Пример</div>
+        <div class="pair">
+          <span class="one"><b id="nex-y">-</b>${ic("check", "mk")}</span>
+          <span class="one no"><b id="nex-n">-</b>${ic("cross", "mk")}</span>
+        </div></div>
+    </div>`;
+}
+function bindNumber(){
+  let on = $("n-on").classList.contains("on");
+  let kind = document.querySelector("[data-nk].on")?.dataset.nk || "repeat";
+  let row = $("nrow") && $("nrow").classList.contains("on");
+  const digits = new Set([...document.querySelectorAll("[data-d].on")].map((b) => b.dataset.d));
+  let cnt = Number(document.querySelector("[data-cnt].on")?.dataset.cnt || 3);
+
+  /* Показываем ДВА примера: подходящий и похожий, но не подходящий. Так правило
+     понятно без описания - видно, чем 7777 отличается от 7717. */
+  function examples(){
+    if(kind === "pattern"){
+      const pat = ($("npattern").value || "").trim().toUpperCase();
+      if(!pat) return ["-", "-"];
+      const map = {}; let d = 2;
+      const yes = pat.split("").map((ch) => (map[ch] = map[ch] || String(d++ % 10))).join("");
+      // ломаем последний символ: получается номер той же длины, но мимо шаблона
+      const no = yes.slice(0, -1) + String((Number(yes.slice(-1)) + 1) % 10);
+      return [yes, no];
+    }
+    const d = digits.size ? [...digits][0] : "7";
+    const other = d === "1" ? "2" : "1";
+    const yes = d.repeat(cnt);
+    // тот же набор цифр, но одна чужая в середине - как раз случай «не подряд»
+    const no = d.repeat(Math.max(1, cnt - 2)) + other + d;
+    return [yes, no];
+  }
+  const upd = () => {
+    if(!$("nex-y")) return;
+    const [yes, no] = on ? examples() : ["-", "-"];
+    $("nex-y").textContent = yes; $("nex-n").textContent = no;
+  };
+
+  $("n-on").onclick = () => {
+    on = !on; $("n-on").classList.toggle("on");
+    $("n-body").style.display = on ? "block" : "none"; haptic(); upd();
+  };
+  document.querySelectorAll("[data-nk]").forEach((b) => b.onclick = () => {
+    document.querySelectorAll("[data-nk]").forEach((x) => x.classList.remove("on"));
+    b.classList.add("on"); kind = b.dataset.nk;
+    $("nrep").style.display = kind === "repeat" ? "block" : "none";
+    $("npat").style.display = kind === "pattern" ? "block" : "none";
+    haptic(); upd();
+  });
+  document.querySelectorAll("[data-d]").forEach((b) => b.onclick = () => {
+    const d = b.dataset.d;
+    if(digits.has(d)) digits.delete(d); else digits.add(d);
+    b.classList.toggle("on"); haptic(); upd();
+  });
+  document.querySelectorAll("[data-cnt]").forEach((b) => b.onclick = () => {
+    document.querySelectorAll("[data-cnt]").forEach((x) => x.classList.remove("on"));
+    b.classList.add("on"); cnt = Number(b.dataset.cnt); haptic(); upd();
+  });
+  if($("nrow")) $("nrow").onclick = () => { row = !row; $("nrow").classList.toggle("on"); upd(); };
+  if($("npattern")) $("npattern").oninput = upd;
+  upd();
+
+  return () => {
+    if(!on) return { number_kind: "off" };
+    if(kind === "pattern") return { number_kind: "pattern",
+      pattern: ($("npattern").value || "").trim().toUpperCase() };
+    return { number_kind: "repeat", digits: [...digits], count: cnt, in_row: row };
+  };
+}
+
+async function loadCatalog(slug){
+  if(CATALOG[slug]) return CATALOG[slug];
+  try{ CATALOG[slug] = await call("catalog", { slug }); }
+  catch(e){ CATALOG[slug] = { models:null, backdrops:null }; }
+  return CATALOG[slug];
+}
+
+/* Выбор коллекции - только из меню: название должно совпадать с тем, что знает
+   Telegram, а вписанное руками с опечаткой дало бы фильтр, который молчит. */
+async function pickCollection(done, title){
+  openSheet(`<h2>${ic("gift")}${title || "Коллекция"}</h2>
+    <p class="sub">Выберите коллекцию из меню.</p>
+    ${searchField("cs")}
+    <div class="grid" id="clist" style="margin-top:11px"><div class="skel" style="height:46px"></div></div>
+    <div class="err" id="cerr"></div>
+    <div class="two" style="margin-top:12px">
+      <button class="btn ghost" id="ccancel">Отмена</button>
+      <button class="btn gold" id="cok">${ic("plus")}Добавить</button></div>`);
+  let chosen = "";
+  const draw = (f) => {
+    const box = $("clist");
+    if(COLLS === null){ box.innerHTML = `<div class="hint">Меню коллекций недоступно - попробуйте позже.</div>`; return; }
+    const q = (f || "").toLowerCase();
+    const list = COLLS.filter((x) => !q || String(x.name || x).toLowerCase().includes(q))
+      .slice(0, 60);
+    box.innerHTML = list.length ? list.map((x) => `
+      <button class="opt ${(x.name || x) === chosen ? "on" : ""}" data-c="${esc(x.name || x)}">
+        <span class="pic">${picOf(x.name || x, (x.icon || null), "c")}</span>
+        <span>${esc(x.name || x)}</span></button>`).join("")
+      : `<div class="hint">Ничего не нашлось</div>`;
+    box.querySelectorAll("[data-c]").forEach((b) => b.onclick = () => {
+      chosen = b.dataset.c; draw(f); haptic();
+    });
+  };
+  const stop = bindSearch("cs", ["Plush Pepe", "Fine Pen", "Astral Shard", "Liberty Figure"], draw);
+  $("ccancel").onclick = () => { stop(); closeSheet(); };
+  $("cok").onclick = async () => {
+    if(!chosen){ $("cerr").textContent = "Выберите коллекцию из меню"; return; }
+    stop(); closeSheet(); await done(chosen);
+  };
+  try{ COLLS = (await call("collections", {})).items; }catch(e){ COLLS = null; }
+  draw("");
+}
+
+async function editColl(cid){
+  const c = S.collections.find((x) => x.cid === cid);
+  if(!c) return;
+  openSheet(`<h2><span class="pic">${picOf(c.slug, c.icon, "c")}</span>${esc(c.title || c.slug)}</h2>
+    <div class="skel"></div><div class="skel"></div>`);
+  const cat = await loadCatalog(c.slug);
+  // icon обязательно переносим: без него список рисует значки из названий, а
+  // настоящие картинки моделей молча пропадают.
+  const models = (cat.models || []).map((m) => ({ name: m.name, pct: m.pct, icon: m.icon }));
+  c.models.forEach((m) => { if(!models.find((x) => x.name === m)) models.push({ name: m }); });
+  const bds = (cat.backdrops || []).map((b) => ({ name: b }));
+  c.backdrops.forEach((b) => { if(!bds.find((x) => x.name === b)) bds.push({ name: b }); });
+
+  const mp = drawerPick("mp", "Модели", models, c.models, "model",
+                        ["Great Dragon", "Ayanami", "Grumpy"]);
+  const bp = drawerPick("bp", "Фоны", bds, c.backdrops, "bd",
+                        ["Onyx Black", "Satin Gold", "Lavender"]);
+  openSheet(`<h2><span class="pic">${picOf(c.slug, c.icon, "c")}</span>${esc(c.title || c.slug)}</h2>
+    <p class="sub">${statusOf(c)}</p>
+    <label>Фильтры подарка</label>${mp.html}${bp.html}
+    ${monoRow(c.mono_min)}
+    ${numberBlock(c.number)}
+    <label>Ждать конкретные номера</label>
+    <input type="text" id="watch" class="num" placeholder="7777, 1234" value="${c.numbers.join(", ")}">
+    <div class="hint">Такой подарок придёт при любых модели и фоне. После срабатывания
+      номер снимается сам.</div>
+    <div class="sw" style="margin-top:16px"><div class="t"><b>Отслеживание</b>
+      <span>${c.enabled ? "включено" : "выключено"}</span></div>
+      <button class="tgl ${c.enabled ? "on" : ""}" id="c-en"></button></div>
+    <div class="err" id="err"></div>
+    <div class="two" style="margin-top:10px">
+      <button class="btn ghost" id="cancel">Отмена</button>
+      <button class="btn gold" id="ok">${ic("check")}Сохранить</button></div>
+    <button class="btn danger" style="margin-top:9px" id="del">${ic("trash")}Удалить коллекцию</button>`);
+  const s1 = mp.bind(), s2 = bp.bind();
+  const numOf = bindNumber();
+  const monoOf = bindMonoRow();
+  $("c-en").onclick = () => { $("c-en").classList.toggle("on"); haptic(); };
+  const close = () => { s1(); s2(); closeSheet(); };
+  $("cancel").onclick = close;
+  $("del").onclick = () => {
+    const ask = (yes) => { if(yes){ close(); save("coll_del", { cid }, "Удалено"); } };
+    if(TG && TG.showConfirm) TG.showConfirm(`Удалить ${c.title || c.slug}?`, ask); else ask(true);
+  };
+  $("ok").onclick = async () => {
+    const numbers = ($("watch").value || "").split(",").map((x) => x.trim().replace("#",""))
+      .filter(Boolean).map(Number).filter((x) => x > 0);
+    try{
+      await call("coll_filters", Object.assign({
+        cid, models: mp.value(), backdrops: bp.value(), numbers, mono_min: monoOf()
+      }, numOf()));
+      if($("c-en").classList.contains("on") !== c.enabled) await call("coll_toggle", { cid });
+      close(); render(); toast("Сохранено");
+    }catch(e){ $("err").textContent = e.message; }
+  };
+}
+
+async function editFlip(fid){
+  const f = S.flip.items.find((x) => x.id === fid);
+  if(!f) return;
+  openSheet(`<h2><span class="pic">${picOf(f.slug, f.icon, "c")}</span>${esc(f.slug)}</h2>
+    <div class="skel"></div><div class="skel"></div>`);
+  const cat = await loadCatalog(f.slug);
+  // icon обязательно переносим: без него список рисует значки из названий, а
+  // настоящие картинки моделей молча пропадают.
+  const models = (cat.models || []).map((m) => ({ name: m.name, pct: m.pct, icon: m.icon }));
+  f.models.forEach((m) => { if(!models.find((x) => x.name === m)) models.push({ name: m }); });
+  const bds = (cat.backdrops || []).map((b) => ({ name: b }));
+  f.backdrops.forEach((b) => { if(!bds.find((x) => x.name === b)) bds.push({ name: b }); });
+  const markets = (S.markets || []).map((x) => ({ name: x.label, key: x.key,
+                                                 market: x.key }));
+
+  const mp = drawerPick("mp", "Модели", models, f.models, "model",
+                        ["Great Dragon", "Ayanami", "Grumpy"]);
+  const bp = drawerPick("bp", "Фоны", bds, f.backdrops, "bd",
+                        ["Onyx Black", "Satin Gold", "Lavender"]);
+  const kp = pickGrid("kp", markets, markets.filter((m) => f.markets.includes(m.key))
+    .map((m) => m.name), "model");
+  openSheet(`<h2><span class="pic">${picOf(f.slug, f.icon, "c")}</span>${esc(f.slug)}</h2>
+    <p class="sub">${f.paused ? `<span class="st wait">не хватает слотов</span>` : statusOf(f)}</p>
+    <label>Фильтры листинга</label>${mp.html}${bp.html}
+    <label>Маркеты</label>${kp.html}
+    <div class="hint">Пусто = любой маркет. Отмечайте площадки, где готовы покупать.</div>
+    <label>Что присылать</label>
+    <div class="seg">
+      <button data-mode="deals" class="${f.mode !== "all" ? "on" : ""}">Только выгодные</button>
+      <button data-mode="all" class="${f.mode === "all" ? "on" : ""}">Все листинги</button></div>
+    <div class="mode-note"><b>Только выгодные</b> - листинги со скидкой.<br>
+      <b>Все листинги</b> - все листинги, эффективнее для углублённой работы,
+      нужно для отправления офферов.</div>
+    <label>Максимальная цена, TON</label>
+    <input type="number" id="mx" class="num" step="0.1" min="0" value="${f.max_price ?? ""}">
+    <label>Минимальная скидка от последних продаж, %</label>
+    <input type="number" id="dc" class="num" min="0" max="99" value="${f.min_discount || ""}">
+    <div class="hint">В режиме «только выгодные» нужен хотя бы один порог - цена или скидка.</div>
+    ${monoRow(f.mono_min)}
+    ${numberBlock(f.number)}
+    <div class="sw" style="margin-top:16px"><div class="t"><b>Отслеживание</b>
+      <span>${f.enabled ? "включено" : "выключено"}</span></div>
+      <button class="tgl ${f.enabled ? "on" : ""}" id="f-en"></button></div>
+    <div class="err" id="err"></div>
+    <div class="two" style="margin-top:10px">
+      <button class="btn ghost" id="cancel">Отмена</button>
+      <button class="btn gold" id="ok">${ic("check")}Сохранить</button></div>
+    <button class="btn danger" style="margin-top:9px" id="del">${ic("trash")}Освободить слот</button>`);
+  kp.draw("");
+  const s1 = mp.bind(), s2 = bp.bind();
+  const numOf = bindNumber();
+  const monoOf = bindMonoRow();
+  let mode = f.mode === "all" ? "all" : "deals";
+  document.querySelectorAll("[data-mode]").forEach((b) => b.onclick = () => {
+    document.querySelectorAll("[data-mode]").forEach((x) => x.classList.remove("on"));
+    b.classList.add("on"); mode = b.dataset.mode; haptic();
+  });
+  $("f-en").onclick = () => { $("f-en").classList.toggle("on"); haptic(); };
+  const close = () => { s1(); s2(); closeSheet(); };
+  $("cancel").onclick = close;
+  $("del").onclick = () => {
+    const ask = (yes) => { if(yes){ close(); save("flip_del", { id: fid }, "Слот освобождён"); } };
+    if(TG && TG.showConfirm) TG.showConfirm(`Удалить отслеживание ${f.slug}?`, ask); else ask(true);
+  };
+  $("ok").onclick = async () => {
+    const val = (id) => $(id).value === "" ? null : Number($(id).value);
+    const picked = kp.value();
+    try{
+      await call("flip_update", Object.assign({
+        id: fid, mode, models: mp.value(), backdrops: bp.value(),
+        markets: markets.filter((m) => picked.includes(m.name)).map((m) => m.key),
+        max_price: val("mx"), min_discount: val("dc") || 0,
+        mono_min: monoOf(), enabled: $("f-en").classList.contains("on")
+      }, numOf()));
+      close(); render(); toast("Сохранено");
+    }catch(e){ $("err").textContent = e.message; }
+  };
+}
+
+/* ---------- меню из трёх полосок ---------- */
+function openMenu(){
+  openSheet(`<h2>${ic("menu")}Меню</h2>
+    <p class="sub">Помощь и правила</p>
+    <button class="item" data-link="support">
+      <div class="pic" style="display:grid;place-items:center;color:var(--gold)">${ic("life")}</div>
+      <div class="body"><div class="name">Поддержка</div>
+        <div class="sub">написать, если что-то не работает</div></div></button>
+    <button class="item" data-link="help">
+      <div class="pic" style="display:grid;place-items:center;color:var(--gold)">${ic("help")}</div>
+      <div class="body"><div class="name">Помощь</div>
+        <div class="sub">как устроены модули и фильтры</div></div></button>
+    <button class="item" data-link="terms">
+      <div class="pic" style="display:grid;place-items:center;color:var(--gold)">${ic("doc")}</div>
+      <div class="body"><div class="name">Условия пользования</div>
+        <div class="sub">правила и ответственность</div></div></button>
+    <button class="btn ghost" style="margin-top:8px" id="mclose">Закрыть</button>`);
+  $("mclose").onclick = closeSheet;
+  document.querySelectorAll("[data-link]").forEach((b) => b.onclick = async () => {
+    haptic();
+    const k = b.dataset.link;
+    /* Тексты берём у бота, а не держим свои: два текста об одном и том же
+       разойдутся при первой правке, и человек получит разные ответы в чате и
+       в приложении. */
+    let texts = null;
+    try{ texts = await call("texts", {}); }catch(e){ texts = null; }
+    if(k === "support") openSupport(texts);
+    else if(k === "help") openText("Помощь", (texts && texts.help) || "Не загрузилось");
+    else openText("Условия пользования", (texts && texts.terms) || "Не загрузилось");
+  });
+}
+/* Обращение в поддержку. Нужно именно в приложении: в режиме «только приложение»
+   кнопки в чате не работают, и человек, у которого что-то сломалось, иначе не
+   может об этом сообщить. */
+function openSupport(texts){
+  const open = (texts && texts.open_tickets) || 0;
+  openSheet(`<h2>${ic("life")}Поддержка</h2>
+    <div class="card" style="white-space:pre-line">${stripTags((texts && texts.support)
+      || "Опишите вопрос одним сообщением - ответит владелец бота.")}</div>
+    ${open ? `<div class="hint">У вас ${open} открытых обращений. Ответ придёт в чат.</div>` : ""}
+    <label>Ваш вопрос</label>
+    <input type="text" id="sup" placeholder="Что случилось?">
+    <div class="err" id="err"></div>
+    <div class="two" style="margin-top:12px">
+      <button class="btn ghost" id="mclose">Отмена</button>
+      <button class="btn gold" id="ssend">${ic("life")}Отправить</button></div>`);
+  $("mclose").onclick = closeSheet;
+  $("ssend").onclick = async () => {
+    try{
+      const r = await call("support_send", { text: $("sup").value });
+      closeSheet();
+      toast(`Обращение №${r.id} отправлено - ответ придёт в чат`, "life");
+    }catch(e){ $("err").textContent = e.message; }
+  };
+}
+
+/* Тексты приходят с разметкой Telegram (<b>, <blockquote>). Показываем без тегов:
+   вставлять чужую разметку в страницу как HTML - прямой путь к неприятностям. */
+function stripTags(html){
+  const d = document.createElement("div");
+  d.innerHTML = String(html || "").replace(/<br\s*\/?>/gi, "\n");
+  return esc(d.textContent || "");
+}
+
+function openText(title, text){
+  openSheet(`<h2>${esc(title)}</h2>
+    <div class="card" style="white-space:pre-line">${stripTags(text)}</div>
+    <button class="btn ghost" id="mclose">Закрыть</button>`);
+  $("mclose").onclick = closeSheet;
+}
+
+/* ---------- демонстрационные данные (только для показа дизайна) ---------- */
+function demoState(){
+  return {
+    uid: 1204450614, name: "Konstantin", photo: "", is_owner: true, lang: "ru",
+    settings: { sales_days: 7, sales_show: 3 }, boot: [1, 2],
+    announcements: [
+      { kind:"promo", title:"Акция: −20% на слоты", text:"До 27 августа. Ещё 3 слота по акции." },
+    ],
+    collections: [
+      { cid:1, slug:"PlushPepe", title:"Plush Pepe", enabled:true, pending:false,
+        models:["Grumpy"], backdrops:["Onyx Black"], number:"7:3:1", numbers:[7777], mono_min:80 },
+      { cid:2, slug:"FinePen", title:"Fine Pen", enabled:true, pending:false,
+        models:["Great Dragon","Ayanami"], backdrops:[], number:"", numbers:[], mono_min:0 },
+      { cid:3, slug:"AstralShard", title:"Astral Shard", enabled:false, pending:false,
+        models:[], backdrops:["Lavender"], number:"p:ABAB", numbers:[], mono_min:50 },
+      { cid:4, slug:"LibertyFigure", title:"Liberty Figure", enabled:true, pending:true,
+        models:["Marilyn"], backdrops:["Cyberpunk"], number:"", numbers:[], mono_min:0 },
+    ],
+    flip: { enabled:true, has_access:true, slots_total:3, slots_used:2, slot_stars:250,
+      items:[
+        { id:1, slug:"PlushPepe", models:["Grumpy"], backdrops:["Black"],
+          markets:["portals","tonnel"], max_price:12.5, min_discount:20, mode:"deals",
+          number:"", enabled:true, paused:false, pending:false, mono_min:80 },
+        { id:2, slug:"DurovsGlasses", models:[], backdrops:[], markets:[], max_price:null,
+          min_discount:15, mode:"all", number:"", enabled:true, paused:false, pending:true,
+          mono_min:0 },
+      ] },
+    markets: [ {key:"portals",label:"Portals"}, {key:"tonnel",label:"Tonnel"},
+      {key:"mrkt",label:"MRKT"}, {key:"getgems",label:"Getgems"}, {key:"telegram",label:"Fragment"} ],
+    transactions: [
+      { kind:"slot", title:"Слот Flip Master", date:"24 августа, 19:42", amount:"250 звёзд" },
+      { kind:"slot", title:"Слот Flip Master", date:"12 августа, 11:08", amount:"250 звёзд" },
+      { kind:"promo", title:"Акция: слот в подарок", date:"2 августа, 09:15", amount:"бесплатно" },
+    ],
+    admin: { users:184, payments:37, slots:52, slot_stars:250, verb:"полная",
+      app_only:false, start_premium:true,
+      hidden:["Coffin","Durov's Boots","Durov's Cat"], boot:[1,2],
+      verbosity:"full", notify_new_users:true, notify_payments:true, open_tickets:2 },
+  };
+}
+async function demoCall(action, payload){
+  if(action === "state") return demoState();
+  if(action === "collections"){
+    const all = ["Plush Pepe","Fine Pen","Astral Shard","Liberty Figure","Durov's Glasses",
+      "Artisan Brick","Swiss Watch","B-Day Candle","Coffin","Durov's Boots","Durov's Cat",
+      "Snoop Dogg","Ion Gem","Loot Bag"].map((n) => ({ name:n }));
+    const hidden = new Set((demoState().admin.hidden) || []);
+    return { items: (payload && payload.all) ? all : all.filter((x) => !hidden.has(x.name)) };
+  }
+  if(action === "catalog") return { models:[{name:"MAGA",pct:0.5},{name:"Marilyn",pct:0.5},
+    {name:"Rebel Royal",pct:0.5},{name:"Astronaut",pct:1},{name:"Burger Queen",pct:1},
+    {name:"Excelsior",pct:1},{name:"Grumpy",pct:2.6},{name:"Great Dragon",pct:0.4}],
+    backdrops:["Black","Electric Purple","Lavender","Cyberpunk","Electric Indigo","Onyx Black",
+      "Satin Gold","Forest Green"] };
+  if(action === "slot_invoice") return { link:"https://t.me/invoice/demo" };
+  if(action === "texts") return { help:"Помощь: как пользоваться ботом.",
+    terms:"Условия пользования.", support:"Опишите вопрос одним сообщением.",
+    open_tickets:0 };
+  if(action === "support_send") return { ok:true, id:7, state:S };
+  if(action === "referral") return { link:"https://t.me/upgradesniper_bot?start=ref_1204450614",
+    percent:20, invited:4, paid:2, discounts:1 };
+  if(action === "tickets") return { items:[
+    { id:12, uid:555, text:"Не приходят уведомления по PlushPepe", date:"27.08 10:14",
+      answered:false },
+    { id:11, uid:777, text:"Как купить слот?", date:"26.08 19:02", answered:true }] };
+  if(action === "ticket_answer") return { ok:true, state:S };
+  return { state: S };
+}
+
+/* ---------- запуск ---------- */
+showBoot();
+
+async function boot(){
+  if(!API && !DEMO){
+    $("boot").classList.add("gone");
+    document.querySelector("main").innerHTML = `<div class="empty" style="margin-top:40px">
+      Не задан адрес бота.<br><br>Откройте приложение кнопкой <b>Open</b> в боте.</div>`;
+    return;
+  }
+  try{
+    const data = await call("state", {});
+    S = data.uid ? data : data.state;
+    // запоминаем набор заставок на следующий заход: до ответа сервера его не знать
+    try{ localStorage.setItem(BOOT_KEY, JSON.stringify(S.boot || [1])); }catch(e){}
+    render();
+    setTimeout(() => $("boot").classList.add("gone"), 1600);
+  }catch(e){
+    $("boot-sub").textContent = "Нет связи с ботом";
+    setTimeout(() => {
+      $("boot").classList.add("gone");
+      document.querySelector("main").innerHTML = `<div class="empty" style="margin-top:40px">
+        Не соединился с ботом.<br><br><span class="gold">${esc(e.message)}</span><br><br>
+        Адрес данных: <span class="num">${esc(API || "не задан")}</span><br>
+        Проверьте, что бот запущен: откройте
+        <span class="num">${esc(API)}/api/ping</span> - должно ответить «ok».</div>`;
+    }, 900);
+  }
+}
+
+document.querySelectorAll("[data-go]").forEach((b) => b.onclick = () => { haptic(); go(b.dataset.go); });
+$("ava").onclick = () => { haptic(); go("profile"); };
+$("who").onclick = () => { haptic(); go("profile"); };
+$("btn-menu").onclick = () => { haptic(); openMenu(); };
+$("veil").onclick = closeSheet;
+$("fab").onclick = () => {
+  haptic("medium");
+  if(VIEW === "sniper") pickCollection((slug) => save("coll_add", { slug }, "Коллекция добавлена"));
+  else pickCollection((slug) => save("flip_add", { slug }, "Слот занят"), "Коллекция для слота");
+};
+
+/* Щипок и двойное касание: iOS игнорирует meta viewport внутри WebView, поэтому
+   отменяем жесты сами. pan-y в CSS оставляет обычную прокрутку. */
+["gesturestart", "gesturechange", "gestureend"].forEach((ev) =>
+  document.addEventListener(ev, (e) => e.preventDefault(), { passive: false }));
+document.addEventListener("touchmove", (e) => {
+  if(e.touches.length > 1) e.preventDefault();
+}, { passive: false });
+let lastTap = 0;
+document.addEventListener("touchend", (e) => {
+  const now = Date.now();
+  if(now - lastTap < 300) e.preventDefault();   // двойное касание = зум на iOS
+  lastTap = now;
+}, { passive: false });
+
+if(TG){
+  TG.ready(); TG.expand();
+  // Телеграм умеет сам запрещать вертикальный свайп-закрытие: без этого прокрутка
+  // длинной панели то и дело сворачивает приложение.
+  try{ TG.disableVerticalSwipes && TG.disableVerticalSwipes(); }catch(e){}
+  try{ TG.setHeaderColor("#07070a"); TG.setBackgroundColor("#07070a"); }catch(e){}
+  if(TG.BackButton) TG.BackButton.onClick(closeSheet);
+  const sp = String((TG.initDataUnsafe && TG.initDataUnsafe.start_param) || "").toLowerCase();
+  if(["sniper","flip","profile","settings"].includes(sp)) VIEW = sp;
+}
+if(VIEW !== "home") go(VIEW);
+boot();
+</script>
+</body>
+</html>
