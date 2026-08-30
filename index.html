@@ -187,6 +187,74 @@ button{font:inherit;cursor:pointer;color:inherit;background:none;border:none}
   76%{opacity:1}88%,100%{opacity:0}}
 .v10 .rail{opacity:.5}
 
+
+/* ---------- 11. Огранка: грани зажигаются одна за другой ---------- */
+.v11 .facet{opacity:.12;animation:v11f 3.6s ease-in-out infinite}
+.v11 .facet:nth-of-type(1){animation-delay:0s}
+.v11 .facet:nth-of-type(2){animation-delay:.18s}
+.v11 .facet:nth-of-type(3){animation-delay:.36s}
+.v11 .facet:nth-of-type(4){animation-delay:.54s}
+.v11 .facet:nth-of-type(5){animation-delay:.72s}
+.v11 .facet:nth-of-type(6){animation-delay:.9s}
+@keyframes v11f{0%,8%{opacity:.12}22%{opacity:1}55%{opacity:.55}100%{opacity:.12}}
+.v11 .sweep{animation:v11s 3.6s cubic-bezier(.4,0,.2,1) infinite}
+@keyframes v11s{0%{transform:translate(-120px,-120px)}55%,100%{transform:translate(120px,120px)}}
+.v11 .frame{stroke-dasharray:520;stroke-dashoffset:520;animation:v11d 3.6s ease-in-out infinite}
+@keyframes v11d{0%{stroke-dashoffset:520}35%,80%{stroke-dashoffset:0}100%{stroke-dashoffset:520}}
+
+/* ---------- 12. Перелёт: подарок летит между маркетами ---------- */
+.v12 .parcel{animation:v12fly 3.4s cubic-bezier(.45,0,.35,1) infinite}
+@keyframes v12fly{0%{transform:translate(-52px,0) scale(.8);opacity:0}
+  15%{opacity:1}50%{transform:translate(0,-16px) scale(1.06)}
+  85%{transform:translate(52px,0) scale(.8);opacity:1}100%{opacity:0}}
+.v12 .node-l{animation:v12pulse 3.4s ease-in-out infinite}
+.v12 .node-r{animation:v12pulse 3.4s ease-in-out infinite;animation-delay:1.5s}
+@keyframes v12pulse{0%,100%{opacity:.35}50%{opacity:1}}
+.v12 .path{stroke-dasharray:6 10;animation:v12dash 1.6s linear infinite}
+@keyframes v12dash{to{stroke-dashoffset:-32}}
+.v12 .plus{animation:v12plus 3.4s ease-out infinite}
+@keyframes v12plus{0%,72%{opacity:0;transform:translateY(6px)}
+  82%{opacity:1;transform:translateY(-6px)}100%{opacity:0;transform:translateY(-16px)}}
+
+/* ---------- 13. Метроном цены: столбики и падающая метка ---------- */
+.v13 .bar{transform-origin:center bottom;animation:v13bar 2.4s ease-in-out infinite}
+.v13 .bar:nth-of-type(1){animation-delay:0s}
+.v13 .bar:nth-of-type(2){animation-delay:.12s}
+.v13 .bar:nth-of-type(3){animation-delay:.24s}
+.v13 .bar:nth-of-type(4){animation-delay:.36s}
+.v13 .bar:nth-of-type(5){animation-delay:.48s}
+@keyframes v13bar{0%,100%{transform:scaleY(.35)}50%{transform:scaleY(1)}}
+.v13 .drop{animation:v13drop 2.4s cubic-bezier(.4,0,.3,1) infinite}
+@keyframes v13drop{0%,30%{transform:translateY(-40px);opacity:0}
+  45%{transform:translateY(0);opacity:1}70%{transform:translateY(0);opacity:1}
+  85%,100%{transform:translateY(6px);opacity:0}}
+.v13 .line{stroke-dasharray:150;stroke-dashoffset:150;animation:v13line 2.4s ease-out infinite}
+@keyframes v13line{0%{stroke-dashoffset:150}45%,100%{stroke-dashoffset:0}}
+
+/* ---------- 14. Печать: подарок «проявляется» из точек ---------- */
+.v14 .px{opacity:0;animation:v14px 3s ease-in-out infinite}
+@keyframes v14px{0%{opacity:0;transform:scale(.3)}
+  40%{opacity:1;transform:scale(1)}75%{opacity:1}100%{opacity:0;transform:scale(.3)}}
+.v14 .solid{opacity:0;animation:v14solid 3s ease-in-out infinite}
+@keyframes v14solid{0%,45%{opacity:0}62%{opacity:1}88%{opacity:1}100%{opacity:0}}
+.v14 .halo{animation:v14halo 3s ease-in-out infinite}
+@keyframes v14halo{0%,45%{opacity:0;transform:scale(.7)}65%{opacity:.5;transform:scale(1)}
+  100%{opacity:0;transform:scale(1.15)}}
+
+/* ---------- 15. Ключ и замок: подбор ---------- */
+.v15 .tumbler{animation:v15t 2.8s cubic-bezier(.4,0,.2,1) infinite}
+.v15 .tumbler:nth-of-type(1){animation-delay:0s}
+.v15 .tumbler:nth-of-type(2){animation-delay:.22s}
+.v15 .tumbler:nth-of-type(3){animation-delay:.44s}
+@keyframes v15t{0%,15%{transform:translateY(0)}35%{transform:translateY(-13px)}
+  70%{transform:translateY(-13px)}88%,100%{transform:translateY(0)}}
+.v15 .shackle{transform-origin:100px 96px;animation:v15s 2.8s cubic-bezier(.3,1.3,.5,1) infinite}
+@keyframes v15s{0%,55%{transform:translateY(0)}72%{transform:translateY(-15px)}
+  92%,100%{transform:translateY(0)}}
+.v15 .flash{animation:v15f 2.8s ease-out infinite}
+@keyframes v15f{0%,60%{opacity:0;transform:scale(.5)}72%{opacity:.85;transform:scale(1.2)}
+  100%{opacity:0;transform:scale(1.5)}}
+
 /* выбор заставки в админке */
 .boot-pick{display:grid;grid-template-columns:repeat(2,1fr);gap:9px}
 .boot-opt{border:1px solid var(--line);border-radius:16px;padding:10px;background:#0b0b0f;
@@ -208,9 +276,12 @@ header{position:sticky;top:0;z-index:30;display:flex;align-items:center;gap:11px
   border:1.5px solid var(--gold-3);background:linear-gradient(140deg,#221d12,#0d0c0a);
   display:grid;place-items:center;color:var(--gold);transition:.2s}
 .ava:active{transform:scale(.93)}
-/* Фото профиля приходит любых пропорций. cover обрезает по краям, center держит
-   лицо в середине: у прошлой версии верх кадра срезался. */
-.ava img{width:100%;height:100%;object-fit:cover;object-position:center;display:block}
+/* Фото профиля. Раньше картинка вставлялась в контейнер с рамкой и padding от
+   grid-раскладки, из-за чего вылезала за круг и выглядела обрезанной. Теперь она
+   лежит строго по размеру круга и вписывается целиком по короткой стороне. */
+.ava{padding:0;line-height:0}
+.ava img{width:100%;height:100%;object-fit:cover;object-position:center;
+  display:block;border-radius:50%}
 .who{flex:1;min-width:0;text-align:left}
 .who b{display:block;font-size:14.5px;font-weight:640}
 .who span{display:block;font-size:11.5px;color:var(--muted);letter-spacing:.4px;text-transform:uppercase}
@@ -293,7 +364,9 @@ main{position:relative;z-index:1;padding:2px 15px 18px}
   text-overflow:ellipsis;margin-bottom:7px}
 .pic{width:46px;height:46px;flex:0 0 46px;border-radius:14px;overflow:hidden;
   border:1px solid var(--line);background:#0c0b09}
-.pic svg{width:100%;height:100%}
+.pic svg,.pic video{width:100%;height:100%;object-fit:contain}
+/* Анимации выключены — показываем первый кадр вместо движения. */
+video[data-still]{animation:none}
 .mkico{display:inline-flex;align-items:center;justify-content:center}
 .mkico img{width:100%;height:100%;object-fit:contain;border-radius:5px}
 .mkpic .mkico{width:100%;height:100%;color:var(--gold)}
@@ -377,6 +450,20 @@ input:focus,select:focus{outline:none;border-color:var(--gold-3);box-shadow:0 0 
   vertical-align:-2px;animation:caret .9s steps(1) infinite}
 @keyframes caret{50%{opacity:0}}
 
+/* Предпросмотр: как будет выглядеть подарок с выбранной моделью на выбранном фоне.
+   Ровно то, ради чего фильтры и настраивают, — по названиям это представить трудно. */
+.prev{border-radius:18px;overflow:hidden;margin:2px 0 14px;position:relative;
+  aspect-ratio:16/10;display:grid;place-items:center;
+  border:1px solid var(--line);transition:background .35s ease}
+.prev .art{width:58%;height:78%;display:grid;place-items:center;position:relative;z-index:1}
+.prev .art img,.prev .art video,.prev .art svg{width:100%;height:100%;object-fit:contain;
+  filter:drop-shadow(0 6px 18px rgba(0,0,0,.45))}
+.prev .glowdot{position:absolute;width:70%;height:70%;border-radius:50%;filter:blur(28px);
+  opacity:.55}
+.prev .cap{position:absolute;left:0;right:0;bottom:0;padding:8px 12px;font-size:11.5px;
+  color:rgba(255,255,255,.82);background:linear-gradient(0deg,rgba(0,0,0,.55),transparent);
+  z-index:2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
 /* Выдвижной блок выбора. Раньше сетка моделей висела в панели целиком: у
    коллекции их бывает по полсотни, и всё остальное — фоны, монохромы, номер —
    уезжало далеко вниз. Теперь строка со сводкой, по нажатию раскрывается. */
@@ -394,9 +481,13 @@ input:focus,select:focus{outline:none;border-color:var(--gold-3);box-shadow:0 0 
 .drawer-body{max-height:0;overflow:hidden;transition:max-height .3s cubic-bezier(.3,.9,.4,1)}
 .drawer.on .drawer-body{max-height:420px}
 .drawer-body .in{padding:0 12px 13px}
-.count{display:inline-flex;align-items:center;justify-content:center;min-width:22px;height:22px;
-  padding:0 6px;border-radius:8px;font-size:12px;font-weight:640;color:#1a1408;
-  background:linear-gradient(135deg,var(--gold),var(--gold-2))}
+/* Счётчик выбранного. Был мелкий и терялся на золотом фоне; теперь крупнее,
+   с тёмным текстом на плотном золоте и лёгким свечением — видно с одного взгляда. */
+.count{display:inline-flex;align-items:center;justify-content:center;min-width:28px;
+  height:28px;padding:0 9px;border-radius:10px;font-size:15px;font-weight:800;
+  color:#120e04;letter-spacing:-.3px;
+  background:linear-gradient(135deg,var(--gold-2),var(--gold));
+  box-shadow:0 2px 10px rgba(217,180,90,.35);border:1px solid rgba(255,255,255,.18)}
 
 /* выбор с картинками */
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:8px;
@@ -749,7 +840,9 @@ const BOOTS = {};
 const BOOT_NAMES = {1:"Коробка с подарком",2:"Прицел снайпера",
   3:"Алмаз на орбите",4:"Чертёж логотипа",5:"Золотая волна",
   6:"Захват цели",7:"Стопка монет",8:"Вращение алмаза",
-  9:"Сигнал уведомления",10:"Лента листингов"};
+  9:"Сигнал уведомления",10:"Лента листингов",
+  11:"Огранка",12:"Перелёт между маркетами",13:"Метроном цены",
+  14:"Проявление",15:"Ключ к апгрейду"};
 
 /* 1 - коробка открывается, карточка NFT выезжает */
 BOOTS[1] = `<svg class="v1" viewBox="0 0 200 200" width="190" height="190">${DEFS}
@@ -913,6 +1006,79 @@ BOOTS[10] = `<svg class="v10" viewBox="0 0 200 200" width="190" height="190">${D
       stroke-linecap="round" stroke-linejoin="round" fill="none"/>
     <circle cx="118" cy="152" r="5" fill="url(#gg)"/></g></svg>`;
 
+BOOTS[11] = `<svg class="v11" viewBox="0 0 200 200" width="190" height="190">${DEFS}
+  <clipPath id="c11"><path d="M100 34l40 34-40 100-40-100z"/></clipPath>
+  <circle class="frame" cx="100" cy="100" r="86" fill="none" stroke="url(#gg)" stroke-width="1.6"/>
+  <g clip-path="url(#c11)">
+    <path class="facet" d="M100 34l40 34H60z" fill="url(#gg)"/>
+    <path class="facet" d="M60 68h26l14 100z" fill="url(#gg)" opacity=".7"/>
+    <path class="facet" d="M140 68h-26l-14 100z" fill="url(#gg)" opacity=".55"/>
+    <path class="facet" d="M86 68h28l-14 100z" fill="url(#gg)" opacity=".85"/>
+    <path class="facet" d="M100 34l-14 34h28z" fill="#fff" opacity=".5"/>
+    <path class="facet" d="M60 68l40 100-40-70z" fill="url(#gg)" opacity=".4"/>
+    <g class="sweep"><rect x="20" y="20" width="34" height="240" fill="#fff" opacity=".22"
+      transform="rotate(35 100 100)"/></g>
+  </g>
+  <path d="M100 34l40 34-40 100-40-100z" fill="none" stroke="url(#gg)" stroke-width="2.4"
+    stroke-linejoin="round"/>
+  <path d="M60 68h80M86 68l14 100M114 68l-14 100" fill="none" stroke="url(#gg)"
+    stroke-width="1.3" opacity=".8"/></svg>`;
+BOOTS[12] = `<svg class="v12" viewBox="0 0 200 200" width="190" height="190">${DEFS}
+  <path class="path" d="M46 112h108" fill="none" stroke="url(#gg)" stroke-width="2"
+    stroke-linecap="round" opacity=".6"/>
+  <g class="node-l"><circle cx="42" cy="112" r="17" fill="url(#gb)" stroke="url(#gg)"
+    stroke-width="2"/><path d="M34 108h16l-1.6 9a1.4 1.4 0 0 1-1.4 1.2h-10a1.4 1.4 0 0 1-1.4-1.2z"
+    fill="none" stroke="url(#gg)" stroke-width="1.6"/></g>
+  <g class="node-r"><circle cx="158" cy="112" r="17" fill="url(#gb)" stroke="url(#gg)"
+    stroke-width="2"/><path d="M150 108h16l-1.6 9a1.4 1.4 0 0 1-1.4 1.2h-10a1.4 1.4 0 0 1-1.4-1.2z"
+    fill="none" stroke="url(#gg)" stroke-width="1.6"/></g>
+  <g class="parcel">
+    <rect x="82" y="86" width="36" height="30" rx="6" fill="url(#gb)" stroke="url(#gg)" stroke-width="2"/>
+    <rect x="96" y="86" width="8" height="30" fill="url(#gg)" opacity=".9"/>
+    <rect x="78" y="79" width="44" height="11" rx="4" fill="url(#gb)" stroke="url(#gg)" stroke-width="1.8"/>
+    <path d="M100 79c-5-2-11-5-11-9 0-3 4-4 6-1 2 2 3 5 5 10z" fill="url(#gg)"/>
+    <path d="M100 79c5-2 11-5 11-9 0-3-4-4-6-1-2 2-3 5-5 10z" fill="url(#gg)" opacity=".85"/></g>
+  <g class="plus"><text x="100" y="62" text-anchor="middle" font-family="Arial" font-size="21"
+    font-weight="700" fill="url(#gg)">+TON</text></g></svg>`;
+BOOTS[13] = `<svg class="v13" viewBox="0 0 200 200" width="190" height="190">${DEFS}
+  <path class="line" d="M40 148h120" stroke="url(#gg)" stroke-width="2" fill="none"
+    stroke-linecap="round"/>
+  <g fill="url(#gg)">
+    <rect class="bar" x="48" y="88" width="16" height="58" rx="4" opacity=".55"/>
+    <rect class="bar" x="72" y="72" width="16" height="74" rx="4" opacity=".7"/>
+    <rect class="bar" x="96" y="60" width="16" height="86" rx="4" opacity=".85"/>
+    <rect class="bar" x="120" y="80" width="16" height="66" rx="4" opacity=".7"/>
+    <rect class="bar" x="144" y="98" width="16" height="48" rx="4" opacity=".55"/></g>
+  <g class="drop">
+    <rect x="74" y="30" width="52" height="26" rx="9" fill="url(#gb)" stroke="url(#gg)" stroke-width="2"/>
+    <path d="M86 43h14M106 37l6 6-6 6" fill="none" stroke="url(#gg)" stroke-width="2"
+      stroke-linecap="round" stroke-linejoin="round"/></g>
+  <circle cx="100" cy="100" r="88" fill="none" stroke="url(#gg)" stroke-width="1.2"
+    opacity=".35" stroke-dasharray="3 9"/></svg>`;
+BOOTS[14] = `<svg class="v14" viewBox="0 0 200 200" width="190" height="190">${DEFS}
+  <g class="halo"><circle cx="100" cy="104" r="58" fill="url(#gr)" opacity=".5"/></g>
+  <g class="px" fill="url(#gg)"><rect x="72" y="80" width="6" height="6" rx="1.6" opacity="0.35"/><rect x="81" y="80" width="6" height="6" rx="1.6" opacity="0.53"/><rect x="90" y="80" width="6" height="6" rx="1.6" opacity="0.71"/><rect x="99" y="80" width="6" height="6" rx="1.6" opacity="0.89"/><rect x="108" y="80" width="6" height="6" rx="1.6" opacity="0.35"/><rect x="117" y="80" width="6" height="6" rx="1.6" opacity="0.53"/><rect x="126" y="80" width="6" height="6" rx="1.6" opacity="0.71"/><rect x="72" y="89" width="6" height="6" rx="1.6" opacity="0.89"/><rect x="81" y="89" width="6" height="6" rx="1.6" opacity="0.35"/><rect x="90" y="89" width="6" height="6" rx="1.6" opacity="0.53"/><rect x="99" y="89" width="6" height="6" rx="1.6" opacity="0.71"/><rect x="108" y="89" width="6" height="6" rx="1.6" opacity="0.89"/><rect x="117" y="89" width="6" height="6" rx="1.6" opacity="0.35"/><rect x="126" y="89" width="6" height="6" rx="1.6" opacity="0.53"/><rect x="72" y="98" width="6" height="6" rx="1.6" opacity="0.71"/><rect x="81" y="98" width="6" height="6" rx="1.6" opacity="0.89"/><rect x="90" y="98" width="6" height="6" rx="1.6" opacity="0.35"/><rect x="99" y="98" width="6" height="6" rx="1.6" opacity="0.53"/><rect x="108" y="98" width="6" height="6" rx="1.6" opacity="0.71"/><rect x="117" y="98" width="6" height="6" rx="1.6" opacity="0.89"/><rect x="126" y="98" width="6" height="6" rx="1.6" opacity="0.35"/><rect x="72" y="107" width="6" height="6" rx="1.6" opacity="0.53"/><rect x="81" y="107" width="6" height="6" rx="1.6" opacity="0.71"/><rect x="90" y="107" width="6" height="6" rx="1.6" opacity="0.89"/><rect x="99" y="107" width="6" height="6" rx="1.6" opacity="0.35"/><rect x="108" y="107" width="6" height="6" rx="1.6" opacity="0.53"/><rect x="117" y="107" width="6" height="6" rx="1.6" opacity="0.71"/><rect x="126" y="107" width="6" height="6" rx="1.6" opacity="0.89"/><rect x="72" y="116" width="6" height="6" rx="1.6" opacity="0.35"/><rect x="81" y="116" width="6" height="6" rx="1.6" opacity="0.53"/><rect x="90" y="116" width="6" height="6" rx="1.6" opacity="0.71"/><rect x="99" y="116" width="6" height="6" rx="1.6" opacity="0.89"/><rect x="108" y="116" width="6" height="6" rx="1.6" opacity="0.35"/><rect x="117" y="116" width="6" height="6" rx="1.6" opacity="0.53"/><rect x="126" y="116" width="6" height="6" rx="1.6" opacity="0.71"/></g>
+  <g class="solid">
+    <path d="M76 100h48v34a5 5 0 0 1-5 5H81a5 5 0 0 1-5-5z" fill="url(#gb)" stroke="url(#gg)" stroke-width="2"/>
+    <rect x="72" y="88" width="56" height="14" rx="4" fill="url(#gb)" stroke="url(#gg)" stroke-width="2"/>
+    <rect x="94" y="88" width="12" height="51" fill="url(#gg)" opacity=".9"/>
+    <path d="M100 88c-8-3-16-8-16-13 0-4 6-5 9-2 3 3 5 8 7 15z" fill="url(#gg)"/>
+    <path d="M100 88c8-3 16-8 16-13 0-4-6-5-9-2-3 3-5 8-7 15z" fill="url(#gg)" opacity=".85"/></g>
+  <circle cx="100" cy="100" r="88" fill="none" stroke="url(#gg)" stroke-width="1.4"
+    opacity=".4" stroke-dasharray="120 60"/></svg>`;
+BOOTS[15] = `<svg class="v15" viewBox="0 0 200 200" width="190" height="190">${DEFS}
+  <g class="flash"><circle cx="100" cy="118" r="52" fill="url(#gr)"/></g>
+  <g class="shackle"><path d="M80 96V80a20 20 0 0 1 40 0v16" fill="none" stroke="url(#gg)"
+    stroke-width="6" stroke-linecap="round"/></g>
+  <rect x="66" y="96" width="68" height="54" rx="11" fill="url(#gb)" stroke="url(#gg)" stroke-width="2.4"/>
+  <g fill="url(#gg)">
+    <rect class="tumbler" x="80" y="110" width="8" height="18" rx="3"/>
+    <rect class="tumbler" x="96" y="110" width="8" height="18" rx="3"/>
+    <rect class="tumbler" x="112" y="110" width="8" height="18" rx="3"/></g>
+  <circle cx="100" cy="140" r="4.5" fill="url(#gg)" opacity=".9"/>
+  <circle cx="100" cy="100" r="86" fill="none" stroke="url(#gg)" stroke-width="1.3"
+    opacity=".4" stroke-dasharray="8 12"/></svg>`;
+
 const BOOT_KEY = "gs_boot";
 function bootAllowed(){
   try{
@@ -1006,8 +1172,9 @@ function bdColor(name, item){
   if(item && item.color) return item.color;
   const k = String(name || "").toLowerCase();
   if(BD_COLORS[k]) return BD_COLORS[k];
-  const h = hash(k);
-  return `hsl(${ART_HUES[h % ART_HUES.length]} 45% 45%)`;
+  // Цвет неизвестен (фон боту ещё не встречался). Нейтральный серый честнее
+  // выдуманного: «Amber» из-за подбора по названию получался синим.
+  return "#2a2a30";
 }
 /* Картинка коллекции или модели: ссылка от бота, иначе рисунок из названия. */
 /* Анимации моделей: Telegram отдаёт их в .tgs (сжатый Lottie), и тегом <img> они
@@ -1078,7 +1245,12 @@ function marketIcon(key, cls){
   const art = MARKET_ART[safe] || safe;
   const own = `<svg class="${cls || "ico"}"><use href="#m-${esc(art)}"/></svg>`;
   if(!safe) return own;
-  return `<span class="mkico ${cls || ""}" data-mk="${esc(safe)}">${own}</span>`;
+  // Ссылку на логотип отдаёт бот: файлы лежат в нём самом, и при выкладке сайта
+  // их больше не нужно копировать отдельно.
+  const fromBot = ((S && S.markets) || []).find((m) => m.key === safe);
+  const url = fromBot && fromBot.icon ? API + fromBot.icon : "";
+  return `<span class="mkico ${cls || ""}" data-mk="${esc(safe)}"
+    ${url ? `data-mkurl="${esc(url)}"` : ""}>${own}</span>`;
 }
 /* Подмену делаем после отрисовки: пробуем форматы по очереди и молча остаёмся со
    своим значком, если файлов нет. В консоль не сыплем - отсутствие файла тут
@@ -1087,19 +1259,30 @@ function loadMarketIcons(root){
   (root || document).querySelectorAll("[data-mk]:not([data-mk-done])").forEach((el) => {
     el.dataset.mkDone = "1";
     const key = el.dataset.mk;
+    // Сначала логотип от бота, затем файл рядом с сайтом (для старых сборок),
+    // и только потом остаётся свой значок.
+    const urls = [el.dataset.mkurl, ...MARKET_TRY.map((e) => `markets/${key}.${e}`)]
+      .filter(Boolean);
     let i = 0;
     const tryNext = () => {
-      if(i >= MARKET_TRY.length) return;
+      if(i >= urls.length) return;
       const img = new Image();
       img.onload = () => { el.innerHTML = ""; img.alt = key; el.appendChild(img); };
       img.onerror = () => { i++; tryNext(); };
-      img.src = `markets/${key}.${MARKET_TRY[i]}`;
+      img.src = urls[i];
     };
     tryNext();
   });
 }
 
 function picOf(name, icon, kind){
+  /* Видео-стикер (.webm) картинкой не показать, нужен тег video. Звука у стикеров
+     нет, но muted обязателен: без него телефон не разрешит автозапуск. */
+  if(icon && /[?&]f=webm\b/i.test(icon)){
+    const full = String(icon).startsWith("/") ? API + icon : icon;
+    return `<video src="${esc(full)}" autoplay loop muted playsinline
+      ${animOn() ? "" : "data-still=\"1\""}></video>`;
+  }
   if(icon && /[?&]f=tgs\b/i.test(icon) && animOn()){
     const full = String(icon).startsWith("/") ? API + icon : icon;
     return `<span class="lot" data-lot="${esc(full)}">
@@ -1245,7 +1428,8 @@ function renderFlip(){
       <div class="row"><span class="k">Цена слота</span>
         <span class="v num">${fl.slot_stars} звёзд</span></div>
       <button class="btn gold" style="margin-top:12px" id="buy">${ic("star")}Купить слот</button>
-      <div class="hint">Один слот - одна коллекция, навсегда. Оплата звёздами Telegram.</div>
+      <div class="hint">Один слот - место для одной коллекции, покупается один раз,
+        навсегда. Оплата звёздами Telegram.</div>
     </div>`;
   $("buy").onclick = buySlot;
   const list = fl.items.map((f) => `
@@ -1256,6 +1440,8 @@ function renderFlip(){
           ? `<span class="st wait">не хватает слотов</span>` : statusOf(f)}</div>
         <div class="sub">${fline(f.models, f.backdrops)}</div>
         <div class="chips">
+          <span class="chip">${ic(f.mode === "all" ? "shop" : "chart")}${
+            f.mode === "all" ? "все листинги" : "только выгодные"}</span>
           <span class="chip">${ic("ton")}${f.max_price ? f.max_price + " TON" : "без порога"}</span>
           ${f.min_discount ? `<span class="chip">${ic("chart")}−${f.min_discount}%</span>` : ""}
           <span class="chip ${f.markets.length ? "" : "mute"}">${
@@ -1729,7 +1915,7 @@ function bootLabel(list){
 function adminBoot(){
   const picked = new Set(((S.admin || {}).boot) || [1]);
   const draw = () => {
-    $("blist").innerHTML = [1,2,3,4,5,6,7,8,9,10].map((n) => `
+    $("blist").innerHTML = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15].map((n) => `
       <button class="boot-opt ${picked.has(n) ? "on" : ""}" data-b="${n}">
         ${BOOTS[n]}<span>${esc(BOOT_NAMES[n])}</span></button>`).join("");
     $("blist").querySelectorAll("[data-b]").forEach((b) => b.onclick = () => {
@@ -1846,6 +2032,73 @@ function bindSearch(id, samples, onInput){
 /* Выбор с картинками. Ручного ввода нет: значение должно совпадать с тем, что знает
    Telegram, а опечатка давала бы фильтр, который молчит. */
 /* Обёртка над pickGrid: сводка в строке, сетка раскрывается по нажатию. */
+/* Предпросмотр подарка: фон — цвет выбранного фона, в центре картинка выбранной
+   модели (а пока модель не выбрана — самой коллекции). Пересобираем при каждом
+   изменении выбора: смысл именно в том, чтобы увидеть сочетание. */
+function previewBox(id){
+  return `<div class="prev" id="${id}"></div>`;
+}
+/* Перебор вариантов в предпросмотре. «Любая модель» — это не пустота, а любой из
+   списка, и показать это лучше всего показом самих вариантов: они сменяют друг
+   друга, и сразу видно, из чего состоит коллекция. Таймер держим один на экран и
+   гасим при перерисовке — иначе после нескольких правок фильтра их накопилось бы
+   несколько, и картинка дёргалась бы. */
+let previewTimer = null;
+function stopPreviewCycle(){
+  if(previewTimer){ clearInterval(previewTimer); previewTimer = null; }
+}
+
+function drawPreview(id, opts){
+  const el = $(id);
+  if(!el) return;
+  stopPreviewCycle();
+  // Выбор возвращает НАЗВАНИЯ, но подстрахуемся: если прилетел объект фона,
+  // берём из него имя — иначе в подписи оказывалось «[object Object]».
+  const first = (opts.backdrops || [])[0];
+  const bdName = (first && first.name) ? first.name : (first || "");
+  const color = bdName ? bdColor(bdName, (opts.bdItems || []).find(
+    (x) => x.name === bdName)) : "#15151b";
+  const modelName = (opts.models || [])[0] || "";
+  const model = (opts.modelItems || []).find((x) => x.name === modelName);
+  // Картинка модели, если она известна; иначе — коллекции: пустой прямоугольник
+  // ничего не объясняет.
+  const art = model
+    ? picOf(model.name, model.icon, "m")
+    : picOf(opts.slug, opts.icon, "c");
+  const cap = [modelName || "любая модель", bdName || "любой фон"].join(" · ");
+  const paint = (mName, bName, mItem, bItem) => {
+    const col = bName ? bdColor(bName, bItem) : "#15151b";
+    const pic = mItem ? picOf(mItem.name, mItem.icon, "m") : picOf(opts.slug, opts.icon, "c");
+    el.style.background = `radial-gradient(circle at 50% 42%,
+      ${col} 0%, ${col} 45%, rgba(0,0,0,.55) 100%)`;
+    el.innerHTML = `<div class="glowdot" style="background:${col}"></div>
+      <div class="art">${pic}</div>
+      <div class="cap">${esc([mName || "любая модель", bName || "любой фон"]
+        .join(" · "))}</div>`;
+    startLotties(el);
+    loadMarketIcons(el);
+  };
+
+  paint(modelName, bdName, model, (opts.bdItems || []).find((x) => x.name === bdName));
+
+  // Что именно перебирать: только то, что человек оставил «любым».
+  const rollModels = !modelName && (opts.modelItems || []).length > 1;
+  const rollBds = !bdName && (opts.bdItems || []).length > 1;
+  if(!rollModels && !rollBds) return;
+
+  const pickRandom = (list) => list[Math.floor(Math.random() * list.length)];
+  previewTimer = setInterval(() => {
+    // Панель закрыли — таймер больше не нужен, иначе он крутился бы вхолостую.
+    if(!document.body.contains(el)){ stopPreviewCycle(); return; }
+    const m = rollModels ? pickRandom(opts.modelItems)
+                         : (opts.modelItems || []).find((x) => x.name === modelName);
+    const bItem = rollBds ? pickRandom(opts.bdItems)
+                          : (opts.bdItems || []).find((x) => x.name === bdName);
+    paint(rollModels ? "любая модель" : modelName,
+          rollBds ? "любой фон" : bdName, m, bItem);
+  }, 900);
+}
+
 function drawerPick(id, title, items, selected, kind, samples){
   const pick = pickGrid(id, items, selected, kind);
   const summary = () => {
@@ -2111,7 +2364,9 @@ async function editColl(cid){
   // настоящие картинки моделей молча пропадают.
   const models = (cat.models || []).map((m) => ({ name: m.name, pct: m.pct, icon: m.icon }));
   c.models.forEach((m) => { if(!models.find((x) => x.name === m)) models.push({ name: m }); });
-  const bds = (cat.backdrops || []).map((b) => ({ name: b }));
+  // Фон приходит объектом {name, color}: цвет настоящий, из данных Telegram.
+  // Строку тоже принимаем — на случай бота старой сборки.
+  const bds = (cat.backdrops || []).map((b) => (typeof b === "string" ? { name: b } : b));
   c.backdrops.forEach((b) => { if(!bds.find((x) => x.name === b)) bds.push({ name: b }); });
 
   const mp = drawerPick("mp", "Модели", models, c.models, "model",
@@ -2120,6 +2375,7 @@ async function editColl(cid){
                         ["Onyx Black", "Satin Gold", "Lavender"]);
   openSheet(`<h2><span class="pic">${picOf(c.slug, c.icon, "c")}</span>${esc(c.title || c.slug)}</h2>
     <p class="sub">${statusOf(c)}</p>
+    ${previewBox("prev")}
     <label>Фильтры подарка</label>${mp.html}${bp.html}
     ${monoRow(c.mono_min)}
     ${numberBlock(c.number)}
@@ -2136,6 +2392,15 @@ async function editColl(cid){
       <button class="btn gold" id="ok">${ic("check")}Сохранить</button></div>
     <button class="btn danger" style="margin-top:9px" id="del">${ic("trash")}Удалить коллекцию</button>`);
   const s1 = mp.bind(), s2 = bp.bind();
+  const preview = () => drawPreview("prev", {
+    slug: c.slug, icon: c.icon, models: mp.value(), backdrops: bp.value(),
+    modelItems: models, bdItems: bds });
+  preview();
+  // Перерисовываем на любое нажатие внутри панели: выбор меняется и в сетке, и
+  // после поиска, а следить за каждым источником по отдельности — лишняя связность.
+  $("panel").addEventListener("click", (e) => {
+    if(e.target.closest("[data-v]")) setTimeout(preview, 0);
+  });
   const numOf = bindNumber();
   const monoOf = bindMonoRow();
   $("c-en").onclick = () => { $("c-en").classList.toggle("on"); haptic(); };
@@ -2168,7 +2433,9 @@ async function editFlip(fid){
   // настоящие картинки моделей молча пропадают.
   const models = (cat.models || []).map((m) => ({ name: m.name, pct: m.pct, icon: m.icon }));
   f.models.forEach((m) => { if(!models.find((x) => x.name === m)) models.push({ name: m }); });
-  const bds = (cat.backdrops || []).map((b) => ({ name: b }));
+  // Фон приходит объектом {name, color}: цвет настоящий, из данных Telegram.
+  // Строку тоже принимаем — на случай бота старой сборки.
+  const bds = (cat.backdrops || []).map((b) => (typeof b === "string" ? { name: b } : b));
   f.backdrops.forEach((b) => { if(!bds.find((x) => x.name === b)) bds.push({ name: b }); });
   const markets = (S.markets || []).map((x) => ({ name: x.label, key: x.key,
                                                  market: x.key }));
@@ -2181,6 +2448,7 @@ async function editFlip(fid){
     .map((m) => m.name), "model");
   openSheet(`<h2><span class="pic">${picOf(f.slug, f.icon, "c")}</span>${esc(f.slug)}</h2>
     <p class="sub">${f.paused ? `<span class="st wait">не хватает слотов</span>` : statusOf(f)}</p>
+    ${previewBox("prev")}
     <label>Фильтры листинга</label>${mp.html}${bp.html}
     <label>Маркеты</label>${kp.html}
     <div class="hint">Пусто = любой маркет. Отмечайте площадки, где готовы покупать.</div>
@@ -2208,6 +2476,13 @@ async function editFlip(fid){
     <button class="btn danger" style="margin-top:9px" id="del">${ic("trash")}Освободить слот</button>`);
   kp.draw("");
   const s1 = mp.bind(), s2 = bp.bind();
+  const preview = () => drawPreview("prev", {
+    slug: f.slug, icon: f.icon, models: mp.value(), backdrops: bp.value(),
+    modelItems: models, bdItems: bds });
+  preview();
+  $("panel").addEventListener("click", (e) => {
+    if(e.target.closest("[data-v]")) setTimeout(preview, 0);
+  });
   const numOf = bindNumber();
   const monoOf = bindMonoRow();
   let mode = f.mode === "all" ? "all" : "deals";
