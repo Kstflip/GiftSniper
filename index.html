@@ -5,10 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, minimum-scale=1, user-scalable=no">
 <title>GiftSniper</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
-<!-- Проигрыватель анимаций моделей. Модели приходят от Telegram в формате .tgs -
-     это сжатый Lottie, картинкой его не показать. Скрипт необязательный: если он
-     не загрузится, приложение нарисует значок из названия и продолжит работать. -->
-<script defer src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie_light.min.js"></script>
+<!-- Проигрыватель анимаций (.tgs - сжатый Lottie, картинкой его не показать).
+     Грузим у САМОГО бота: раньше он брался с cdnjs, то есть с Cloudflare, который у
+     части провайдеров режется, и анимации не появлялись вовсе. Подключаем из кода
+     ниже, когда известен адрес бота; если файл не отдастся, приложение покажет
+     значок из названия и продолжит работать. -->
 <style>
 /* GiftSniper - только мобильная вёрстка. Иконки свои, эмодзи не используются. */
 :root{
@@ -450,12 +451,84 @@ input:focus,select:focus{outline:none;border-color:var(--gold-3);box-shadow:0 0 
   vertical-align:-2px;animation:caret .9s steps(1) infinite}
 @keyframes caret{50%{opacity:0}}
 
+/* ---------- портфель ---------- */
+.port-top{border-radius:20px;padding:16px;margin-bottom:11px;position:relative;overflow:hidden;
+  background:linear-gradient(160deg,#17170f,#0b0b0d 70%);border:1px solid var(--line)}
+.port-sum{font-size:33px;font-weight:780;letter-spacing:-1px;display:flex;align-items:center;
+  gap:9px}
+.port-sum .ico{width:24px;height:24px;color:var(--gold)}
+
+.delta{display:inline-flex;align-items:center;gap:4px;font-size:13.5px;font-weight:660;
+  line-height:1}
+.delta .ico{flex:0 0 auto}
+/* Строка под суммой - flex, а не текст с вставками: тогда процент, точка и время
+   стоят на одной линии сами, без подгонки отступами. */
+.port-sub{display:flex;align-items:center;flex-wrap:wrap;gap:6px;
+  font-size:12.5px;color:var(--muted);margin-top:6px;line-height:1.2}
+.delta.up{color:#6cc48a}
+.delta.down{color:#d1705a}
+.delta .ico{width:14px;height:14px;stroke-width:2.4}
+.chart{margin-top:12px;position:relative}
+.chart svg{width:100%;height:120px;overflow:visible}
+.chart .axis{font-size:10px;fill:var(--muted)}
+.chart-legend{display:flex;justify-content:space-between;font-size:10.5px;color:var(--muted);
+  margin-top:4px}
+.range{display:flex;gap:6px;margin-top:12px}
+.range button{flex:1;padding:8px 6px;border-radius:11px;border:1px solid var(--line);
+  background:#0b0b0f;color:var(--muted);font-size:12.5px;font-weight:640;transition:.16s}
+.range button.on{color:#1a1408;border-color:transparent;
+  background:linear-gradient(135deg,var(--gold),var(--gold-2))}
+.range button:disabled{opacity:.4}
+.minmax{display:flex;gap:8px;margin-top:10px}
+.minmax div{flex:1;border:1px solid var(--line);border-radius:12px;padding:8px 10px;
+  background:#0b0b0f}
+.minmax span{display:block;font-size:10.5px;color:var(--muted);text-transform:uppercase;
+  letter-spacing:.6px}
+.minmax b{font-size:15px;font-weight:700}
+.minmax .lo b{color:#d1705a}
+.minmax .hi b{color:#6cc48a}
+
+/* 10. Перекрестие: подробности в точке, куда нажал палец. */
+.cross{position:absolute;inset:0;pointer-events:none;opacity:0;transition:opacity .15s}
+.cross.on{opacity:1}
+.cross .vline,.cross .hline{position:absolute;background:rgba(246,226,166,.5)}
+.cross .vline{width:1px;top:0;bottom:0;border-left:1px dashed rgba(246,226,166,.75);
+  background:none}
+.cross .hline{height:1px;left:0;right:0;border-top:1px dashed rgba(246,226,166,.75);
+  background:none}
+.cross .dot{position:absolute;width:11px;height:11px;border-radius:50%;
+  background:var(--gold-2);border:2px solid #0b0b0d;transform:translate(-50%,-50%)}
+.cross .tip{position:absolute;transform:translate(-50%,-120%);background:#16150f;
+  border:1px solid var(--gold-3);border-radius:12px;padding:7px 11px;white-space:nowrap}
+.cross .tip small{display:block;font-size:10.5px;color:var(--muted)}
+.cross .tip b{font-size:15px;font-weight:720;color:var(--gold-2);display:flex;
+  align-items:center;gap:5px}
+.cross .tip .ico{width:14px;height:14px}
+.mark{fill:var(--gold);stroke:#0b0b0d;stroke-width:2}
+.hold{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--line)}
+.hold:last-child{border-bottom:none}
+.hold .pic{width:44px;height:44px;flex:0 0 44px;border-radius:13px}
+.hold .t{flex:1;min-width:0}
+.hold .t b{display:block;font-size:14.5px;font-weight:640}
+.hold .t span{font-size:12px;color:var(--muted)}
+.hold .val{text-align:right;white-space:nowrap}
+.hold .val b{display:block;font-size:14.5px;font-weight:680;color:var(--gold-2)}
+/* Кнопка портфеля в шапке: значок и процент по центру друг под другом. */
+.port-btn{position:relative;padding:4px 11px;width:auto;font-size:13px;font-weight:680;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
+  height:auto;min-height:37px}
+.port-btn .d{font-size:11.5px;line-height:1;display:flex;align-items:center}
+
 /* Предпросмотр: как будет выглядеть подарок с выбранной моделью на выбранном фоне.
    Ровно то, ради чего фильтры и настраивают, — по названиям это представить трудно. */
 .prev{border-radius:18px;overflow:hidden;margin:2px 0 14px;position:relative;
   aspect-ratio:16/10;display:grid;place-items:center;
-  border:1px solid var(--line);transition:background .35s ease}
-.prev .art{width:58%;height:78%;display:grid;place-items:center;position:relative;z-index:1}
+  border:1px solid var(--line);transition:background .9s ease}
+.prev .art{width:58%;height:78%;display:grid;place-items:center;position:relative;z-index:1;
+  transition:opacity .45s ease, transform .45s ease}
+.prev .art.fade{opacity:0;transform:scale(.94)}
+.prev .cap{transition:opacity .45s ease}
+.prev .cap.fade{opacity:0}
 .prev .art img,.prev .art video,.prev .art svg{width:100%;height:100%;object-fit:contain;
   filter:drop-shadow(0 6px 18px rgba(0,0,0,.45))}
 .prev .glowdot{position:absolute;width:70%;height:70%;border-radius:50%;filter:blur(28px);
@@ -624,7 +697,9 @@ input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;bor
   <symbol id="i-drop" viewBox="0 0 24 24"><path d="M12 3.4s6.2 6.7 6.2 10.7a6.2 6.2 0 1 1-12.4 0C5.8 10.1 12 3.4 12 3.4z"/></symbol>
   <symbol id="i-hash" viewBox="0 0 24 24"><path d="M9.4 4 7.6 20M16.4 4l-1.8 16M4.5 9h15M3.8 15h15"/></symbol>
   <symbol id="i-shop" viewBox="0 0 24 24"><path d="M4 8h16l-1.2 11.2a1.4 1.4 0 0 1-1.4 1.3H6.6a1.4 1.4 0 0 1-1.4-1.3z"/><path d="M8.6 8V6.4a3.4 3.4 0 0 1 6.8 0V8"/></symbol>
-  <symbol id="i-ton" viewBox="0 0 24 24"><path d="M12 3.2 21 8v.4L12 20.8 3 8.4V8z"/><path d="M3.4 8.2h17.2M12 3.4v17"/></symbol>
+  <!-- Логотип TON: гранёная капля с буквой T внутри. Контур, а не заливка: в
+       золотой палитре он так читается и в 14 пикселях, и крупно. -->
+  <symbol id="i-ton" viewBox="0 0 24 24"><path d="M5 6.6h14a2.1 2.1 0 0 1 1.7 3.3l-7.9 11a1 1 0 0 1-1.6 0l-7.9-11A2.1 2.1 0 0 1 5 6.6z"/><path d="M5.4 7.2h13.2"/><path d="M12 7.6v12.6"/></symbol>
   <symbol id="i-mono" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.6"/><path d="M12 3.4a8.6 8.6 0 0 1 0 17.2z" fill="currentColor" stroke="none"/></symbol>
   <symbol id="i-chart" viewBox="0 0 24 24"><path d="M4 20h16"/><path d="M7 20v-6.5M12 20V7M17 20v-9.5"/></symbol>
   <symbol id="i-star" viewBox="0 0 24 24"><path d="m12 3.6 2.6 5.6 6.1.8-4.5 4.3 1.2 6.1L12 17.5l-5.4 2.9 1.2-6.1-4.5-4.3 6.1-.8z"/></symbol>
@@ -677,6 +752,9 @@ input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;bor
     <path d="M10.9 17.2v6.6l3.5-4.4"
           stroke-linejoin="round" opacity=".8"/>
   </symbol>
+  <symbol id="i-case" viewBox="0 0 24 24"><rect x="3" y="7.5" width="18" height="12.5" rx="2.4"/><path d="M9 7.5V6a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v1.5M3 12.5h18"/></symbol>
+  <symbol id="i-up" viewBox="0 0 24 24"><path d="M4 17l6-6 4 4 6-7"/><path d="M20 8h-4.5M20 8v4.5"/></symbol>
+  <symbol id="i-down" viewBox="0 0 24 24"><path d="M4 7l6 6 4-4 6 7"/><path d="M20 16h-4.5M20 16v-4.5"/></symbol>
   <symbol id="i-chev" viewBox="0 0 24 24"><path d="m6 9.5 6 6 6-6"/></symbol>
   <symbol id="i-cross" viewBox="0 0 24 24"><path d="M6.5 6.5l11 11M17.5 6.5l-11 11"/></symbol>
   <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 7h16M4 12h12M4 17h16"/></symbol>
@@ -695,6 +773,9 @@ input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;bor
 <header>
   <button class="ava" id="ava"><svg class="ico" style="width:20px;height:20px"><use href="#i-user"/></svg></button>
   <button class="who" id="who"><b id="who-name">Профиль</b><span>профиль</span></button>
+  <button class="top-act port-btn" id="btn-port" aria-label="Портфель">
+    <svg class="ico" style="width:18px;height:18px"><use href="#i-case"/></svg>
+    <span class="d" id="port-delta">·</span></button>
   <button class="top-act" id="btn-menu" aria-label="Меню">
     <span class="burger"><i></i><i></i><i></i></span></button>
 </header>
@@ -714,7 +795,7 @@ input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;bor
       </svg>
       <div class="in">
         <h3><svg class="ico" style="color:var(--gold)"><use href="#i-scope"/></svg>Upgrade Sniper</h3>
-        <p>Уведомление в тот момент, когда подарок улучшили с нужной моделью, фоном или красивым номером.</p>
+        <p>Уведомления об улучшениях подарков.</p>
         <div class="chips">
           <span class="chip"><svg class="ico"><use href="#i-gift"/></svg><b id="c-colls">0</b></span>
           <span class="chip mute">бесплатно</span>
@@ -734,6 +815,23 @@ input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;bor
         <div class="chips">
           <span class="chip"><svg class="ico"><use href="#i-shop"/></svg><b id="c-slots">0/0</b></span>
           <span class="chip mute" id="c-flip-state">нужен слот</span>
+        </div>
+      </div>
+    </button>
+
+    <button class="mod" data-go="portfolio">
+      <svg class="art" viewBox="0 0 120 120">
+        <path d="M28 52h64v40a6 6 0 0 1-6 6H34a6 6 0 0 1-6-6z" fill="none"
+          stroke="url(#g-gold)" stroke-width="2" opacity=".45"/>
+        <path d="M30 78l14-12 12 9 14-16 20 15" fill="none" stroke="url(#g-gold)"
+          stroke-width="2" opacity=".7"/>
+      </svg>
+      <div class="in">
+        <h3><svg class="ico" style="color:var(--gold)"><use href="#i-case"/></svg>Портфель</h3>
+        <p>Отслеживайте стоимость своего портфеля подарков</p>
+        <div class="chips">
+          <span class="chip"><svg class="ico"><use href="#i-ton"/></svg><b id="c-port">-</b></span>
+          <span class="chip mute" id="c-port-delta">за 24 часа</span>
         </div>
       </div>
     </button>
@@ -762,8 +860,7 @@ input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;bor
   <!-- UPGRADE SNIPER -->
   <section class="view" id="v-sniper">
     <h1 class="h1">Upgrade <b>Sniper</b></h1>
-    <p class="lead">Уведомление в тот момент, когда подарок улучшили с нужной моделью,
-      фоном или красивым номером.</p>
+    <p class="lead">Уведомления об улучшениях подарков.</p>
     <div id="sniper-list"></div>
   </section>
 
@@ -774,6 +871,14 @@ input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;bor
     <div id="flip-top"></div>
     <div id="flip-list"></div>
     <div id="flip-settings"></div>
+  </section>
+
+  <!-- ПОРТФЕЛЬ -->
+  <section class="view" id="v-portfolio">
+    <h1 class="h1"><svg class="ico" style="width:24px;height:24px;display:inline-block;
+      vertical-align:-3px;color:var(--gold)"><use href="#i-case"/></svg> Портфель</h1>
+    <p class="lead">Отслеживайте стоимость своего портфеля подарков</p>
+    <div id="port-body"></div>
   </section>
 
   <!-- ПРОФИЛЬ -->
@@ -1094,6 +1199,18 @@ function showBoot(){
   document.getElementById("boot-art").innerHTML = BOOTS[pick] || BOOTS[1];
 }
 
+/* Проигрыватель анимаций подтягиваем у бота. Ждать его не нужно: пока он грузится,
+   в списках стоят значки-заглушки, а после загрузки анимации запускаются сами. */
+function loadPlayer(){
+  if(!API || typeof lottie !== "undefined" || window.__lotLoading) return;
+  window.__lotLoading = true;
+  const el = document.createElement("script");
+  el.src = `${API}/api/vendor/lottie_light.min.js`;
+  el.onload = () => { window.__lotLoading = false; startLotties(); };
+  el.onerror = () => { window.__lotLoading = false; };
+  document.head.appendChild(el);
+}
+
 const $ = (id) => document.getElementById(id);
 const esc = (s) => String(s == null ? "" : s).replace(/[&<>"]/g,
   (c) => ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c]));
@@ -1339,13 +1456,39 @@ async function save(action, payload, msg){
 }
 
 /* ---------- навигация ---------- */
+/* Тихое обновление состояния. Подписка в Gift Satellite создаётся не мгновенно, и
+   статус «отслеживание создаётся» менялся только после перезагрузки страницы.
+   Опрашиваем редко и только когда приложение на экране: фоновый опрос в свёрнутом
+   виде тратил бы связь впустую. */
+let refreshTimer = null;
+async function refreshState(){
+  if(document.hidden || !S) return;
+  try{
+    const d = await call("state", {});
+    const next = d.uid ? d : (d.state || null);
+    if(!next) return;
+    const was = JSON.stringify(S), now = JSON.stringify(next);
+    S = next;
+    // Перерисовываем ТОЛЬКО при изменениях и только когда не открыт редактор:
+    // иначе у человека сбрасывались бы списки и прокрутка прямо во время правки.
+    if(was !== now && !$("sheet").classList.contains("on")) render();
+  }catch(e){ /* нет связи - попробуем в следующий раз */ }
+}
+function startRefresh(){
+  if(refreshTimer) return;
+  refreshTimer = setInterval(refreshState, 15000);
+  document.addEventListener("visibilitychange", () => {
+    if(!document.hidden) refreshState();   // вернулись в приложение - обновимся сразу
+  });
+}
+
 function go(view){
   VIEW = view;
-  ["home","sniper","flip","profile","settings","admin"].forEach((v) =>
+  ["home","sniper","flip","portfolio","profile","settings","admin"].forEach((v) =>
     $("v-" + v).classList.toggle("on", v === view));
   document.querySelectorAll("nav .tab").forEach((t) => t.classList.toggle("on", t.dataset.go === view));
   document.querySelector("nav .home").classList.toggle("on", view === "home");
-  $("fab").style.display = (view === "sniper") ? "grid" : "none";
+  $("fab").style.display = (view === "sniper" || view === "portfolio") ? "grid" : "none";
   window.scrollTo({ top: 0, behavior: "smooth" });
   render();
 }
@@ -1362,6 +1505,15 @@ function render(){
     ? "слоты без ограничения" : `${nSlot(fl.slots_total)}, занято ${fl.slots_used}`;
   $("c-flip-state").textContent = fl.has_access ? "активен" : "нужен слот";
   $("row-admin").style.display = S.is_owner ? "flex" : "none";
+  const pf = S.portfolio || null;
+  $("c-port").textContent = pf ? fmtTon(pf.total) : "пусто";
+  $("c-port-delta").innerHTML = pf ? deltaHtml(pf.change_24h).trim() + " за 24 часа"
+                                   : "за 24 часа";
+  $("port-delta").innerHTML = pf
+    ? `<span class="${Number(pf.change_24h) >= 0 ? "delta up" : "delta down"}"
+        style="font-size:11.5px">${Number(pf.change_24h) >= 0 ? "+" : ""}${
+        Number(pf.change_24h).toFixed(1)}%</span>`
+    : "·";
   $("home-promo").innerHTML = (S.announcements || []).map((a) => `
     <div class="promo">
       <div class="ic">${ic(a.kind === "promo" ? "star" : "mega")}</div>
@@ -1374,6 +1526,7 @@ function render(){
   else if(VIEW === "flip") renderFlip();
   else if(VIEW === "profile") renderProfile();
   else if(VIEW === "settings") renderSettings();
+  else if(VIEW === "portfolio") renderPortfolio();
   else if(VIEW === "admin") renderAdmin();
 }
 
@@ -1426,7 +1579,7 @@ function renderFlip(){
       <div class="row"><span class="k">Слоты</span>
         <span class="v gold num">${fl.slots_used} / ${fl.slots_total === null ? "∞" : fl.slots_total}</span></div>
       <div class="row"><span class="k">Цена слота</span>
-        <span class="v num">${fl.slot_stars} звёзд</span></div>
+        <span class="v num gold" style="font-weight:800">${fl.slot_stars} звёзд</span></div>
       <button class="btn gold" style="margin-top:12px" id="buy">${ic("star")}Купить слот</button>
       <div class="hint">Один слот - место для одной коллекции, покупается один раз,
         навсегда. Оплата звёздами Telegram.</div>
@@ -1544,6 +1697,336 @@ async function renderRef(){
   };
 }
 
+/* ---------- портфель ----------
+   Стоимость считает бот по данным Gift Satellite и обновляет раз в час, в начале
+   часа и одинаково для всех: чаще незачем - цены на маркетах так быстро не ходят,
+   а лишние запросы съедают лимит ключа, который нужен уведомлениям.
+
+   Добавление подарка НЕ рисует ступеньку вверх: цена нового подарка добавляется и
+   к прошлым точкам тоже. Иначе график показывал бы «рост», которого не было -
+   портфель не подорожал, в него просто положили ещё один подарок. Момент добавления
+   при этом виден отметкой на линии.
+
+   Изменение за 24 часа считается от значения в ТО ЖЕ время вчера (04:00 к 04:00), а
+   не от первой точки на экране: иначе цифра прыгала бы при смене диапазона. */
+function fmtTon(v){
+  const n = Number(v || 0);
+  return n >= 100 ? n.toFixed(0) : n.toFixed(2);
+}
+function deltaHtml(pct, cls){
+  const up = Number(pct) >= 0;
+  return `<span class="delta ${up ? "up" : "down"} ${cls || ""}">
+    ${ic(up ? "up" : "down")}${up ? "+" : ""}${Number(pct).toFixed(2)}%</span>`;
+}
+
+/* График строим сами: библиотеке тут делать нечего - линия, заливка и метки
+   добавления подарков. */
+function chartSvg(points, marks){
+  if(!points || points.length < 2) return "";
+  const W = 320, H = 120, pad = 6;
+  const xs = points.map((p) => p.t), ys = points.map((p) => p.v);
+  const minX = Math.min(...xs), maxX = Math.max(...xs);
+  const minY = Math.min(...ys), maxY = Math.max(...ys);
+  const spanX = (maxX - minX) || 1;
+  // Диапазон по вертикали расширяем: линия впритык к краям читается плохо.
+  const padY = ((maxY - minY) || 1) * 0.18;
+  const lo = minY - padY, hi = maxY + padY;
+  const px = (t) => pad + ((t - minX) / spanX) * (W - pad * 2);
+  const py = (v) => H - pad - ((v - lo) / ((hi - lo) || 1)) * (H - pad * 2);
+  const line = points.map((p, i) => `${i ? "L" : "M"}${px(p.t).toFixed(1)},${py(p.v).toFixed(1)}`)
+    .join(" ");
+  const area = `${line} L${px(maxX).toFixed(1)},${H - pad} L${px(minX).toFixed(1)},${H - pad} Z`;
+  const dots = (marks || []).map((m) => {
+    const near = points.reduce((a, b) => Math.abs(b.t - m.t) < Math.abs(a.t - m.t) ? b : a);
+    return `<circle class="mark" cx="${px(near.t).toFixed(1)}" cy="${py(near.v).toFixed(1)}"
+      r="4.5"><title>${esc(m.title || "добавлен подарок")}</title></circle>`;
+  }).join("");
+  const last = points[points.length - 1];
+  return `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none">
+    <defs><linearGradient id="pg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#d9b45a" stop-opacity=".35"/>
+      <stop offset="100%" stop-color="#d9b45a" stop-opacity="0"/></linearGradient></defs>
+    <path d="${area}" fill="url(#pg)"/>
+    <path d="${line}" fill="none" stroke="#f0d68f" stroke-width="2.4"
+      stroke-linejoin="round" stroke-linecap="round"
+      vector-effect="non-scaling-stroke"/>
+    ${dots}
+    <circle cx="${px(last.t).toFixed(1)}" cy="${py(last.v).toFixed(1)}" r="3.6"
+      fill="#f6e2a6"/>
+  </svg>`;
+}
+
+/* Выбранный диапазон графика. Держим снаружи функции: перерисовка не должна
+   сбрасывать выбор человека обратно на сутки. */
+let portRange = "24h";
+const RANGES = { "24h": 24 * 3600e3, "week": 7 * 86400e3, "month": 30 * 86400e3 };
+const RANGE_NAMES = { "24h": "24 часа", "week": "неделя", "month": "месяц" };
+
+function cutRange(points, key){
+  const span = RANGES[key];
+  if(!points || !points.length || !span) return points || [];
+  const last = points[points.length - 1].t;
+  const cut = points.filter((p) => p.t >= last - span);
+  // Данных за выбранный срок может не хватать (портфель создан вчера) - тогда
+  // показываем всё, что есть, а не пустой экран.
+  return cut.length >= 2 ? cut : points;
+}
+
+/* Перекрестие: нажал и держишь - видно точную стоимость в этот час. */
+function bindCrosshair(box, points){
+  const cross = box.querySelector(".cross");
+  const svg = box.querySelector("svg");
+  if(!cross || !svg || !points.length) return;
+  const minX = points[0].t, maxX = points[points.length - 1].t;
+  const ys = points.map((p) => p.v);
+  const lo = Math.min(...ys), hi = Math.max(...ys);
+  const padY = ((hi - lo) || 1) * 0.18;
+
+  const show = (clientX) => {
+    const r = svg.getBoundingClientRect();
+    const x = Math.min(Math.max(clientX - r.left, 0), r.width);
+    const t = minX + (x / (r.width || 1)) * ((maxX - minX) || 1);
+    const p = points.reduce((a, b) => Math.abs(b.t - t) < Math.abs(a.t - t) ? b : a);
+    const px = ((p.t - minX) / ((maxX - minX) || 1)) * r.width;
+    const py = r.height - ((p.v - (lo - padY)) / (((hi + padY) - (lo - padY)) || 1)) * r.height;
+    cross.querySelector(".vline").style.left = px + "px";
+    cross.querySelector(".hline").style.top = py + "px";
+    const dot = cross.querySelector(".dot");
+    dot.style.left = px + "px"; dot.style.top = py + "px";
+    const tip = cross.querySelector(".tip");
+    const when = new Date(p.t).toLocaleString("ru-RU",
+      { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
+    tip.innerHTML = `<small>${esc(when)}</small><b>${ic("ton")}${fmtTon(p.v)}</b>`;
+    // Подсказку у краёв прижимаем внутрь, иначе она уезжает за экран.
+    tip.style.left = Math.min(Math.max(px, 54), r.width - 54) + "px";
+    tip.style.top = Math.max(py, 40) + "px";
+    cross.classList.add("on");
+  };
+  const hide = () => cross.classList.remove("on");
+
+  svg.style.touchAction = "none";
+  svg.addEventListener("pointerdown", (e) => { svg.setPointerCapture(e.pointerId); show(e.clientX); });
+  svg.addEventListener("pointermove", (e) => { if(cross.classList.contains("on")) show(e.clientX); });
+  ["pointerup", "pointercancel", "pointerleave"].forEach((ev) =>
+    svg.addEventListener(ev, hide));
+}
+
+async function renderPortfolio(){
+  let p = null;
+  try{ p = await call("portfolio", {}); }catch(e){ p = null; }
+  if(!p){ $("port-body").innerHTML = `<div class="empty">Не загрузилось</div>`; return; }
+
+  const items = p.items || [];
+  const all = p.chart || [];
+  const pts = cutRange(all, portRange);
+  const enough = (key) => {
+    const span = RANGES[key];
+    return all.length > 1 && (all[all.length - 1].t - all[0].t) >= span * 0.5;
+  };
+  const vals = pts.map((x) => x.v);
+  const lo = vals.length ? Math.min(...vals) : 0;
+  const hi = vals.length ? Math.max(...vals) : 0;
+  const short = all.length > 1 && !enough(portRange);
+
+  $("port-body").innerHTML = `
+    <div class="port-top">
+      <div class="port-sum">${ic("ton")}${fmtTon(p.total)}</div>
+      <div class="port-sub">${deltaHtml(p.change_24h)} за 24 часа ·
+        обновлено в ${esc(p.updated || "--:--")}</div>
+      <div class="chart">${chartSvg(pts, p.marks)
+        || `<div class="hint">График появится, когда наберётся история</div>`}
+        <div class="cross"><div class="vline"></div><div class="hline"></div>
+          <div class="dot"></div><div class="tip"></div></div>
+      </div>
+      <div class="chart-legend"><span>${esc(
+        pts.length ? new Date(pts[0].t).toLocaleDateString("ru-RU",
+          { day: "numeric", month: "long" }) : "")}</span><span>сейчас</span></div>
+      <div class="range">${Object.keys(RANGES).map((k) => `
+        <button data-range="${k}" class="${portRange === k ? "on" : ""}">${
+          esc(RANGE_NAMES[k])}</button>`).join("")}</div>
+      ${short ? `<div class="hint">Данных за этот срок ещё мало - показываю всё,
+        что успело накопиться.</div>` : ""}
+      <div class="minmax">
+        <div class="lo"><span>минимум</span><b>${fmtTon(lo)}</b></div>
+        <div class="hi"><span>максимум</span><b>${fmtTon(hi)}</b></div>
+      </div>
+      <button class="btn" style="margin-top:12px" id="port-notify">
+        ${ic("bell")}Уведомления портфеля${(p.notify && p.notify.on)
+          ? `<span class="st on" style="margin-left:auto">вкл</span>`
+          : `<span class="st off" style="margin-left:auto">выкл</span>`}</button>
+    </div>
+    ${items.length ? `<div class="sec">Мой портфель</div><div class="card">${items.map((h) => `
+      <div class="hold" data-hold="${h.id}">
+        <div class="pic">${picOf(h.model || h.slug, h.icon, h.model ? "m" : "c")}</div>
+        <div class="t"><b>${esc(h.title || h.slug)}</b>
+          <span>${esc(h.model || "любая модель")} · ${h.qty} шт.</span></div>
+        <div class="val"><b>${fmtTon(h.value)}</b>${deltaHtml(h.change_24h)}</div>
+      </div>`).join("")}</div>`
+      : `<div class="empty">Портфель пуст.<br>Добавьте подарки, и я буду считать их
+         общую стоимость и показывать изменение за сутки.</div>`}
+    <div class="hint" style="margin-top:10px">Цены обновляются каждый час.</div>`;
+  document.querySelectorAll("[data-hold]").forEach((el) => el.onclick = () =>
+    editHolding(items.find((x) => String(x.id) === el.dataset.hold)));
+  $("port-notify").onclick = () => { haptic(); portfolioNotify(p.notify || {}); };
+  document.querySelectorAll("[data-range]").forEach((b) => b.onclick = () => {
+    portRange = b.dataset.range; haptic(); renderPortfolio();
+  });
+  bindCrosshair($("port-body").querySelector(".chart"), pts);
+}
+
+/* Уведомления портфеля. Три разных повода, и путать их нельзя:
+   - резкое движение цены КОНКРЕТНОГО подарка (приходит сразу, когда случилось);
+   - сводка по всему портфелю в выбранное время и с выбранной частотой;
+   - недельный итог: прибыль или убыток и какие подарки тянули вверх и вниз.
+   Порог для первого пункта обязателен: без него уведомления приходили бы на любое
+   шевеление цены и быстро надоели бы - их бы просто отключили целиком. */
+function portfolioNotify(n){
+  const on = !!n.on;
+  const step = Number(n.threshold || 10);
+  const at = String(n.summary_at || "20:00");
+  const every = String(n.summary_every || "day");
+  const weekly = n.weekly !== false;
+  const EVERY = { "6h": "6 часов", "12h": "12 часов", "day": "сутки", "off": "не слать" };
+
+  openSheet(`<h2>${ic("bell")}Уведомления портфеля</h2>
+    <p class="sub">Приходят в чат бота. На отслеживания в модулях не влияют</p>
+
+    <div class="card" style="margin-top:4px">
+      <div class="sw"><div class="t"><b>Включить уведомления</b>
+        <span>без этого остальные настройки не работают</span></div>
+        <button class="tgl ${on ? "on" : ""}" id="n-on"></button></div>
+    </div>
+
+    <div id="n-body" style="display:${on ? "block" : "none"}">
+      <label>Резкое движение цены подарка</label>
+      <div class="seg">${[5, 10, 15, 25].map((v) => `
+        <button data-th="${v}" class="${step === v ? "on" : ""}">±${v}%</button>`).join("")}</div>
+      <div class="hint">Придёт, как только цена подарка из портфеля изменится на
+        столько за сутки. Отдельным сообщением по каждому подарку</div>
+
+      <label>Сводка по портфелю</label>
+      <div class="seg">${Object.keys(EVERY).map((k) => `
+        <button data-ev="${k}" class="${every === k ? "on" : ""}">${esc(EVERY[k])}</button>`)
+        .join("")}</div>
+      <div id="n-at" style="display:${every === "off" ? "none" : "block"}">
+        <label>Во сколько присылать</label>
+        <div class="seg" style="flex-wrap:wrap">${
+          ["09:00", "12:00", "15:00", "18:00", "20:00", "23:00"].map((h) => `
+          <button data-at="${h}" class="${at === h ? "on" : ""}"
+            style="min-width:72px">${h}</button>`).join("")}</div>
+        <div class="hint">Общая стоимость, изменение за период и самые заметные
+          подарки</div>
+      </div>
+
+      <div class="card" style="margin-top:16px">
+        <div class="sw"><div class="t"><b>Итог недели</b>
+          <span>прибыль или убыток за неделю, самые прибыльные и самые убыточные
+          подарки</span></div>
+          <button class="tgl ${weekly ? "on" : ""}" id="n-week"></button></div>
+      </div>
+    </div>
+
+    <div class="two" style="margin-top:14px">
+      <button class="btn ghost" id="cancel">Отмена</button>
+      <button class="btn gold" id="ok">${ic("check")}Сохранить</button></div>`);
+
+  let state = { on, threshold: step, summary_at: at, summary_every: every, weekly };
+  const seg = (attr, key, after) => {
+    document.querySelectorAll(`[data-${attr}]`).forEach((b) => b.onclick = () => {
+      document.querySelectorAll(`[data-${attr}]`).forEach((x) => x.classList.remove("on"));
+      b.classList.add("on");
+      state[key] = attr === "th" ? Number(b.dataset[attr]) : b.dataset[attr];
+      haptic(); if(after) after();
+    });
+  };
+  seg("th", "threshold");
+  seg("ev", "summary_every", () => {
+    $("n-at").style.display = state.summary_every === "off" ? "none" : "block";
+  });
+  seg("at", "summary_at");
+  $("n-on").onclick = () => {
+    state.on = !state.on; $("n-on").classList.toggle("on");
+    $("n-body").style.display = state.on ? "block" : "none"; haptic();
+  };
+  $("n-week").onclick = () => {
+    state.weekly = !state.weekly; $("n-week").classList.toggle("on"); haptic();
+  };
+  $("cancel").onclick = closeSheet;
+  $("ok").onclick = async () => {
+    try{
+      await call("portfolio_notify", state);
+      closeSheet(); renderPortfolio(); toast("Настройки сохранены", "bell");
+    }catch(e){ toast(e.message, "help"); }
+  };
+}
+
+/* Добавление: сначала коллекция, потом (необязательно) модель и количество.
+   Модель влияет на цену сильнее всего, поэтому её и спрашиваем. */
+async function addHolding(){
+  pickCollection(async (slug) => {
+    let cat = null;
+    try{ cat = await call("catalog", { slug }); }catch(e){ cat = null; }
+    const models = ((cat && cat.models) || []).map((m) => ({ name: m.name, icon: m.icon }));
+    const mp = pickGrid("hm", models, [], "model");
+    openSheet(`<h2>${ic("case")}${esc(slug)}</h2>
+      <p class="sub">Модель влияет на цену. Не выбирайте, если подарок обычный.</p>
+      <label>Модель (необязательно)</label>${searchField("hs")}${mp.html}
+      <label>Фон (необязательно)</label>
+      <div class="seg" id="hbd">
+        <button data-bd="" class="on">Любой</button>
+        <button data-bd="Black">Black</button>
+        <button data-bd="Onyx Black">Onyx Black</button>
+      </div>
+      <div class="hint">Тёмные фоны заметно дороже остальных, поэтому их стоит
+        указать. Другие фоны на цену почти не влияют.</div>
+      <label>Количество</label>
+      <input type="number" id="hq" class="num" min="1" max="9999" value="1">
+      <div class="err" id="err"></div>
+      <div class="two" style="margin-top:12px">
+        <button class="btn ghost" id="cancel">Отмена</button>
+        <button class="btn gold" id="ok">${ic("plus")}Добавить</button></div>`);
+    mp.draw("");
+    const stop = bindSearch("hs", ["MAGA", "Marilyn", "Astronaut"], mp.draw);
+    let bd = "";
+    document.querySelectorAll("[data-bd]").forEach((b) => b.onclick = () => {
+      document.querySelectorAll("[data-bd]").forEach((x) => x.classList.remove("on"));
+      b.classList.add("on"); bd = b.dataset.bd; haptic();
+    });
+    $("cancel").onclick = () => { stop(); closeSheet(); };
+    $("ok").onclick = async () => {
+      try{
+        await call("portfolio_add", { slug, model: mp.value()[0] || "", backdrop: bd,
+                                      qty: Number($("hq").value || 1) });
+        stop(); closeSheet(); renderPortfolio(); toast("Добавлено в портфель", "case");
+      }catch(e){ $("err").textContent = e.message; }
+    };
+  }, "Подарок в портфель");
+}
+
+function editHolding(h){
+  if(!h) return;
+  openSheet(`<h2>${ic("case")}${esc(h.title || h.slug)}</h2>
+    <p class="sub">${esc(h.model || "любая модель")} · сейчас ${fmtTon(h.value)} TON</p>
+    <label>Количество</label>
+    <input type="number" id="hq" class="num" min="1" max="9999" value="${h.qty}">
+    <div class="two" style="margin-top:12px">
+      <button class="btn ghost" id="cancel">Отмена</button>
+      <button class="btn gold" id="ok">${ic("check")}Сохранить</button></div>
+    <button class="btn danger" style="margin-top:9px" id="del">${ic("trash")}Убрать из портфеля</button>`);
+  $("cancel").onclick = closeSheet;
+  $("ok").onclick = async () => {
+    try{
+      await call("portfolio_set", { id: h.id, qty: Number($("hq").value || 1) });
+      closeSheet(); renderPortfolio(); toast("Сохранено");
+    }catch(e){ toast(e.message, "help"); }
+  };
+  $("del").onclick = async () => {
+    closeSheet();
+    try{ await call("portfolio_del", { id: h.id }); renderPortfolio(); toast("Убрано"); }
+    catch(e){ toast(e.message, "help"); }
+  };
+}
+
 function renderProfile(){
   const fl = S.flip;
   $("prof-lead").textContent = `${S.name || "Профиль"} · id ${S.uid}`;
@@ -1565,9 +2048,7 @@ function renderSettings(){
   $("set-body").innerHTML = `
     <div class="sec">Внешний вид</div>
     <div class="card">
-      <div class="sw"><div class="t"><b>Анимации моделей</b>
-        <span>двигающиеся картинки подарков. Выключите, если телефон греется
-        или связь слабая - вместо анимаций будут значки</span></div>
+      <div class="sw"><div class="t"><b>Анимации подарков</b></div>
         <button class="tgl ${st.anim === false ? "" : "on"}" id="s-anim"></button></div>
     </div>
     <div class="sec">Язык</div>
@@ -2068,7 +2549,14 @@ function drawPreview(id, opts){
   const cap = [modelName || "любая модель", bdName || "любой фон"].join(" · ");
   const paint = (mName, bName, mItem, bItem) => {
     const col = bName ? bdColor(bName, bItem) : "#15151b";
-    const pic = mItem ? picOf(mItem.name, mItem.icon, "m") : picOf(opts.slug, opts.icon, "c");
+    /* Картинки может не быть (бот ещё не собрал её). Рисунок из названия во весь
+       экран предпросмотра выглядит как сбой - «приближённая модель», - поэтому
+       вместо него показываем спокойный силуэт подарка. */
+    const known = (x) => x && x.icon;
+    const pic = known(mItem) ? picOf(mItem.name, mItem.icon, "m")
+      : (opts.icon ? picOf(opts.slug, opts.icon, "c")
+                   : `<svg viewBox="0 0 48 48" style="opacity:.5">
+                        <use href="#i-gift" x="12" y="12" width="24" height="24"/></svg>`);
     el.style.background = `radial-gradient(circle at 50% 42%,
       ${col} 0%, ${col} 45%, rgba(0,0,0,.55) 100%)`;
     el.innerHTML = `<div class="glowdot" style="background:${col}"></div>
@@ -2088,15 +2576,23 @@ function drawPreview(id, opts){
 
   const pickRandom = (list) => list[Math.floor(Math.random() * list.length)];
   previewTimer = setInterval(() => {
-    // Панель закрыли — таймер больше не нужен, иначе он крутился бы вхолостую.
+    // Панель закрыли - таймер больше не нужен, иначе он крутился бы вхолостую.
     if(!document.body.contains(el)){ stopPreviewCycle(); return; }
     const m = rollModels ? pickRandom(opts.modelItems)
                          : (opts.modelItems || []).find((x) => x.name === modelName);
     const bItem = rollBds ? pickRandom(opts.bdItems)
                           : (opts.bdItems || []).find((x) => x.name === bdName);
-    paint(rollModels ? "любая модель" : modelName,
-          rollBds ? "любой фон" : bdName, m, bItem);
-  }, 900);
+    // Сначала гасим, потом подменяем: резкая смена картинки читается как мигание,
+    // а плавная - как перебор вариантов.
+    const art = el.querySelector(".art"), cap = el.querySelector(".cap");
+    if(art) art.classList.add("fade");
+    if(cap) cap.classList.add("fade");
+    setTimeout(() => {
+      if(!document.body.contains(el)) return;
+      paint(rollModels ? "любая модель" : modelName,
+            rollBds ? "любой фон" : bdName, m, bItem);
+    }, 450);
+  }, 1900);
 }
 
 function drawerPick(id, title, items, selected, kind, samples){
@@ -2588,6 +3084,7 @@ function demoState(){
   return {
     uid: 1204450614, name: "Konstantin", photo: "", is_owner: true, lang: "ru",
     settings: { sales_days: 7, sales_show: 3 }, boot: [1, 2],
+    portfolio: { total: 262.7, change_24h: 3.42 },
     announcements: [
       { kind:"promo", title:"Акция: −20% на слоты", text:"До 27 августа. Ещё 3 слота по акции." },
     ],
@@ -2638,6 +3135,46 @@ async function demoCall(action, payload){
     backdrops:["Black","Electric Purple","Lavender","Cyberpunk","Electric Indigo","Onyx Black",
       "Satin Gold","Forest Green"] };
   if(action === "slot_invoice") return { link:"https://t.me/invoice/demo" };
+  if(action === "portfolio"){
+    // Цены обновляются В НАЧАЛЕ ЧАСА и одинаково для всех портфелей, поэтому точки
+    // графика стоят ровно на часах, а не через час после создания портфеля.
+    const hour = 3600 * 1000;
+    const now = Math.floor(Date.now() / hour) * hour;
+    const HOURS = 24 * 30;
+    const pts = [];
+    let v = 150;
+    for(let i = HOURS; i >= 0; i--){
+      v += (Math.sin(i / 9.3) * 1.1) + (Math.random() - 0.47) * 1.7;
+      pts.push({ t: now - i * hour, v: Math.round(Math.max(40, v) * 100) / 100 });
+    }
+    const items = [
+      { id:1, slug:"ArtisanBrick", title:"Artisan Brick", model:"", qty:2,
+        value:113.62, change_24h:3.46, icon:"" },
+      { id:2, slug:"BDayCandle", title:"B-Day Candle", model:"Sunrise", qty:23,
+        value:107.18, change_24h:0, icon:"" },
+      { id:3, slug:"PlushPepe", title:"Plush Pepe", model:"Grumpy", qty:1,
+        value:41.9, change_24h:-1.2, icon:"" },
+    ];
+    const total = items.reduce((a, x) => a + x.value, 0);
+    // Конец графика подтягиваем к сумме подарков: расхождение выглядело бы ошибкой.
+    const scale = total / pts[pts.length - 1].v;
+    pts.forEach((p) => { p.v = Math.round(p.v * scale * 100) / 100; });
+    // Изменение за сутки - от значения в тот же час вчера.
+    const dayAgo = pts[pts.length - 25] || pts[0];
+    const change = ((total - dayAgo.v) / (dayAgo.v || 1)) * 100;
+    return {
+      total, change_24h: Math.round(change * 100) / 100,
+      updated: new Date(now).toLocaleTimeString("ru-RU",
+        { hour: "2-digit", minute: "2-digit" }),
+      chart: pts,
+      marks: [{ t: now - 19 * hour, title: "добавлен Plush Pepe" }],
+      notify: { on: true, threshold: 10, summary_at: "20:00", summary_every: "day",
+                weekly: true },
+      items };
+  }
+  if(action === "portfolio_add" || action === "portfolio_set"
+     || action === "portfolio_del" || action === "portfolio_notify")
+    return { ok:true, state:S };
   if(action === "texts") return { help:"Помощь: как пользоваться ботом.",
     terms:"Условия пользования.", support:"Опишите вопрос одним сообщением.",
     open_tickets:0 };
@@ -2654,6 +3191,7 @@ async function demoCall(action, payload){
 
 /* ---------- запуск ---------- */
 showBoot();
+loadPlayer();
 
 async function boot(){
   if(!API && !DEMO){
@@ -2668,6 +3206,7 @@ async function boot(){
     // запоминаем набор заставок на следующий заход: до ответа сервера его не знать
     try{ localStorage.setItem(BOOT_KEY, JSON.stringify(S.boot || [1])); }catch(e){}
     render();
+    startRefresh();
     setTimeout(() => $("boot").classList.add("gone"), 1600);
   }catch(e){
     $("boot-sub").textContent = "Нет связи с ботом";
@@ -2686,10 +3225,12 @@ document.querySelectorAll("[data-go]").forEach((b) => b.onclick = () => { haptic
 $("ava").onclick = () => { haptic(); go("profile"); };
 $("who").onclick = () => { haptic(); go("profile"); };
 $("btn-menu").onclick = () => { haptic(); openMenu(); };
+$("btn-port").onclick = () => { haptic(); go("portfolio"); };
 $("veil").onclick = closeSheet;
 $("fab").onclick = () => {
   haptic("medium");
-  if(VIEW === "sniper") pickCollection((slug) => save("coll_add", { slug }, "Коллекция добавлена"));
+  if(VIEW === "portfolio") addHolding();
+  else if(VIEW === "sniper") pickCollection((slug) => save("coll_add", { slug }, "Коллекция добавлена"));
   else pickCollection((slug) => save("flip_add", { slug }, "Слот занят"), "Коллекция для слота");
 };
 
