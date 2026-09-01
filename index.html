@@ -368,15 +368,21 @@ main{position:relative;z-index:1;padding:2px 15px 18px}
   text-overflow:ellipsis;margin-bottom:7px}
 .pic{width:46px;height:46px;flex:0 0 46px;border-radius:14px;overflow:hidden;
   border:1px solid var(--line);background:#0c0b09}
-.pic svg,.pic video{width:100%;height:100%;object-fit:contain}
+/* Все три тега перечислены намеренно. Забытый img уже стоил всех статичных
+   иконок: стикер приходит 512x512, без размера рисуется целиком, а через окно
+   46px видно только его прозрачный угол — то есть пустой квадрат. */
+.pic img,.pic video,.pic svg{width:100%;height:100%;object-fit:contain}
 /* Анимации выключены — показываем первый кадр вместо движения. */
 video[data-still]{animation:none}
 .mkico{display:inline-flex;align-items:center;justify-content:center}
 .mkico img{width:100%;height:100%;object-fit:contain;border-radius:5px}
 .mkpic .mkico{width:100%;height:100%;color:var(--gold)}
 .chip .mkico{width:15px;height:15px}
-.pic.lot{display:grid;place-items:center;overflow:hidden}
-.pic.lot > div{width:100%;height:100%}
+/* Именно .pic .lot, а не .pic.lot: контейнер анимации это ОТДЕЛЬНЫЙ span
+   внутри .pic, и правило с двумя классами не срабатывало никогда. Размер задаём
+   явно — у span высота по содержимому, а содержимое меряется от него. */
+.pic .lot{display:grid;place-items:center;width:100%;height:100%}
+.pic .lot > div{width:100%;height:100%}
 .empty{text-align:center;color:var(--muted);font-size:13px;padding:34px 18px;
   border:1px dashed var(--line-2);border-radius:var(--r);line-height:1.6}
 
