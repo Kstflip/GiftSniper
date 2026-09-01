@@ -2194,6 +2194,11 @@ function renderAdmin(){
        a.notify_payments ? "вкл" : "выкл"}`],
     ["boot", "star", "Выбор заставки", bootLabel(a.boot || [1])],
     ["colls", "gift", "Коллекции в меню", `скрыто ${(a.hidden || []).length}`],
+    // Иконки. Число нужно ровно затем, чтобы «иконок нет» перестало быть догадкой:
+    // ноль означает, что сбор не дошёл до картинок, а маленькое число - что
+    // Telegram отдал лишь часть каталога. Без него причину искали в вёрстке.
+    ["icons", "gift", "Иконки коллекций",
+     `${(a.icons || {}).collections || 0} из ${(a.icons || {}).total || 0} картинок`],
     ["tickets", "life", "Обращения",
      a.open_tickets ? `${a.open_tickets} без ответа` : "все отвечены"],
     ["ban", "ban", "Чёрный список", "закрыть доступ человеку"],
@@ -2238,6 +2243,7 @@ function renderAdmin(){
     else if(k === "verb") adminVerb();
     else if(k === "ntf") adminNtf();
     else if(k === "tickets") adminTickets();
+    else if(k === "icons") adminIcons();
     else toast("Экран «" + b.querySelector(".name").textContent + "» откроется здесь", "tune");
   });
 }
@@ -2468,6 +2474,37 @@ function adminVerb(){
 }
 
 /* Уведомления владельцу: о новых людях и об оплатах. */
+/* Иконки коллекций. Экран отвечает на вопрос «почему их нет», а не показывает
+   настройку: сбор идёт сам при запуске бота, молча и около минуты, и до этого
+   отличить «ещё качается» от «каталог не отдался» было нечем. */
+function adminIcons(){
+  const n = (S.admin || {}).icons || {};
+  const total = n.total || 0, colls = n.collections || 0;
+  openSheet(`<h2>${ic("gift")}Иконки коллекций</h2>
+    <p class="sub">Картинки берутся из каталога Telegram и лежат рядом с ботом.
+    Сбор идёт сам при запуске и занимает около минуты.</p>
+    <div class="stat-grid">
+      <div class="stat"><b class="num gold">${colls}</b><span>коллекций</span></div>
+      <div class="stat"><b class="num">${total - colls}</b><span>моделей</span></div>
+    </div>
+    <div class="hint">${total
+      ? "Коллекция без картинки показывается значком из названия. Это нормально:"
+        + " Telegram отдаёт каталог не целиком, и часть иконок появляется позже."
+      : "Картинок нет ни одной. Обычно это значит, что бот не смог получить"
+        + " каталог подарков: сбору нужен вход по номеру телефона, тот же, что"
+        + " и снайперу."}</div>
+    <button class="btn gold" style="margin-top:12px" id="icgo">${ic("plus")}Собрать сейчас</button>
+    <button class="btn ghost" style="margin-top:8px" id="cancel">Закрыть</button>`);
+  $("cancel").onclick = closeSheet;
+  $("icgo").onclick = async () => {
+    // Сбор идёт в фоне, поэтому число тут же не изменится. Говорим об этом прямо:
+    // иначе кнопка выглядит так, будто она ничего не сделала.
+    try{ haptic("medium"); await call("admin_icons", {});
+      toast("Сбор запущен, картинки появятся через минуту"); closeSheet(); }
+    catch(e){ toast(e.message, "help"); }
+  };
+}
+
 function adminNtf(){
   const a = S.admin || {};
   openSheet(`<h2>${ic("bell")}Уведомления владельцу</h2>
@@ -3235,7 +3272,8 @@ function demoState(){
     admin: { users:184, payments:37, slots:52, slot_stars:250, verb:"полная",
       app_only:false, start_premium:true,
       hidden:["Coffin","Durov's Boots","Durov's Cat"], boot:[1,2],
-      verbosity:"full", notify_new_users:true, notify_payments:true, open_tickets:2 },
+      verbosity:"full", notify_new_users:true, notify_payments:true, open_tickets:2,
+      icons:{ total:412, collections:118 } },
   };
 }
 async function demoCall(action, payload){
