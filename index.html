@@ -372,8 +372,6 @@ main{position:relative;z-index:1;padding:2px 15px 18px}
    иконок: стикер приходит 512x512, без размера рисуется целиком, а через окно
    46px видно только его прозрачный угол — то есть пустой квадрат. */
 .pic img,.pic video,.pic svg{width:100%;height:100%;object-fit:contain}
-/* Анимации выключены — показываем первый кадр вместо движения. */
-video[data-still]{animation:none}
 .mkico{display:inline-flex;align-items:center;justify-content:center}
 .mkico img{width:100%;height:100%;object-fit:contain;border-radius:5px}
 .mkpic .mkico{width:100%;height:100%;color:var(--gold)}
@@ -1394,6 +1392,22 @@ function startLotties(root){
   });
 }
 
+/* Анимации выключены - видео-стикер должен показать первый кадр и замереть.
+   Одним CSS этого не сделать: свойство animation управляет CSS-анимациями и на
+   воспроизведение видео не влияет, поэтому раньше стикеры продолжали крутиться,
+   хотя человек анимации выключил. Останавливаем ПОСЛЕ загрузки кадра: пауза до
+   неё оставила бы пустой квадрат, а нужен именно неподвижный кадр. */
+function stillVideos(root){
+  (root || document).querySelectorAll("video[data-still]").forEach((el) => {
+    if(el.dataset.stillOn) return;
+    el.dataset.stillOn = "1";
+    const freeze = () => { try{ el.pause(); el.currentTime = 0; }catch(e){} };
+    // readyState 2 - первый кадр уже есть, ждать событие незачем.
+    if(el.readyState >= 2) freeze();
+    else el.addEventListener("loadeddata", freeze, { once: true });
+  });
+}
+
 function animOn(){
   // По умолчанию анимации включены: настройка приходит от бота, а до ответа
   // сервера её ещё нет.
@@ -1580,7 +1594,7 @@ function render(){
     </div>`).join("");
 
   // анимации запускаем после отрисовки: до неё запускать нечего
-  setTimeout(() => { startLotties(); loadMarketIcons(); }, 0);
+  setTimeout(() => { startLotties(); stillVideos(); loadMarketIcons(); }, 0);
   if(VIEW === "sniper") renderSniper();
   else if(VIEW === "flip") renderFlip();
   else if(VIEW === "profile") renderProfile();
@@ -2614,7 +2628,8 @@ async function adminCollections(){
 /* ---------- панель ---------- */
 function openSheet(html){
   $("panel").innerHTML = `<div class="grip"></div>` + html;
-  setTimeout(() => { startLotties($("panel")); loadMarketIcons($("panel")); }, 0);
+  setTimeout(() => { startLotties($("panel")); stillVideos($("panel"));
+    loadMarketIcons($("panel")); }, 0);
   $("sheet").classList.add("on");
   if(TG && TG.BackButton) TG.BackButton.show();
 }
