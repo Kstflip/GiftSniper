@@ -658,6 +658,49 @@ input[type=time]{display:block;width:100%;min-width:0;max-width:100%;box-sizing:
 .mxb{font-weight:500;color:rgba(255,255,255,.7)}
 .al .row .t b,.al .row .t span{white-space:normal}
 .al .chip{height:24px;padding:0 9px;font-size:12px;flex:0 0 auto}
+.duo{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin:0 0 12px}
+.duo-b{display:flex;align-items:center;gap:10px;padding:11px 12px;border-radius:var(--r-m);background:var(--s1);
+  font-size:15px;font-weight:600;text-align:left;line-height:1.2;transition:transform .2s var(--spring)}
+.duo-b:active{transform:scale(.96)}
+.duo-b .tile{flex:0 0 auto;width:32px;height:32px;border-radius:9px}
+.duo-b .tile .ico{width:18px;height:18px}
+.hint.center{text-align:center;margin-top:14px}
+nav{grid-template-columns:repeat(5,minmax(0,1fr))}
+.tab{min-width:0;font-size:10.5px;letter-spacing:-.2px;white-space:nowrap}
+/* баннеры на главной */
+.bnrs{position:relative;margin:2px -16px 16px}
+.bnr-track{display:flex;gap:16px;overflow-x:auto;scroll-snap-type:x mandatory;padding:0 16px;scroll-padding:0 16px;
+  scrollbar-width:none;overscroll-behavior-x:contain}
+.bnr-track::-webkit-scrollbar{display:none}
+.bnr{position:relative;flex:0 0 100%;scroll-snap-align:start;min-height:100px;border-radius:22px;overflow:hidden;
+  display:flex;align-items:center;padding:15px 16px;isolation:isolate;cursor:pointer}
+.bnr.img::before{content:"";position:absolute;inset:0;z-index:1;
+  background:linear-gradient(90deg,rgba(0,0,0,.55),rgba(0,0,0,.08) 70%)}
+.bnr-t{position:relative;z-index:2;flex:1;min-width:0}
+.bnr.with-art .bnr-t{padding-right:96px}
+.bnr-t b{display:block;font-size:20px;font-weight:800;letter-spacing:-.3px;line-height:1.15}
+.bnr-t span{display:block;margin-top:3px;font-size:14px;line-height:1.3;color:rgba(255,255,255,.85)}
+.bnr-t .bnr-b{display:inline-flex;align-items:center;height:28px;margin-top:9px;padding:0 13px;border-radius:14px;
+  background:#fff;color:#000;font-size:13.5px;font-weight:700}
+.bnr .art.bnr-art{position:absolute;right:6px;top:50%;width:104px;height:104px;margin-top:-52px;z-index:2;
+  filter:drop-shadow(0 8px 16px rgba(0,0,0,.35))}
+.bnr-dots{display:flex;justify-content:center;gap:5px;margin-top:9px}
+.bnr-dots i{width:6px;height:6px;border-radius:3px;background:rgba(255,255,255,.25);transition:width .3s var(--ease),background .3s}
+.bnr-dots i.on{width:16px;background:#fff}
+.bnprev{margin:6px 0 4px}
+.bnprev .bnr{cursor:default}
+.bncolors{display:flex;gap:9px;margin-top:10px;flex-wrap:wrap}
+.bnc{width:44px;height:44px;border-radius:14px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.12);
+  transition:transform .2s var(--spring)}
+.bnc.on{box-shadow:0 0 0 2px var(--bg),0 0 0 4px #fff}
+.bnc:active{transform:scale(.9)}
+.bnrow .bnsw{flex:0 0 46px;width:46px;height:30px;border-radius:9px}
+.round.sm{width:32px;height:32px;flex:0 0 32px}
+.round.sm .ico{width:16px;height:16px}
+.round.sm:disabled{opacity:.3}
+.seg.wrap .thumb{display:none}
+/* узкие телефоны: заголовки малых плиток не упираются в края */
+.hero.small h2{font-size:clamp(16px,5vw,21px);overflow-wrap:anywhere}
 .credit{display:block;margin:-2px auto 8px;padding:6px 10px;font-size:12px;color:var(--muted-2);background:none}
 /* Правка надписей: полоса сверху, пока режим включён, и окно правки поверх всего. */
 #txbar{position:fixed;left:12px;right:12px;top:calc(10px + var(--tg-content-safe-area-inset-top,0px));z-index:130;
@@ -1149,24 +1192,32 @@ function artUrls(coll, model, size){
   const name = collName(coll);
   const out = [];
   const q = `?size=${size || 256}`;
+  // Крупным картинкам (шапка карточки, полёт) - оригинал с CDN: он легче
+  // уменьшенной до 512 копии (около 75 КБ против 160) и уже лежит в кэше CDN.
+  const big = (size || 256) > 256;
   if(model){
     const m = `${encodeURIComponent(name)}/${encodeURIComponent(model)}`;
     const json = `${CDN}/models/${encodeURIComponent(name)}/lottie/${encodeURIComponent(model)}.json`;
-    out.push({ png: `${API_ART}/model/${m}.png${q}`, big: `${API_ART}/model/${m}.png?size=512`, json });
-    out.push({ png: `${CDN}/models/${encodeURIComponent(name)}/png/${encodeURIComponent(model)}.png`, json });
+    const full = `${CDN}/models/${encodeURIComponent(name)}/png/${encodeURIComponent(model)}.png`;
+    if(big) out.push({ png: full, big: full, json });
+    out.push({ png: `${API_ART}/model/${m}.png${q}`, big: full, json });
+    if(!big) out.push({ png: full, json });
   }
   const e = ART.names.get(norm(coll));
   if(e){
     const json = `${CDN}/originals/${e.id}/Original.json`;
-    out.push({ png: `${API_ART}/original/${e.id}.png${q}`, big: `${API_ART}/original/${e.id}.png?size=512`, json });
-    out.push({ png: `${CDN}/originals/${e.id}/Original.png`, json });
+    const full = `${CDN}/originals/${e.id}/Original.png`;
+    if(big) out.push({ png: full, big: full, json });
+    out.push({ png: `${API_ART}/original/${e.id}.png${q}`, big: full, json });
+    if(!big) out.push({ png: full, json });
   }
   return out;
 }
 function setupArt(el){
   if(el.dataset.ah) return;
   el.dataset.ah = "1";
-  const urls = artUrls(el.dataset.ac, el.dataset.am, artSize(el));
+  const size = artSize(el);
+  const urls = artUrls(el.dataset.ac, el.dataset.am, size);
   const mono = () => { el.classList.remove("wait"); el.innerHTML = `<div class="mono">${esc(initials(el.dataset.am || collName(el.dataset.ac)))}</div>`; };
   if(!urls.length){ mono(); return; }
   el.classList.add("wait");
@@ -1174,12 +1225,19 @@ function setupArt(el){
   const img = new Image();
   // Отложенная загрузка: в списке выбора до сотни коллекций по ~250 КБ, и качать
   // их все сразу на телефоне незачем: браузер берёт только те, что у экрана.
-  img.decoding = "async"; img.alt = ""; img.loading = "lazy";
+  // отложенно - только мелкие плитки сеток; крупная картинка нужна сразу
+  img.decoding = "async"; img.alt = ""; img.loading = size > 128 ? "eager" : "lazy";
   img.onload = () => { el.classList.remove("wait"); el._json = urls[i].json; el._big = urls[i].big || img.src;
-    if(el.dataset.aa && ioArt) ioArt.observe(el); };
+    if(el.dataset.aa && !el.dataset.hold && ioArt) ioArt.observe(el); };
   img.onerror = () => { i++; if(i < urls.length) img.src = urls[i].png; else mono(); };
   el.appendChild(img);
   img.src = urls[0].png;
+}
+/* Разрешить анимацию подарку, который ждал (шапка карточки - ждёт свой вылет). */
+function releaseArt(el){
+  if(!el || !el.dataset.hold) return;
+  delete el.dataset.hold;
+  if(el._json && el.dataset.aa && ioArt) ioArt.observe(el);
 }
 function getJson(u){
   if(!ART.json.has(u)) ART.json.set(u, fetch(u).then((r) => r.ok ? r.json() : null).catch(() => null));
@@ -1382,7 +1440,14 @@ function bindSeg(id, onPick){
     thumb.style.width = on.offsetWidth + "px";
     thumb.style.transform = `translateX(${on.offsetLeft - 2}px)`;
   };
-  place(); requestAnimationFrame(place);
+  // Новый переключатель (экран перерисовался) ставим на место БЕЗ анимации: раньше
+  // бегунок доезжал до выбранного, а после перерисовки ехал от края ещё раз.
+  if(thumb){
+    thumb.style.transition = "none";
+    place();
+    void thumb.offsetWidth;
+    requestAnimationFrame(() => { place(); requestAnimationFrame(() => { thumb.style.transition = ""; }); });
+  }
   box.querySelectorAll("button").forEach((b) => b.onclick = () => {
     box.querySelectorAll("button").forEach((x) => x.classList.remove("on"));
     b.classList.add("on"); place(); haptic();
@@ -1469,11 +1534,6 @@ function reveal(sel){
   });
 }
 
-function promoHtml(){
-  return (S.announcements || []).map((a) => `
-    <div class="promo"><span class="tile">${ic(a.kind === "promo" ? "star" : "mega")}</span>
-      <div><b>${esc(a.title)}</b><span ${a.kind === "notice" ? "data-notx" : ""}>${esc(a.text)}</span></div></div>`).join("");
-}
 
 function renderHome(){
   const c0 = S.collections[0], fl = S.flip, f0 = fl.items[0];
@@ -1483,7 +1543,7 @@ function renderHome(){
   const pfArt = art((pf && pf.top && pf.top.slug) || "Loot Bag", (pf && pf.top && pf.top.model) || "", "", true);
   $("v-home").innerHTML = `
     <div class="brandrow">${BRAND.svg}<b>${BRAND.name}</b></div>
-    ${promoHtml()}
+    ${bannersBlock()}
     <button class="hero g-blue" data-go="sniper">
       <span class="bgc">${sparkles(9)}${silhouettes()}</span>
       <h2>Upgrade Sniper</h2>
@@ -1516,6 +1576,7 @@ function renderHome(){
           <div class="pr"><span>${c.enabled ? ic("check") + "следим" : ic("power") + "выкл"}</span></div>
         </button>`).join("")}</div>` : ""}
     <div id="home-extra">${homeExtraHtml()}</div>`;
+  bindBanners();
   bindHomeExtra($("home-extra"));
   loadHome(); loadNewColls();
   bindGo($("v-home"));
@@ -1779,13 +1840,28 @@ function bindCrosshair(box, points){
   svg.addEventListener("pointermove", (e) => { if(cross.classList.contains("on")) show(e.clientX); });
   ["pointerup", "pointercancel", "pointerleave"].forEach((ev) => svg.addEventListener(ev, hide));
 }
-async function renderPortfolio(){
-  if(!$("v-portfolio").innerHTML) $("v-portfolio").innerHTML = `<div class="skel" style="height:260px"></div><div class="skel"></div>`;
+/* Портфель рисуется из прошлых данных сразу, а свежие подтягиваются следом. Раньше
+   экран рисовался дважды (заготовка, потом данные), и анимация появления шла два
+   раза; переключатель срока перезапрашивал всё и снова проигрывал её. */
+let PF = null;
+async function renderPortfolio(useCache){
   fab("Добавить подарок", addHolding);
+  if(useCache === true && PF){ paintPortfolio(PF); return; }
+  if(PF) paintPortfolio(PF);
+  else if(!$("v-portfolio").innerHTML) $("v-portfolio").innerHTML = `<div class="skel" style="height:260px"></div><div class="skel"></div>`;
   let p = null;
   try{ p = await call("portfolio", {}); }catch(e){ p = null; }
   if(VIEW !== "portfolio") return;
-  if(!p){ $("v-portfolio").innerHTML = `<div class="empty"><b>Не загрузилось</b>Попробуй ещё раз чуть позже.</div>`; return; }
+  if(!p){ if(!PF) $("v-portfolio").innerHTML = `<div class="empty"><b>Не загрузилось</b>Попробуй ещё раз чуть позже.</div>`; return; }
+  const same = PF && JSON.stringify(PF) === JSON.stringify(p);
+  const first = !PF;
+  PF = p;
+  if(same) return;
+  // второй раз за заход анимацию появления не проигрываем
+  if(!first) $("v-portfolio").classList.remove("fresh");
+  paintPortfolio(p);
+}
+function paintPortfolio(p){
   const items = p.items || [], all = p.chart || [];
   const pts = cutRange(all, portRange);
   const vals = pts.map((x) => x.v);
@@ -1829,7 +1905,7 @@ async function renderPortfolio(){
     portRange = k;
     const box = $("v-portfolio").querySelector(".chart");
     if(box) box.classList.add("swap");
-    setTimeout(renderPortfolio, 200);
+    setTimeout(() => { $("v-portfolio").classList.remove("fresh"); renderPortfolio(true); }, 200);
   });
   bindCrosshair($("v-portfolio").querySelector(".chart"), pts);
   after($("v-portfolio"));
@@ -1901,6 +1977,7 @@ function renderAdmin(){
     ["notice", "purple", "mega", "Объявление", a.notice ? "показывается" : "нет"],
     ["bcast", "blue", "share", "Рассылка", "сообщение всем"],
     ["fx", "indigo", "spark", "Эффекты", `включено ${onCount} из ${FX_KEYS.length}`],
+    ["banners", "purple", "mega", "Баннеры", S.banners_on === false ? "выключены" : `своих ${(S.banners || []).length}`],
     ["texts", "teal", "edit", "Надписи", TXEDIT ? "режим правки включён"
       : Object.keys(TX).length ? `изменено ${Object.keys(TX).length}` : "поменять любой текст"],
     ["ntf", "red", "bell", "Уведомления владельцу",
@@ -1922,7 +1999,7 @@ function renderAdmin(){
   bindGo($("v-admin"));
   const map = { colls: adminCollections, bcast: adminBroadcast, promo: adminPromo, ban: adminBans,
     give: adminGive, price: adminPrice, notice: adminNotice, ntf: adminNtf, tickets: adminTickets, fx: adminEffects,
-    texts: adminTexts };
+    texts: adminTexts, banners: adminBanners };
   $("v-admin").querySelectorAll("[data-adm]").forEach((b) => b.onclick = () => {
     const fn = map[b.dataset.adm];
     // Строку добавили, а экран забыли - говорим прямо, а не «скоро появится».
@@ -1932,7 +2009,16 @@ function renderAdmin(){
 }
 
 /* ===================== ПАНЕЛЬ СНИЗУ ===================== */
+/* Закрытие идёт с анимацией 270 мс. Если за это время открылось следующее окно
+   (выбрал коллекцию - открылась карточка), отложенное закрытие гасило уже его:
+   окно пропадало, а анимации в нём останавливались. Поэтому таймер отменяем. */
+let sheetTimer = 0;
+/* Проверка перед закрытием: карточка коллекции сохраняет изменения сама, когда её
+   закрывают. Вернула false - ошибка, окно остаётся открытым и показывает причину. */
+let SHEET_GUARD = null;
 function openSheet(html){
+  clearTimeout(sheetTimer);
+  SHEET_GUARD = null;
   $("panel").innerHTML = `<div class="grip"></div>` + html;
   $("panel").scrollTop = 0;
   $("sheet").classList.remove("closing");
@@ -1940,11 +2026,19 @@ function openSheet(html){
   after($("panel"));
   if(TG && TG.BackButton) TG.BackButton.show();
 }
-function closeSheet(){
+function closeSheet(force){
   const sh = $("sheet");
   if(!sh.classList.contains("on")) return;
+  if(SHEET_GUARD && force !== true){
+    const g = SHEET_GUARD;
+    SHEET_GUARD = null;
+    Promise.resolve(g()).then((ok) => { if(ok === false) SHEET_GUARD = g; else closeSheet(true); });
+    return;
+  }
+  SHEET_GUARD = null;
   sh.classList.add("closing");
-  setTimeout(() => {
+  clearTimeout(sheetTimer);
+  sheetTimer = setTimeout(() => {
     sh.classList.remove("on", "closing");
     $("panel").querySelectorAll(".art").forEach((a) => { if(a._anim){ a._anim.destroy(); ART.live.delete(a); } });
   }, 270);
@@ -1954,13 +2048,17 @@ function closeSheet(){
 function sheroHtml(coll, model, bd, title, sub){
   return `<div class="shero" style="${bdVars(bd)}">${sparkles(10, .5)}
     <button class="x" id="x">${ic("cross")}</button>
-    ${art(coll, model, "", true)}
+    ${art(coll, model, "", true).replace('class="art', 'data-hold="1" class="art')}
     <h2>${esc(title)}</h2><p class="sub">${sub || ""}</p></div>`;
 }
+/* Сначала подарок вылетает (вспышка, лучи), и только когда вылет закончился,
+   начинает играть его анимация: раньше она стартовала вместе с открытием окна, и
+   её не было видно за вылетом. */
 function popHero(){
-  if(!fxOn("open")) return;
   const a = $("panel").querySelector(".shero .art");
-  if(a) setTimeout(() => FX.fly(a, "pop"), 220);
+  if(!a) return;
+  if(!fxOn("open")){ setTimeout(() => releaseArt(a), 320); return; }
+  setTimeout(() => FX.fly(a, "pop").then(() => releaseArt(a)), 220);
 }
 
 /* ---------- поиск с бегущей подсказкой ---------- */
@@ -2298,7 +2396,7 @@ async function editColl(cid){
       <button id="c-en" class="${c.enabled ? "on" : ""}">${ic("power")}${c.enabled ? "включено" : "выключено"}</button>
       <button id="c-test">${ic("bell")}${c.pending ? "создаётся" : "уведомления"}</button>
       <button id="del" class="red">${ic("trash")}удалить</button></div>
-    <div class="group">${rowHtml({ tile: "teal", icon: "chart", title: "История цен", sub: "флор и последние продажи", attr: 'id="c-hist"' })}</div>
+    ${histAlertRow("c")}
     <label>Фильтры подарка</label>${mp.html}${bp.html}
     ${monoRow(c.mono_min)}
     ${numberBlock(c.number)}
@@ -2306,31 +2404,37 @@ async function editColl(cid){
     <input type="text" id="watch" class="num" placeholder="7777, 1234" value="${c.numbers.join(", ")}">
     <div class="hint">Такой подарок придёт при любых модели и фоне. После срабатывания номер снимается сам.</div>
     <div class="err" id="err"></div>
-    <button class="btn blue" style="margin-top:8px" id="ok">${ic("check")}Сохранить</button>`;
+    <div class="hint center">Изменения сохраняются сами, когда закрываешь карточку.</div>`;
   after($("panel"));
-  $("x").onclick = () => close();
+  $("x").onclick = () => closeSheet();
   const s1 = mp.bind(), s2 = bp.bind();
   const numOf = bindNumber(), monoOf = bindMonoRow(name, models.map((m) => m.name));
   modelFloors(name, models, mp.redraw, mp.isOpen);
-  $("c-hist").onclick = () => openHistory(name, mp.value().length ? mp.value() : models.slice(0, 3).map((m) => m.name));
+  bindHistAlert("c", name, () => (mp.value().length ? mp.value() : models.slice(0, 3).map((m) => m.name)));
   let en = c.enabled;
   $("c-en").onclick = () => { en = !en; $("c-en").classList.toggle("on", en);
     $("c-en").innerHTML = ic("power") + (en ? "включено" : "выключено"); haptic(); };
   $("c-test").onclick = () => toast(c.pending ? "Подписка создаётся - уведомления скоро пойдут" : "Уведомления приходят в чат бота", "bell");
-  const close = () => { s1(); s2(); closeSheet(); };
   $("del").onclick = () => {
-    const ask = (yes) => { if(yes){ close(); save("coll_del", { cid }, "Удалено"); } };
+    const ask = (yes) => { if(yes){ s1(); s2(); closeSheet(true); save("coll_del", { cid }, "Удалено"); } };
     if(TG && TG.showConfirm) TG.showConfirm(tr(`Удалить ${name}?`), ask); else ask(true);
   };
-  $("ok").onclick = async () => {
+  const payload = () => {
     const numbers = ($("watch").value || "").split(",").map((x) => x.trim().replace("#", ""))
       .filter(Boolean).map(Number).filter((x) => x > 0);
+    return Object.assign({ cid, models: mp.value(), backdrops: bp.value(), numbers, mono_min: monoOf() }, numOf());
+  };
+  // Сохраняем при закрытии карточки, и только если что-то поменялось.
+  const was = JSON.stringify(payload());
+  SHEET_GUARD = async () => {
+    const p = payload(), changed = JSON.stringify(p) !== was, toggled = en !== c.enabled;
+    if(!changed && !toggled){ s1(); s2(); return true; }
     try{
-      await call("coll_filters", Object.assign({ cid, models: mp.value(), backdrops: bp.value(), numbers,
-        mono_min: monoOf() }, numOf()));
-      if(en !== c.enabled) await call("coll_toggle", { cid });
-      close(); render(); toast("Сохранено");
-    }catch(e){ $("err").textContent = e.message; }
+      if(changed) await call("coll_filters", p);
+      if(toggled) await call("coll_toggle", { cid });
+      s1(); s2(); render(); toast("Сохранено");
+      return true;
+    }catch(e){ $("err").textContent = e.message; toast(e.message, "help"); return false; }
   };
 }
 
@@ -2358,7 +2462,7 @@ async function editFlip(fid){
       <button id="f-en" class="${f.enabled ? "on" : ""}">${ic("power")}${f.enabled ? "включено" : "выключено"}</button>
       <button id="del" class="red">${ic("trash")}освободить слот</button></div>
     ${f.paused ? `<div class="hint" style="margin:0 4px 10px;color:var(--orange)">Не хватает слотов - это отслеживание на паузе.</div>` : ""}
-    <div class="group">${rowHtml({ tile: "teal", icon: "chart", title: "История цен", sub: "флор и последние продажи", attr: 'id="f-hist"' })}</div>
+    ${histAlertRow("f")}
     <label>Фильтры листинга</label>${mp.html}${bp.html}
     <label>Маркеты</label>${kp.html}
     <div class="hint">Пусто - любой маркет.</div>
@@ -2372,13 +2476,13 @@ async function editFlip(fid){
     ${monoRow(f.mono_min)}
     ${numberBlock(f.number)}
     <div class="err" id="err"></div>
-    <button class="btn blue" style="margin-top:8px" id="ok">${ic("check")}Сохранить</button>`;
+    <div class="hint center">Изменения сохраняются сами, когда закрываешь карточку.</div>`;
   after($("panel"));
   kp.draw("");
   const s1 = mp.bind(), s2 = bp.bind();
   const numOf = bindNumber(), monoOf = bindMonoRow(f.slug, models.map((m) => m.name));
   modelFloors(f.slug, models, mp.redraw, mp.isOpen);
-  $("f-hist").onclick = () => openHistory(f.slug, mp.value().length ? mp.value() : models.slice(0, 3).map((m) => m.name));
+  bindHistAlert("f", f.slug, () => (mp.value().length ? mp.value() : models.slice(0, 3).map((m) => m.name)));
   let mode = f.mode === "all" ? "all" : "deals", en = f.enabled;
   const note = () => { $("mode-note").textContent = mode === "all"
     ? "Все новые листинги под фильтр - для тех, кто сам отправляет офферы."
@@ -2387,21 +2491,28 @@ async function editFlip(fid){
   bindSeg("fmode", (k) => { mode = k; note(); });
   $("f-en").onclick = () => { en = !en; $("f-en").classList.toggle("on", en);
     $("f-en").innerHTML = ic("power") + (en ? "включено" : "выключено"); haptic(); };
-  const close = () => { s1(); s2(); closeSheet(); };
-  $("x").onclick = close;
+  $("x").onclick = () => closeSheet();
   $("del").onclick = () => {
-    const ask = (yes) => { if(yes){ close(); save("flip_del", { id: fid }, "Слот освобождён"); } };
+    const ask = (yes) => { if(yes){ s1(); s2(); closeSheet(true); save("flip_del", { id: fid }, "Слот освобождён"); } };
     if(TG && TG.showConfirm) TG.showConfirm(tr(`Удалить отслеживание ${name}?`), ask); else ask(true);
   };
-  $("ok").onclick = async () => {
+  const payload = () => {
     const val = (id) => $(id).value === "" ? null : Number($(id).value);
     const picked = kp.value();
+    return Object.assign({ id: fid, mode, models: mp.value(), backdrops: bp.value(),
+      markets: markets.filter((m) => picked.includes(m.name)).map((m) => m.key),
+      max_price: val("mx"), min_discount: val("dc") || 0, mono_min: monoOf(), enabled: en }, numOf());
+  };
+  // Сохраняем при закрытии карточки, и только если что-то поменялось.
+  const was = JSON.stringify(payload());
+  SHEET_GUARD = async () => {
+    const p = payload();
+    if(JSON.stringify(p) === was){ s1(); s2(); return true; }
     try{
-      await call("flip_update", Object.assign({ id: fid, mode, models: mp.value(), backdrops: bp.value(),
-        markets: markets.filter((m) => picked.includes(m.name)).map((m) => m.key),
-        max_price: val("mx"), min_discount: val("dc") || 0, mono_min: monoOf(), enabled: en }, numOf()));
-      close(); render(); toast("Сохранено");
-    }catch(e){ $("err").textContent = e.message; }
+      await call("flip_update", p);
+      s1(); s2(); render(); toast("Сохранено");
+      return true;
+    }catch(e){ $("err").textContent = e.message; toast(e.message, "help"); return false; }
   };
 }
 
@@ -2427,12 +2538,13 @@ async function addHolding(){
     bindSeg("hbd", (k) => { bd = k; });
     $("ok").onclick = async () => {
       try{
+        $("ok").disabled = true;
         await call("portfolio_add", { slug, model: mp.value()[0] || "", backdrop: bd, qty: Number($("hq").value || 1) });
         stop();
         const a = $("panel").querySelector(".shero .art");
-        if(a && fxOn("add")){ FX.fly(a, "out"); await sleep(420); }
-        closeSheet(); portShown = null; renderPortfolio(); toast("Добавлено в портфель", "case");
-      }catch(e){ $("err").textContent = e.message; }
+        if(a && fxOn("add")) FX.fly(a, "out");
+        closeSheet(true); renderPortfolio(); toast("Добавлено в портфель", "case");
+      }catch(e){ $("ok").disabled = false; $("err").textContent = e.message; }
     };
   }, "Подарок в портфель");
 }
@@ -2452,18 +2564,22 @@ function editHolding(h){
     <input type="number" id="hp" class="num" step="0.01" min="0"
       placeholder="${h.market_price ? "рыночная " + fmtTon(h.market_price) : "рыночная"}" value="${h.own_price ?? ""}">
     <div class="hint">Пусто - по рыночной. Своя цена не меняется при почасовом обновлении.</div>
-    <div class="two" style="margin-top:14px"><button class="btn danger" id="del">${ic("trash")}Убрать</button>
-      <button class="btn blue" id="ok">${ic("check")}Сохранить</button></div>`);
+    <div class="err" id="err"></div>
+    <button class="btn danger" style="margin-top:14px" id="del">${ic("trash")}Убрать</button>
+    <div class="hint center">Изменения сохраняются сами, когда закрываешь карточку.</div>`);
   popHero();
-  $("x").onclick = closeSheet;
-  $("ok").onclick = async () => {
-    try{
-      await call("portfolio_set", { id: h.id, qty: Number($("hq").value || 1), own_price: $("hp").value });
-      closeSheet(); renderPortfolio(); toast("Сохранено");
-    }catch(e){ toast(e.message, "help"); }
+  $("x").onclick = () => closeSheet();
+  // как карточка коллекции: сохраняем при закрытии и только если что-то поменялось
+  const read = () => ({ id: h.id, qty: Number($("hq").value || 1), own_price: $("hp").value });
+  const was = JSON.stringify(read());
+  SHEET_GUARD = async () => {
+    const p = read();
+    if(JSON.stringify(p) === was) return true;
+    try{ await call("portfolio_set", p); renderPortfolio(); toast("Сохранено"); return true; }
+    catch(e){ $("err").textContent = e.message; toast(e.message, "help"); return false; }
   };
   $("del").onclick = async () => {
-    closeSheet();
+    closeSheet(true);
     try{ await call("portfolio_del", { id: h.id }); portShown = null; renderPortfolio(); toast("Убрано"); }
     catch(e){ toast(e.message, "help"); }
   };
@@ -2932,8 +3048,7 @@ async function openHistory(slug, models){
   const opts = [["", "Коллекция"]].concat((models || []).slice(0, 6).map((m) => [m, m]));
   openSheet(sheroHtml(name, "", "", name, "история цен") + `
     ${opts.length > 1 ? segHtml("hm", opts, "") : ""}
-    <div id="hbody"><div class="skel" style="height:160px"></div></div>
-    <button class="btn" style="margin-top:12px" id="h-alert">${ic("bell")}Ценовой алерт</button>`);
+    <div id="hbody"><div class="skel" style="height:160px"></div></div>`);
   $("x").onclick = closeSheet;
   let model = "";
   const draw = async () => {
@@ -2942,22 +3057,24 @@ async function openHistory(slug, models){
     try{ d = await call("model_history", { slug, model }); }catch(e){ $("hbody").innerHTML = `<div class="err">${esc(e.message)}</div>`; return; }
     const pts = (d.floors || []).map((p) => ({ t: p.t * 1000, v: p.price }));
     const last = pts.length ? pts[pts.length - 1].v : null;
-    const sales = (d.sales || []).slice(-8).reverse();
     $("hbody").innerHTML = `
       <div class="card hcard"><div class="hhead"><small>флор${model ? " модели" : ""}</small>
         <b class="num">${last ? fmtTon(last) + " TON" : "-"}</b></div>
         ${pts.length > 1 ? chartSvg(pts) : `<div class="hint" style="margin:6px 0 4px">${pts.length
-          ? "Пока одна точка: график появится через пару часов." : "Флор ещё не посчитан."}</div>`}</div>
-      <label>Последние продажи</label>
-      ${sales.length ? `<div class="group plain">${sales.map((s) => `<div class="row"><span class="t">
-          <b class="num">${fmtTon(s.price)} TON</b><span>${esc(((S.markets || []).find((m) => m.key === s.market) || {}).label || s.market || "")}${
-            s.backdrop ? " · " + esc(s.backdrop) : ""}</span></span>
-          <span class="v">${dayMonth(s.t)}</span></div>`).join("")}</div>`
-        : `<div class="hint">Продаж в базе бота пока нет: они копятся, пока модуль листингов следит за коллекцией.</div>`}`;
+          ? "Пока одна точка: график появится через пару часов." : "Флор ещё не посчитан."}</div>`}</div>`;
   };
   if(opts.length > 1) bindSeg("hm", (k) => { model = k; draw(); });
-  $("h-alert").onclick = () => newAlert(slug, model);
   draw();
+}
+
+/* Две кнопки рядом в карточке коллекции: история цен и ценовой алерт. */
+function histAlertRow(p){
+  return `<div class="duo"><button class="duo-b" id="${p}-hist"><span class="tile teal">${ic("chart")}</span>История цен</button>
+    <button class="duo-b" id="${p}-alert"><span class="tile red">${ic("bell")}</span>Ценовой алерт</button></div>`;
+}
+function bindHistAlert(p, slug, models){
+  $(p + "-hist").onclick = () => openHistory(slug, models());
+  $(p + "-alert").onclick = () => newAlert(slug, "");
 }
 
 /* ---------- ценовые алерты ---------- */
@@ -3088,6 +3205,250 @@ function bindQuiet(){
     if(s === e){ toast("Начало и конец совпадают", "help"); return; }
     send({ mode, start: s, end: e, tz }, "Тихие часы сохранены");
   };
+}
+
+/* ===================== БАННЕРЫ =====================
+   Карусель вверху главной: действующая акция и объявление (собираются из
+   state.announcements) и баннеры владельца (state.banners). Если баннеров
+   несколько, они сменяют друг друга каждые 5 секунд; можно листать пальцем.
+   Выключатель в админке прячет карусель целиком. */
+const BN_COLORS = { violet: ["#7b5cff", "#b45cf2"], blue: ["#3f8cff", "#1d5fd6"], green: ["#2fbf71", "#138a52"],
+  orange: ["#ff9f43", "#ff6b3d"], pink: ["#ff5fa2", "#c2337a"], dark: ["#2a2f3d", "#12151e"] };
+const BN_GO = [["sniper", "Улучшения"], ["flip", "Листинги"], ["portfolio", "Портфель"], ["buy", "Купить слот"],
+  ["profile", "Профиль"]];
+let bnTimer = 0;
+
+function bannerImg(b){
+  const f = b && b.bg && b.bg.image;
+  if(b && b._local) return b._local;           // только что загруженная, ещё не с сервера
+  return f && API ? `${API}/api/banner/${encodeURIComponent(f)}` : "";
+}
+function homeBanners(){
+  if(!S || S.banners_on === false) return [];
+  const auto = (S.announcements || []).map((a) => a.kind === "promo"
+    ? { title: a.title, text: a.text, bg: { color: "violet" }, auto: true,
+        button: S.flip && S.flip.enabled ? { action: "go", target: "buy", text: "Купить слот" } : null }
+    : { title: a.title, text: a.text, bg: { color: "blue" }, auto: true, notice: true });
+  // акция и объявление - первыми: они про «сейчас»
+  return auto.concat(S.banners || []);
+}
+function bannerHtml(b, i){
+  const c = BN_COLORS[(b.bg || {}).color] || BN_COLORS.violet;
+  const img = bannerImg(b);
+  const bg = img ? `background:#111 url('${esc(img)}') center/cover`
+    : `background:linear-gradient(120deg,${c[0]},${c[1]})`;
+  const btn = b.button && b.button.action && b.button.action !== "none"
+    ? `<span class="bnr-b">${esc(b.button.text || "")}</span>` : "";
+  const hasArt = b.art && b.art.coll;
+  return `<div class="bnr ${img ? "img" : ""} ${hasArt ? "with-art" : ""}" data-bn="${i}" style="${bg}">
+    ${img ? "" : sparkles(5, .35)}
+    <div class="bnr-t" ${b.auto && !b.notice ? "" : "data-notx"}>${b.title ? `<b>${esc(b.title)}</b>` : ""}${b.text
+      ? `<span>${esc(b.text)}</span>` : ""}${btn}</div>
+    ${hasArt ? art(b.art.coll, b.art.model || "", "bnr-art", true) : ""}</div>`;
+}
+function bannersBlock(){
+  const list = homeBanners();
+  if(!list.length) return "";
+  return `<div class="bnrs" id="bnrs"><div class="bnr-track" id="bnr-track">${list.map(bannerHtml).join("")}</div>
+    ${list.length > 1 ? `<div class="bnr-dots">${list.map((_, i) => `<i class="${i ? "" : "on"}"></i>`).join("")}</div>` : ""}</div>`;
+}
+function bindBanners(){
+  clearInterval(bnTimer);
+  const tr = $("bnr-track");
+  if(!tr) return;
+  const list = homeBanners();
+  const dots = [...document.querySelectorAll("#bnrs .bnr-dots i")];
+  const step = () => (tr.children[1] ? tr.children[1].offsetLeft - tr.children[0].offsetLeft : tr.clientWidth) || 1;
+  const idx = () => Math.round(tr.scrollLeft / step());
+  tr.addEventListener("scroll", () => { const k = idx(); dots.forEach((d, i) => d.classList.toggle("on", i === k)); },
+    { passive: true });
+  let touched = 0;
+  tr.addEventListener("pointerdown", () => { touched = Date.now(); }, { passive: true });
+  if(list.length > 1) bnTimer = setInterval(() => {
+    if(VIEW !== "home" || !document.body.contains(tr)){ clearInterval(bnTimer); return; }
+    // человек листает сам или открыл окно - не перебиваем
+    if(Date.now() - touched < 7000 || $("sheet").classList.contains("on") || document.hidden) return;
+    tr.scrollTo({ left: ((idx() + 1) % list.length) * step(), behavior: REDUCED ? "auto" : "smooth" });
+  }, 5000);
+  tr.querySelectorAll("[data-bn]").forEach((el) => el.onclick = () => bannerAct(list[+el.dataset.bn]));
+}
+function bannerAct(b){
+  const btn = b && b.button;
+  if(!btn || !btn.action || btn.action === "none") return;
+  haptic();
+  if(btn.action === "url") openUrl(btn.target);
+  else if(btn.target === "buy"){ go("flip"); setTimeout(buySlot, 450); }
+  else go(btn.target);
+}
+
+/* ---------- админка: список баннеров ---------- */
+async function adminBanners(){
+  openSheet(`<h2><span class="tile purple">${ic("mega")}</span>Баннеры</h2>
+    <p class="sub">Наверху главной. Если баннеров несколько, они сменяют друг друга.</p>
+    <div id="bnbody"><div class="skel"></div></div>`);
+  let d = null;
+  try{ d = await call("banners", {}); }catch(e){ $("bnbody").innerHTML = `<div class="err">${esc(e.message)}</div>`; return; }
+  const items = d.items || [];
+  $("bnbody").innerHTML = `
+    <div class="group plain"><div class="row"><span class="t"><b>Показывать баннеры</b>
+      <span>выключено - на главной нет баннеров, в том числе акции и объявления</span></span>
+      <button class="tgl ${d.on ? "on" : ""}" id="bn-on"></button></div></div>
+    ${items.length ? `<div class="group">${items.map((b, i) => {
+      const c = BN_COLORS[(b.bg || {}).color] || BN_COLORS.violet;
+      return `<div class="row bnrow" data-bi="${i}">
+        <span class="bnsw" style="${b.bg && b.bg.image ? `background:#111 url('${esc(bannerImg(b))}') center/cover`
+          : `background:linear-gradient(120deg,${c[0]},${c[1]})`}"></span>
+        <span class="t"><b>${esc(b.title || b.text || "Баннер")}</b><span>${b.enabled === false ? "скрыт" : "показывается"}${
+          b.art && b.art.coll ? " · " + esc(collName(b.art.coll)) : ""}</span></span>
+        <button class="round sm" data-up="${i}" ${i ? "" : "disabled"}>${ic("up")}</button>
+        <button class="round sm" data-dn="${i}" ${i < items.length - 1 ? "" : "disabled"}>${ic("down")}</button></div>`;
+    }).join("")}</div>` : `<div class="hint">Своих баннеров пока нет.</div>`}
+    <button class="btn blue" style="margin-top:10px" id="bn-new">${ic("plus")}Новый баннер</button>`;
+  after($("bnbody"));
+  $("bn-on").onclick = async () => {
+    const on = !$("bn-on").classList.contains("on");
+    $("bn-on").classList.toggle("on", on); haptic();
+    try{ await call("banner_save", { on }); toast(on ? "Баннеры показываются" : "Баннеры скрыты"); }
+    catch(e){ toast(e.message, "help"); }
+  };
+  $("bn-new").onclick = () => editBanner({ title: "", text: "", bg: { color: "violet" }, button: { action: "none" }, enabled: true });
+  $("bnbody").querySelectorAll("[data-bi]").forEach((r) => r.onclick = (e) => {
+    if(e.target.closest("[data-up],[data-dn]")) return;
+    editBanner(JSON.parse(JSON.stringify(items[+r.dataset.bi])));
+  });
+  const move = async (i, step) => {
+    try{ await call("banner_move", { id: items[i].id, step }); adminBanners(); }catch(e){ toast(e.message, "help"); }
+  };
+  $("bnbody").querySelectorAll("[data-up]").forEach((b) => b.onclick = () => move(+b.dataset.up, -1));
+  $("bnbody").querySelectorAll("[data-dn]").forEach((b) => b.onclick = () => move(+b.dataset.dn, 1));
+}
+
+/* ---------- админка: редактор баннера ----------
+   Сверху живой предпросмотр - тот же баннер, что увидят люди. */
+function editBanner(ed){
+  ed.button = ed.button || { action: "none" };
+  ed.bg = ed.bg || { color: "violet" };
+  const bgKind = ed.bg.image || ed._local ? "image" : "color";
+  openSheet(`<h2><span class="tile purple">${ic("mega")}</span>${ed.id ? "Баннер" : "Новый баннер"}</h2>
+    <div class="bnprev" id="bnprev"></div>
+    <label>Заголовок</label><input type="text" id="bn-t" maxlength="60" placeholder="Redo улучшен" value="${esc(ed.title || "")}">
+    <label>Текст</label><input type="text" id="bn-x" maxlength="140" placeholder="Торги запущены" value="${esc(ed.text || "")}">
+    <label>Фон</label>${segHtml("bn-bg", [["color", "Цвет"], ["image", "Картинка"]], bgKind)}
+    <div id="bn-colors" class="bncolors" style="display:${bgKind === "color" ? "flex" : "none"}">${Object.entries(BN_COLORS).map(([k, c]) =>
+      `<button class="bnc ${ed.bg.color === k ? "on" : ""}" data-c="${k}" style="background:linear-gradient(120deg,${c[0]},${c[1]})"></button>`).join("")}</div>
+    <div id="bn-imgbox" style="display:${bgKind === "image" ? "block" : "none"}">
+      <input type="file" id="bn-file" accept="image/png,image/jpeg,image/webp" style="display:none">
+      <button class="btn" id="bn-up">${ic("plus")}Загрузить картинку</button>
+      <div class="hint">Лучше горизонтальная, примерно 3 к 1. Текст и подарок будут поверх неё.</div></div>
+    <label>Подарок с анимацией</label>
+    <div class="two"><button class="btn" id="bn-gift">${ic("gift")}${ed.art && ed.art.coll ? esc(collName(ed.art.coll)) : "Выбрать"}</button>
+      ${ed.art && ed.art.coll ? `<button class="btn ghost" id="bn-nogift">Убрать</button>` : ""}</div>
+    <div id="bn-models"></div>
+    <label>Кнопка</label>${segHtml("bn-act", [["none", "Нет"], ["go", "Раздел"], ["url", "Ссылка"]], ed.button.action || "none")}
+    <div id="bn-btn" style="display:${ed.button.action && ed.button.action !== "none" ? "block" : "none"}">
+      <input type="text" id="bn-bt" maxlength="24" placeholder="Вперёд!" style="margin-top:10px" value="${esc(ed.button.text || "")}">
+      <div id="bn-go" style="margin-top:10px;display:${ed.button.action === "go" ? "block" : "none"}">${segHtml("bn-target", BN_GO,
+        ed.button.action === "go" ? ed.button.target : "sniper").replace('class="seg"', 'class="seg wrap"')}</div>
+      <input type="text" id="bn-url" placeholder="https://t.me/..." style="margin-top:10px;display:${ed.button.action === "url" ? "block" : "none"}"
+        value="${esc(ed.button.action === "url" ? ed.button.target || "" : "")}"></div>
+    <div class="group plain" style="margin-top:12px"><div class="row"><span class="t"><b>Показывать</b>
+      <span>скрытый баннер видишь только здесь</span></span>
+      <button class="tgl ${ed.enabled !== false ? "on" : ""}" id="bn-en"></button></div></div>
+    <div class="err" id="bn-err"></div>
+    <div class="two" style="margin-top:8px">${ed.id ? `<button class="btn danger" id="bn-del">${ic("trash")}Удалить</button>` : ""}
+      <button class="btn blue" id="bn-ok">${ic("check")}Сохранить</button></div>`);
+  const read = () => {
+    ed.title = $("bn-t").value; ed.text = $("bn-x").value;
+    const act = ($("bn-act").querySelector("button.on") || {}).dataset.k || "none";
+    ed.button = act === "none" ? { action: "none" } : {
+      action: act, text: $("bn-bt").value,
+      target: act === "go" ? (($("bn-target").querySelector("button.on") || {}).dataset.k || "sniper") : $("bn-url").value.trim() };
+    ed.enabled = $("bn-en").classList.contains("on");
+  };
+  const preview = () => {
+    read();
+    keepArts($("bnprev"), () => { $("bnprev").innerHTML = bannerHtml(ed, 0); });
+    after($("bnprev"));
+  };
+  preview();
+  ["bn-t", "bn-x", "bn-bt", "bn-url"].forEach((id) => $(id).addEventListener("input", preview));
+  bindSeg("bn-bg", (k) => {
+    $("bn-colors").style.display = k === "color" ? "flex" : "none";
+    $("bn-imgbox").style.display = k === "image" ? "block" : "none";
+    if(k === "color"){ ed.bg = { color: ed.bg.color || "violet" }; delete ed._local; }
+    preview();
+  });
+  $("bn-colors").querySelectorAll("[data-c]").forEach((b) => b.onclick = () => {
+    $("bn-colors").querySelectorAll(".on").forEach((x) => x.classList.remove("on"));
+    b.classList.add("on"); haptic();
+    ed.bg = { color: b.dataset.c }; delete ed._local; preview();
+  });
+  $("bn-up").onclick = () => $("bn-file").click();
+  $("bn-file").onchange = async () => {
+    const f = $("bn-file").files[0];
+    if(!f) return;
+    $("bn-err").textContent = "";
+    try{
+      const data = await shrinkImage(f, 1200);
+      ed._local = data; preview();
+      const r = await call("banner_image", { data });
+      ed.bg = { image: r.file };
+      toast("Картинка загружена");
+    }catch(e){ $("bn-err").textContent = e.message || "Картинка не загрузилась"; }
+  };
+  bindSeg("bn-act", (k) => {
+    $("bn-btn").style.display = k === "none" ? "none" : "block";
+    $("bn-go").style.display = k === "go" ? "block" : "none";
+    $("bn-url").style.display = k === "url" ? "block" : "none";
+    preview();
+  });
+  bindSeg("bn-target", () => preview());
+  $("bn-en").onclick = () => { $("bn-en").classList.toggle("on"); haptic(); preview(); };
+  // Подарок: выбрать коллекцию, потом модель (необязательно). Окно выбора одно на
+  // всё приложение, поэтому черновик баннера переживает его в ed и открывается снова.
+  $("bn-gift").onclick = () => { read(); pickCollection(async (slug) => { ed.art = { coll: slug, model: "" }; editBanner(ed); }, "Подарок для баннера"); };
+  if($("bn-nogift")) $("bn-nogift").onclick = () => { read(); delete ed.art; editBanner(ed); };
+  if(ed.art && ed.art.coll){
+    loadCatalog(ed.art.coll).then((cat) => {
+      if(!$("bn-models")) return;
+      const items = (cat.models || []).map((m) => ({ name: m.name, pct: m.pct }));
+      const mp = pickGrid("bn-mp", items, ed.art.model ? [ed.art.model] : [], "model", ed.art.coll, true);
+      $("bn-models").innerHTML = `<div class="hint" style="margin:8px 4px 0">Модель - необязательно</div>${mp.html}`;
+      mp.draw("");
+      $("bn-mp").addEventListener("pick", () => { ed.art.model = mp.value()[0] || ""; preview(); });
+    });
+  }
+  $("bn-ok").onclick = async () => {
+    read();
+    const banner = { id: ed.id, title: ed.title, text: ed.text, bg: ed.bg, art: ed.art, button: ed.button, enabled: ed.enabled };
+    try{
+      await call("banner_save", { banner });
+      hapticOk(); toast("Баннер сохранён"); adminBanners(); refreshState();
+    }catch(e){ $("bn-err").textContent = e.message; }
+  };
+  if($("bn-del")) $("bn-del").onclick = () => {
+    const ask = async (yes) => {
+      if(!yes) return;
+      try{ await call("banner_del", { id: ed.id }); toast("Баннер удалён"); adminBanners(); refreshState(); }
+      catch(e){ $("bn-err").textContent = e.message; }
+    };
+    if(TG && TG.showConfirm) TG.showConfirm(tr("Удалить баннер?"), ask); else ask(true);
+  };
+}
+/* Картинку сжимаем в приложении: с телефона приходят снимки по 5-10 МБ, а баннеру
+   хватает 1200 точек по ширине. JPEG 85% - около 150-250 КБ. */
+async function shrinkImage(file, maxW){
+  const url = URL.createObjectURL(file);
+  try{
+    const img = new Image();
+    img.src = url;
+    await img.decode();
+    const k = Math.min(1, maxW / img.naturalWidth);
+    const c = document.createElement("canvas");
+    c.width = Math.round(img.naturalWidth * k); c.height = Math.round(img.naturalHeight * k);
+    c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
+    return c.toDataURL("image/jpeg", .85);
+  }finally{ URL.revokeObjectURL(url); }
 }
 
 /* ===================== АНГЛИЙСКИЙ =====================
@@ -3601,7 +3962,56 @@ const EN_DICT = {
 "дней": "days",
 "час": "hour",
 "ч": "h",
-"С": "From"
+"С": "From",
+"Изменения сохраняются сами, когда закрываешь карточку": "Changes are saved automatically when you close the card",
+"баннеры недоступны": "banners are unavailable",
+"нужен баннер": "a banner is needed",
+"картинка баннера не найдена, загрузи её ещё раз": "banner image not found, upload it again",
+"неизвестный цвет баннера": "unknown banner color",
+"неизвестное действие кнопки": "unknown button action",
+"напиши текст кнопки": "write the button text",
+"выбери раздел для кнопки": "pick a section for the button",
+"ссылка должна начинаться с https://": "the link must start with https://",
+"нужен заголовок, текст или картинка": "a title, text or image is needed",
+"баннер не найден": "banner not found",
+"нужна картинка JPEG, PNG или WebP": "a JPEG, PNG or WebP image is needed",
+"картинка повреждена": "the image is damaged",
+"картинка больше 1.5 МБ": "the image is larger than 1.5 MB",
+"это не картинка": "this is not an image",
+"Баннеры": "Banners",
+"выключены": "off",
+"своих": "own:",
+"Баннер": "Banner",
+"Баннер сохранён": "Banner saved",
+"Баннер удалён": "Banner deleted",
+"Баннеры показываются": "Banners are shown",
+"Баннеры скрыты": "Banners are hidden",
+"Вперёд!": "Go!",
+"Выбрать": "Choose",
+"Заголовок": "Title",
+"Загрузить картинку": "Upload image",
+"Картинка": "Image",
+"Картинка загружена": "Image uploaded",
+"Картинка не загрузилась": "The image didn't upload",
+"Кнопка": "Button",
+"Лучше горизонтальная, примерно 3 к 1. Текст и подарок будут поверх неё": "Best horizontal, about 3 to 1. Text and the gift go on top of it",
+"Наверху главной. Если баннеров несколько, они сменяют друг друга": "At the top of the home screen. If there are several banners, they rotate",
+"Нет": "None",
+"Новый баннер": "New banner",
+"Подарок для баннера": "Gift for the banner",
+"Подарок с анимацией": "Animated gift",
+"Показывать": "Show",
+"Показывать баннеры": "Show banners",
+"Раздел": "Section",
+"Своих баннеров пока нет": "No banners of your own yet",
+"Ссылка": "Link",
+"Торги запущены": "Trading started",
+"Удалить баннер?": "Delete the banner?",
+"Цвет": "Color",
+"выключено - на главной нет баннеров, в том числе акции и объявления": "off - no banners on the home screen, including the promo and announcement",
+"скрыт": "hidden",
+"скрытый баннер видишь только здесь": "you see a hidden banner only here",
+"улучшен": "upgraded"
 };
 const EN_RX = [
 [
@@ -3643,6 +4053,10 @@ const EN_RX = [
 [
 "^номер\\ \\-\\ от\\ 1\\ до\\ (.+?)$",
 "number - from 1 to $1"
+],
+[
+"^не\\ больше\\ (.+?)\\ баннеров$",
+"no more than $1 banners"
 ]
 ].map(([p, r]) => [new RegExp(p), r]);
 
@@ -3913,7 +4327,9 @@ function demoState(){
     settings: { sales_days: 7, sales_show: 3, premium_emoji: true,
       quiet: { start: 1380, end: 480, mode: "silent", tz: 180 } },
     portfolio: { total: 1186.4, change_24h: 3.42, top: { slug: "PlushPepe", model: "Midas Pepe" } },
-    effects: { boot: true, buy: true, add: true, open: true }, texts: {},
+    effects: { boot: true, buy: true, add: true, open: true }, texts: {}, banners_on: true,
+    banners: [{ id: "d1", title: "Redo улучшен", text: "Торги запущены", bg: { color: "violet" },
+      art: { coll: "Plush Pepe", model: "Ninja Mike" }, button: { action: "go", text: "Вперёд!", target: "sniper" }, enabled: true }],
     announcements: [{ kind: "promo", title: "Акция", text: "-20% на слоты, 3 слот(а) в подарок. Осталось 13 дней" }],
     collections: [
       { cid: 1, slug: "PlushPepe", title: "Plush Pepe", enabled: true, pending: false,
@@ -4000,6 +4416,22 @@ async function demoCall(action, payload){
     return { ok: true, state: DEMO_S };
   }
   if(action === "alert_del"){ DEMO_S.alerts = (DEMO_S.alerts || []).filter((a) => a.id !== payload.id); return { ok: true, state: DEMO_S }; }
+  if(action === "banners") return { on: DEMO_S.banners_on !== false, items: DEMO_S.banners };
+  if(action === "banner_image") return { ok: true, file: "" };
+  if(action === "banner_save"){
+    if("on" in payload){ DEMO_S.banners_on = !!payload.on; return { ok: true, state: DEMO_S }; }
+    const b = Object.assign({}, payload.banner);
+    if(b.bg && !b.bg.image && !b.bg.color) b.bg = { color: "violet" };
+    if(b.id) DEMO_S.banners = DEMO_S.banners.map((x) => (x.id === b.id ? b : x));
+    else { b.id = "d" + Date.now(); DEMO_S.banners.push(b); }
+    return { ok: true, banner: b, state: DEMO_S };
+  }
+  if(action === "banner_del"){ DEMO_S.banners = DEMO_S.banners.filter((x) => x.id !== payload.id); return { ok: true, state: DEMO_S }; }
+  if(action === "banner_move"){
+    const i = DEMO_S.banners.findIndex((x) => x.id === payload.id), j = Math.max(0, Math.min(DEMO_S.banners.length - 1, i + payload.step));
+    [DEMO_S.banners[i], DEMO_S.banners[j]] = [DEMO_S.banners[j], DEMO_S.banners[i]];
+    return { ok: true, state: DEMO_S };
+  }
   if(action === "alert_rearm"){ (DEMO_S.alerts || []).forEach((a) => { if(a.id === payload.id) a.active = true; }); return { ok: true, state: DEMO_S }; }
   if(action === "settings"){
     if(payload.quiet) DEMO_S.settings.quiet = payload.quiet.mode === "off" ? null : payload.quiet;
