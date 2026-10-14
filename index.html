@@ -42,6 +42,7 @@ svg{display:block}
   stroke-linecap:round;stroke-linejoin:round;flex:0 0 auto}
 button{font:inherit;cursor:pointer;color:inherit;background:none;border:none;padding:0}
 input,select,textarea{font:inherit}
+html,button,.tap,a,input{touch-action:manipulation}
 img{display:block}
 
 /* ---------- экран загрузки ---------- */
@@ -62,9 +63,6 @@ img{display:block}
   background:radial-gradient(circle,rgba(47,124,246,.55),rgba(47,124,246,.12) 45%,transparent 70%)}
 #boot .logo-wrap{position:relative;width:132px;height:132px;margin-top:-6vh;will-change:transform}
 #boot .logo-wrap svg{width:100%;height:100%;overflow:visible}
-#boot .word{margin-top:26px;font-size:30px;font-weight:850;letter-spacing:-.8px;opacity:0;
-  transform:translateY(10px)}
-#boot .tag{margin-top:6px;font-size:14px;color:var(--muted);opacity:0;transform:translateY(8px)}
 #boot .load{position:absolute;bottom:calc(64px + env(safe-area-inset-bottom));left:50%;
   width:120px;height:4px;border-radius:2px;background:var(--s2);overflow:hidden;
   transform:translateX(-50%);opacity:0;transition:opacity .3s}
@@ -78,11 +76,9 @@ img{display:block}
 #boot.play .logo-wrap{opacity:0}
 #boot.play .rays{animation:raysIn 1s var(--ease) .55s forwards, spin 26s linear infinite}
 #boot.play .halo{animation:haloIn .9s var(--spring) .52s forwards}
-#boot.play .word{animation:fadeUp .5s var(--ease) .8s forwards}
-#boot.play .tag{animation:fadeUp .5s var(--ease) .92s forwards}
 #boot.play .load{opacity:1;transition-delay:1.1s}
 #boot.hit .flash{animation:flash .55s ease-out}
-#boot.out .word,#boot.out .tag,#boot.out .load,#boot.out .msg{transition:.25s;opacity:0}
+#boot.out .load,#boot.out .msg{transition:.25s;opacity:0}
 #boot.out .flash{animation:flash .6s ease-out forwards}
 #boot .flash{position:absolute;inset:0;background:radial-gradient(circle at 50% 44%,#fff,rgba(120,175,255,.6) 30%,transparent 70%);
   opacity:0;pointer-events:none}
@@ -598,7 +594,7 @@ input[type=range]::-moz-range-thumb{width:26px;height:26px;border-radius:50%;bor
   animation-iteration-count:1!important;transition-duration:.01ms!important}}
 </style>
 <style>
-#boot .word,.brandrow{font-variant-ligatures:none;font-feature-settings:"liga" 0,"calt" 0}
+.brandrow{font-variant-ligatures:none;font-feature-settings:"liga" 0,"calt" 0}
 .brandrow{display:flex;align-items:center;gap:9px;margin:2px 2px 0;font-weight:800;font-size:17px;letter-spacing:-.3px}
 .brandrow svg{width:30px;height:30px;filter:drop-shadow(0 4px 10px rgba(47,124,246,.35))}
 .brandrow.foot{justify-content:center;opacity:.45;margin:30px 0 6px;font-size:14px}
@@ -612,9 +608,6 @@ input[type=range]::-moz-range-thumb{width:26px;height:26px;border-radius:50%;bor
 .art.mini{width:40px;height:40px;flex:0 0 40px}
 .empty .art svg,.big-icon svg{width:100%;height:100%;overflow:visible}
 .big-icon{animation:bob 5s ease-in-out infinite}
-#boot .word span{background:linear-gradient(90deg,#5a9bff,#c3dbff);-webkit-background-clip:text;
-  background-clip:text;color:transparent}
-#boot.still .word,#boot.still .tag{opacity:1;transform:none}
 /* Логотип живой везде: блик пробегает по подарку, искры мерцают. */
 .lg-glare{animation:glare 3.6s ease-in-out infinite}
 .lg-star,.lg-star2{transform-box:fill-box;transform-origin:center;animation:starTw 2.4s ease-in-out infinite}
@@ -629,6 +622,43 @@ input[type=range]::-moz-range-thumb{width:26px;height:26px;border-radius:50%;bor
 @media (prefers-reduced-motion:reduce){.lg-glare,.lg-star,.lg-star2,#boot .lg-float{animation:none!important}}
 .skel i{display:block;background:var(--s1);border-radius:12px}
 .me-hero{padding-top:6px}
+/* только что добавленная карточка: короткая синяя вспышка рамки */
+.born{animation:born 1.3s var(--ease)}
+@keyframes born{0%{box-shadow:0 0 0 0 rgba(90,155,255,0);transform:scale(.97)}
+  25%{box-shadow:0 0 0 3px rgba(90,155,255,.9),0 0 34px rgba(47,124,246,.55);transform:scale(1.015)}
+  100%{box-shadow:0 0 0 0 rgba(90,155,255,0);transform:none}}
+/* главная: рынок, состояние, новые коллекции */
+.mrow .v{flex-direction:column;align-items:flex-end;gap:2px}
+.mrow .v b{font-size:16px}
+.mrow .v .delta{font-size:12.5px}
+.delta.up{color:var(--green)}.delta.down{color:var(--red)}
+.sdot{width:10px;height:10px;border-radius:50%;flex:0 0 10px;margin:0 4px 0 2px}
+.sdot.ok{background:var(--green);box-shadow:0 0 10px rgba(48,209,88,.6)}
+.sdot.mid{background:var(--orange);box-shadow:0 0 10px rgba(255,159,10,.5)}
+.sdot.bad{background:var(--red);box-shadow:0 0 10px rgba(255,69,58,.5)}
+.newc{background:radial-gradient(circle at 50% 35%,var(--c1),var(--c2))}
+.newc .pr>span{font-size:11.5px;height:26px;padding:0 10px;white-space:nowrap;background:rgba(255,255,255,.1)}
+.opt .fl{font-size:11.5px;color:#8bb8ff;font-weight:700}
+.hcard{padding:14px 14px 10px}
+.hhead small{display:block;font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+.hhead b{font-size:26px;font-weight:800}
+input[type=time]{display:block;width:100%;min-width:0;max-width:100%;box-sizing:border-box;height:50px;
+  padding:0 14px;border-radius:15px;border:none;background:var(--s1);color:var(--text);font-size:17px;
+  color-scheme:dark;-webkit-appearance:none;appearance:none}
+.two>div{min-width:0}
+/* примеры монохромов */
+.mx-title{margin:14px 2px 8px;font-size:13px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+.mx{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.mxi{position:relative;border-radius:16px;padding:8px 6px 7px;text-align:center;overflow:hidden;
+  background:radial-gradient(circle at 50% 38%,var(--c1),var(--c2))}
+.mxi .art{width:64%;aspect-ratio:1;margin:2px auto 3px}
+.mxp{position:absolute;top:6px;right:6px;font-size:11px;font-weight:800;padding:2px 6px;border-radius:8px;
+  background:rgba(0,0,0,.4)}
+.mxn,.mxb{display:block;font-size:11px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mxb{font-weight:500;color:rgba(255,255,255,.7)}
+.al .row .t b,.al .row .t span{white-space:normal}
+.al .chip{height:24px;padding:0 9px;font-size:12px;flex:0 0 auto}
+.credit{display:block;margin:-2px auto 8px;padding:6px 10px;font-size:12px;color:var(--muted-2);background:none}
 /* Правка надписей: полоса сверху, пока режим включён, и окно правки поверх всего. */
 #txbar{position:fixed;left:12px;right:12px;top:calc(10px + var(--tg-content-safe-area-inset-top,0px));z-index:130;
   display:none;align-items:center;gap:10px;padding:8px 8px 8px 14px;border-radius:18px;
@@ -703,8 +733,6 @@ body.txedit,body.txedit *{-webkit-user-select:none;user-select:none;-webkit-touc
   <div class="bveil"></div>
   <div class="rays"></div><div class="halo"></div>
   <div class="logo-wrap" id="boot-logo"></div>
-  <div class="word" id="boot-word"></div>
-  <div class="tag" id="boot-tag"></div>
   <div class="load"><i></i></div>
   <div class="msg" id="boot-sub"></div>
   <div class="flash"></div>
@@ -771,8 +799,8 @@ body.txedit,body.txedit *{-webkit-user-select:none;user-select:none;-webkit-touc
 <nav id="nav">
   <span class="ind" id="ind"></span>
   <button class="tab on" data-go="home"><svg class="ico"><use href="#i-home"/></svg>Главная</button>
-  <button class="tab" data-go="sniper"><svg class="ico"><use href="#i-scope"/></svg>Снайпер</button>
-  <button class="tab" data-go="flip"><svg class="ico"><use href="#i-flip"/></svg>Флип</button>
+  <button class="tab" data-go="sniper"><svg class="ico"><use href="#i-scope"/></svg>Улучшения</button>
+  <button class="tab" data-go="flip"><svg class="ico"><use href="#i-flip"/></svg>Листинги</button>
   <button class="tab" data-go="portfolio"><svg class="ico"><use href="#i-case"/></svg>Портфель</button>
   <button class="tab" data-go="profile"><span class="me" id="tab-me"><svg class="ico" style="width:18px;height:18px"><use href="#i-user"/></svg></span>Профиль</button>
 </nav>
@@ -865,7 +893,7 @@ function logoSvg(){
       <path class="lg-star2" d="${starPath(95, 27, 5.5)}" fill="#fff"/></svg>`;
 }
 const BRAND = {
-  name: "GiftFlip", word: "Gift<span>Flip</span>", tag: "Купи дешевле, продай дороже",
+  name: "GiftFlip",
   get svg(){ return logoSvg(); },
 };
 document.title = BRAND.name;
@@ -994,6 +1022,13 @@ const FX = (() => {
     if(png && png.complete && png.naturalWidth){
       copy = new Image(); copy.src = png.src; copy.alt = "";
       copy.style.cssText = "position:absolute;inset:0;width:100%;height:100%;object-fit:contain";
+      // В плитке стоит уменьшенная картинка, а в полёте подарок растёт в разы -
+      // подменяем на крупную, когда она загрузится (обычно до середины полёта).
+      if(src._big && src._big !== png.src){
+        const hi = new Image();
+        hi.onload = () => { copy.src = hi.src; };
+        hi.src = src._big;
+      }
     } else {
       copy = src.cloneNode(true);
       copy.style.cssText = "position:absolute;inset:0;width:100%;height:100%;margin:0;transform:none;animation:none";
@@ -1083,31 +1118,55 @@ function art(coll, model, cls, anim){
   return `<div class="art ${cls || ""}" data-ac="${esc(coll || "")}" data-am="${esc(model || "")}"
     data-aa="${anim ? 1 : ""}"></div>`;
 }
+/* Анимация играет, только пока подарок заметно виден (треть и больше), и разом не
+   больше LIVE_MAX: каждая Lottie - отдельная SVG-сцена, и десяток сразу заметно
+   тормозил телефон. Ушёл с экрана - пауза. */
+const LIVE_MAX = 5;
 const ioArt = "IntersectionObserver" in window ? new IntersectionObserver((list) => {
   list.forEach((en) => {
     const el = en.target;
     if(en.isIntersecting) playArt(el); else if(el._anim){ el._anim.pause(); ART.live.delete(el); }
   });
-}, { rootMargin: "60px" }) : null;
+}, { threshold: .35 }) : null;
 
 function hydrateArt(root){
   const els = (root || document).querySelectorAll(".art[data-ac]:not([data-ah])");
   if(!els.length) return;
   artIndex().then(() => els.forEach(setupArt));
 }
-function artUrls(coll, model){
+/* Картинки - уменьшенные копии из того же каталога (api.changes.tg ...png?size=N):
+   оригинал весит ~250 КБ при 1024 точках, а плитке в сетке хватает 128 (~25 КБ).
+   Именно полноразмерные картинки в сетках давали лаги. Не ответил уменьшитель -
+   берём полноразмерную с CDN, нет и её - кружок с буквами. */
+const API_ART = "https://api.changes.tg";
+const SIZES = [64, 128, 256, 512];
+function artSize(el){
+  const w = (el.getBoundingClientRect().width || 0) * Math.min(2, window.devicePixelRatio || 1);
+  if(!w) return 256;                     // экран скрыт и размера ещё нет
+  return SIZES.find((s) => s >= w) || 512;
+}
+function artUrls(coll, model, size){
   const name = collName(coll);
   const out = [];
-  if(model) out.push({ png: `${CDN}/models/${encodeURIComponent(name)}/png/${encodeURIComponent(model)}.png`,
-                       json: `${CDN}/models/${encodeURIComponent(name)}/lottie/${encodeURIComponent(model)}.json` });
+  const q = `?size=${size || 256}`;
+  if(model){
+    const m = `${encodeURIComponent(name)}/${encodeURIComponent(model)}`;
+    const json = `${CDN}/models/${encodeURIComponent(name)}/lottie/${encodeURIComponent(model)}.json`;
+    out.push({ png: `${API_ART}/model/${m}.png${q}`, big: `${API_ART}/model/${m}.png?size=512`, json });
+    out.push({ png: `${CDN}/models/${encodeURIComponent(name)}/png/${encodeURIComponent(model)}.png`, json });
+  }
   const e = ART.names.get(norm(coll));
-  if(e) out.push({ png: `${CDN}/originals/${e.id}/Original.png`, json: `${CDN}/originals/${e.id}/Original.json` });
+  if(e){
+    const json = `${CDN}/originals/${e.id}/Original.json`;
+    out.push({ png: `${API_ART}/original/${e.id}.png${q}`, big: `${API_ART}/original/${e.id}.png?size=512`, json });
+    out.push({ png: `${CDN}/originals/${e.id}/Original.png`, json });
+  }
   return out;
 }
 function setupArt(el){
   if(el.dataset.ah) return;
   el.dataset.ah = "1";
-  const urls = artUrls(el.dataset.ac, el.dataset.am);
+  const urls = artUrls(el.dataset.ac, el.dataset.am, artSize(el));
   const mono = () => { el.classList.remove("wait"); el.innerHTML = `<div class="mono">${esc(initials(el.dataset.am || collName(el.dataset.ac)))}</div>`; };
   if(!urls.length){ mono(); return; }
   el.classList.add("wait");
@@ -1116,7 +1175,7 @@ function setupArt(el){
   // Отложенная загрузка: в списке выбора до сотни коллекций по ~250 КБ, и качать
   // их все сразу на телефоне незачем: браузер берёт только те, что у экрана.
   img.decoding = "async"; img.alt = ""; img.loading = "lazy";
-  img.onload = () => { el.classList.remove("wait"); el._json = urls[i].json;
+  img.onload = () => { el.classList.remove("wait"); el._json = urls[i].json; el._big = urls[i].big || img.src;
     if(el.dataset.aa && ioArt) ioArt.observe(el); };
   img.onerror = () => { i++; if(i < urls.length) img.src = urls[i].png; else mono(); };
   el.appendChild(img);
@@ -1128,7 +1187,14 @@ function getJson(u){
 }
 async function playArt(el){
   if(!el._json || !window.lottie || !document.body.contains(el)) return;
-  if(el._anim){ el._anim.play(); ART.live.add(el); return; }
+  if(el._anim){
+    el._anim.play(); ART.live.add(el);
+    if(ART.live.size > LIVE_MAX){
+      const old = [...ART.live].find((x) => x !== el && !x.closest(".shero"));
+      if(old && old._anim){ old._anim.pause(); ART.live.delete(old); }
+    }
+    return;
+  }
   if(el._loading) return;
   el._loading = true;
   const data = await getJson(el._json);
@@ -1149,7 +1215,7 @@ async function playArt(el){
     el._anim.addEventListener("data_failed", () => { box.remove(); el._anim = null; });
     ART.live.add(el);
     // Одновременно играет ограниченное число: телефону тяжело больше.
-    if(ART.live.size > 10){
+    if(ART.live.size > LIVE_MAX){
       const old = [...ART.live].find((x) => x !== el && !x.closest(".shero"));
       if(old && old._anim){ old._anim.pause(); ART.live.delete(old); }
     }
@@ -1160,7 +1226,7 @@ async function playArt(el){
 let tt = null;
 function toast(text, icon){
   const el = $("toast");
-  el.innerHTML = ic(icon || "check") + "<span>" + esc(text) + "</span>";
+  el.innerHTML = ic(icon || "check") + "<span>" + esc(tr(text)) + "</span>";
   el.classList.add("on");
   clearTimeout(tt); tt = setTimeout(() => el.classList.remove("on"), 2300);
 }
@@ -1187,6 +1253,7 @@ function setState(st){
   S = st;
   if(!S) return;
   if(S.effects) applyEffects(S.effects);
+  if(S.lang) setLang(S.lang);
   if(S.texts) setTexts(S.texts);
   txEditMode(TXEDIT);
 }
@@ -1280,7 +1347,8 @@ function statusChip(x){
 }
 function fmtTon(v){
   const n = Number(v || 0);
-  return n >= 1000 ? Math.round(n).toLocaleString("ru-RU") : n >= 100 ? n.toFixed(0) : n.toFixed(2);
+  return n >= 1000 ? Math.round(n).toLocaleString(LANG === "en" ? "en-US" : "ru-RU")
+    : n >= 100 ? n.toFixed(0) : n.toFixed(2);
 }
 function deltaHtml(pct){
   const up = Number(pct) >= 0;
@@ -1362,15 +1430,49 @@ function render(){
   }
   if(pend) document.querySelector('nav .tab[data-go="sniper"]').insertAdjacentHTML("beforeend",
     `<span class="badge">${pend}</span>`);
-  ({ home: renderHome, sniper: renderSniper, flip: renderFlip, portfolio: renderPortfolio,
-     profile: renderProfile, settings: renderSettings, admin: renderAdmin }[VIEW] || renderHome)();
+  const paint = { home: renderHome, sniper: renderSniper, flip: renderFlip, portfolio: renderPortfolio,
+     profile: renderProfile, settings: renderSettings, admin: renderAdmin }[VIEW] || renderHome;
+  keepArts($("v-" + VIEW), paint);
   after($("v-" + VIEW));
+}
+/* Перерисовка экрана без перезагрузки картинок. Экран собирается заново целиком
+   (так проще и надёжнее), но уже загруженные картинки и идущие анимации переносятся
+   в новую разметку на свои места. Раньше после добавления коллекции или тихого
+   обновления все подарки исчезали и появлялись заново, и список «прыгал». */
+const artKey = (a) => [a.dataset.ac, a.dataset.am, a.dataset.aa].join("|");
+function keepArts(root, paint){
+  const old = new Map();
+  if(root) root.querySelectorAll(".art[data-ah]").forEach((a) => {
+    const k = artKey(a);
+    if(!old.has(k)) old.set(k, []);
+    old.get(k).push(a);
+  });
+  const r = paint();
+  if(root && old.size) root.querySelectorAll(".art[data-ac]:not([data-ah])").forEach((n) => {
+    const o = (old.get(artKey(n)) || []).shift();
+    if(!o) return;
+    const keep = ["anim", "wait"].filter((c) => o.classList.contains(c));
+    o.className = n.className;
+    keep.forEach((c) => o.classList.add(c));
+    n.replaceWith(o);
+  });
+  return r;
+}
+/* Новая карточка: плавно прокрутить к ней и подсветить - чтобы было видно, куда
+   она добавилась, а не искать её в конце списка. */
+function reveal(sel){
+  requestAnimationFrame(() => {
+    const el = document.querySelector(sel);
+    if(!el) return;
+    el.scrollIntoView({ behavior: REDUCED ? "auto" : "smooth", block: "center" });
+    el.classList.remove("born"); void el.offsetWidth; el.classList.add("born");
+  });
 }
 
 function promoHtml(){
   return (S.announcements || []).map((a) => `
     <div class="promo"><span class="tile">${ic(a.kind === "promo" ? "star" : "mega")}</span>
-      <div><b>${esc(a.title)}</b><span>${esc(a.text)}</span></div></div>`).join("");
+      <div><b>${esc(a.title)}</b><span ${a.kind === "notice" ? "data-notx" : ""}>${esc(a.text)}</span></div></div>`).join("");
 }
 
 function renderHome(){
@@ -1381,7 +1483,6 @@ function renderHome(){
   const pfArt = art((pf && pf.top && pf.top.slug) || "Loot Bag", (pf && pf.top && pf.top.model) || "", "", true);
   $("v-home").innerHTML = `
     <div class="brandrow">${BRAND.svg}<b>${BRAND.name}</b></div>
-    <div class="top"><h1>Привет, ${esc(S.name || "друг")}<small>Что отслеживаем сегодня?</small></h1></div>
     ${promoHtml()}
     <button class="hero g-blue" data-go="sniper">
       <span class="bgc">${sparkles(9)}${silhouettes()}</span>
@@ -1414,16 +1515,12 @@ function renderHome(){
           <div class="sb">${esc(c.models[0] || "любая модель")}</div>
           <div class="pr"><span>${c.enabled ? ic("check") + "следим" : ic("power") + "выкл"}</span></div>
         </button>`).join("")}</div>` : ""}
-    <div class="sec">Помощь</div>
-    <div class="group">
-      ${rowHtml({ tile: "blue", icon: "life", title: "Поддержка", sub: "ответит живой человек", attr: 'data-link="support"' })}
-      ${rowHtml({ tile: "orange", icon: "help", title: "Как это работает", sub: "модули, фильтры, монохромы", attr: 'data-link="help"' })}
-      ${rowHtml({ tile: "gray", icon: "doc", title: "Условия пользования", attr: 'data-link="terms"' })}
-    </div>`;
+    <div id="home-extra">${homeExtraHtml()}</div>`;
+  bindHomeExtra($("home-extra"));
+  loadHome(); loadNewColls();
   bindGo($("v-home"));
   $("v-home").querySelectorAll("[data-coll]").forEach((el) =>
     el.onclick = () => editColl(Number(el.dataset.coll), el.querySelector(".art")));
-  bindLinks($("v-home"));
   fab(null);
 }
 /* Силуэты подарков на фоне баннера - как силуэты оружия в примере. */
@@ -1474,8 +1571,12 @@ function renderSniper(){
       Добавь коллекцию - и я напишу, как только подарок в ней улучшат под твои фильтры.</div>`}`;
   $("v-sniper").querySelectorAll("[data-coll]").forEach((el) =>
     el.onclick = () => editColl(Number(el.dataset.coll), el.querySelector(".a0")));
-  fab("Добавить коллекцию", () => pickCollection(async (name, artEl) => {
-    if(await save("coll_add", { slug: name }, "Коллекция добавлена") && fxOn("add")) FX.confetti();
+  fab("Добавить коллекцию", () => pickCollection(async (name) => {
+    const before = new Set(S.collections.map((c) => c.cid));
+    if(!await save("coll_add", { slug: name }, "Коллекция добавлена")) return;
+    const fresh = S.collections.find((c) => !before.has(c.cid));
+    if(fresh) reveal(`#v-sniper [data-coll="${fresh.cid}"]`);
+    if(fxOn("add")) FX.confetti();
   }, "Новая коллекция"));
 }
 
@@ -1542,7 +1643,11 @@ function renderFlip(){
   $("v-flip").querySelectorAll("[data-flip]").forEach((el) =>
     el.onclick = () => editFlip(Number(el.dataset.flip), el.querySelector(".a0")));
   if(free && fl.has_access) fab("Занять слот", () => pickCollection(async (name) => {
-    if(await save("flip_add", { slug: name }, "Слот занят") && fxOn("add")) FX.confetti();
+    const before = new Set(S.flip.items.map((f) => f.id));
+    if(!await save("flip_add", { slug: name }, "Слот занят")) return;
+    const fresh = S.flip.items.find((f) => !before.has(f.id));
+    if(fresh) reveal(`#v-flip [data-flip="${fresh.id}"]`);
+    if(fxOn("add")) FX.confetti();
   }, "Коллекция для слота"));
   else fab(null);
 }
@@ -1661,7 +1766,7 @@ function bindCrosshair(box, points){
     const dot = cross.querySelector(".dot");
     dot.style.left = px + "px"; dot.style.top = py + "px";
     const tip = cross.querySelector(".tip");
-    tip.innerHTML = `<small>${esc(new Date(p.t).toLocaleString("ru-RU",
+    tip.innerHTML = `<small>${esc(new Date(p.t).toLocaleString(LANG === "en" ? "en-US" : "ru-RU",
       { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }))}</small><b>${ic("ton")}${fmtTon(p.v)}</b>`;
     tip.style.left = Math.min(Math.max(px, 60), r.width - 60) + "px";
     tip.style.top = Math.max(py, 44) + "px";
@@ -1695,7 +1800,7 @@ async function renderPortfolio(){
         <span>${ic("clock")}<i>${esc(p.updated || "--:--")}</i></span></div>
       <div class="chart">${chartSvg(pts, p.marks) || `<div class="hint">График появится, когда наберётся история</div>`}
         <div class="cross"><div class="vline"></div><div class="dot"></div><div class="tip"></div></div></div>
-      <div class="chart-legend"><span>${esc(pts.length ? new Date(pts[0].t).toLocaleDateString("ru-RU",
+      <div class="chart-legend"><span>${esc(pts.length ? new Date(pts[0].t).toLocaleDateString(LANG === "en" ? "en-US" : "ru-RU",
         { day: "numeric", month: "long" }) : "")}</span><span>сейчас</span></div>
       <div style="margin-top:12px">${segHtml("rng", Object.keys(RANGES).map((k) => [k, RANGE_NAMES[k]]), portRange)}</div>
       ${all.length > 1 && !enough ? `<div class="hint">Данных за этот срок ещё мало - показываю всё, что накопилось.</div>` : ""}
@@ -1745,44 +1850,42 @@ function renderProfile(){
       ${rowHtml({ tile: "blue", icon: "users", title: "Пригласить друга", sub: "скидка на слот тебе и ему", attr: 'id="p-ref"' })}
       ${rowHtml({ tile: "green", icon: "history", title: "История покупок",
         value: String((S.transactions || []).length || ""), attr: 'id="p-tx"' })}
+      ${rowHtml({ tile: "red", icon: "bell", title: "Ценовые алерты", sub: "напишу, когда флор опустится", attr: 'id="p-al"' })}
     </div>
     <div class="group">
-      ${rowHtml({ tile: "gray", icon: "gear", title: "Настройки", sub: "язык, премиум-эмодзи", attr: 'data-go="settings"' })}
+      ${rowHtml({ tile: "gray", icon: "gear", title: "Настройки", sub: "язык, тихие часы", attr: 'data-go="settings"' })}
       ${rowHtml({ tile: "indigo", icon: "life", title: "Поддержка", attr: 'data-link="support"' })}
-      ${rowHtml({ tile: "orange", icon: "help", title: "Помощь", attr: 'data-link="help"' })}
       ${rowHtml({ tile: "teal", icon: "doc", title: "Условия пользования", attr: 'data-link="terms"' })}
     </div>
     ${S.is_owner ? `<div class="group">${rowHtml({ tile: "yellow", icon: "crown", title: "Админка",
       sub: "люди, платежи, акции, эффекты",
       value: S.admin && S.admin.open_tickets ? `<span class="count">${S.admin.open_tickets}</span>` : null,
       attr: 'data-go="admin"' })}</div>` : ""}
-    <div class="brandrow foot">${BRAND.svg}<b>${BRAND.name}</b></div>`;
+    <div class="brandrow foot">${BRAND.svg}<b>${BRAND.name}</b></div>
+    <button class="credit" id="p-credit">Данные о подарках: @GiftChanges</button>`;
   bindGo($("v-profile"));
+  // Благодарность источнику картинок и анимаций - условие его правил: должна быть
+  // видна людям, а не только в коде.
+  $("p-credit").onclick = () => {
+    const u = "https://t.me/GiftChanges";
+    if(TG && TG.openTelegramLink) TG.openTelegramLink(u); else window.open(u, "_blank");
+  };
   bindLinks($("v-profile"));
   $("p-ref").onclick = () => openRef();
   $("p-tx").onclick = () => openTx();
+  $("p-al").onclick = () => openAlerts();
   fab(null);
 }
 
 function renderSettings(){
-  const st = S.settings || {};
   $("v-settings").innerHTML = `
     <div class="top"><button class="round" data-go="profile">${ic("chev", "flipx")}</button><h1>Настройки</h1></div>
     <div class="sec">Язык</div>
     ${segHtml("lang", [["ru", "Русский"], ["en", "English"]], S.lang)}
-    <div class="sec">Сообщения бота</div>
-    <div class="group plain">
-      <div class="row"><span class="tile purple">${ic("emoji")}</span><span class="t"><b>Премиум-эмодзи</b>
-        <span>анимированные эмодзи в уведомлениях</span></span>
-        <button class="tgl ${st.premium_emoji !== false ? "on" : ""}" id="s-prem"></button></div>
-    </div>`;
+    ${quietHtml((S.settings || {}).quiet)}`;
   bindGo($("v-settings"));
   bindSeg("lang", (k) => save("settings", { lang: k }, "Язык изменён"));
-  $("s-prem").onclick = () => {
-    const on = !$("s-prem").classList.contains("on");
-    $("s-prem").classList.toggle("on", on); haptic();
-    save("settings", { premium_emoji: on }, on ? "Включено" : "Выключено");
-  };
+  bindQuiet();
   fab(null);
 }
 
@@ -1909,7 +2012,7 @@ function pickGrid(id, items, selected, kind, coll, single){
           : kind === "mk" ? marketIcon(x.key)
           : art(coll, x.name)}
         <span>${esc(x.name)}</span>
-        ${x.pct ? `<span class="pct">${esc(x.pct)}%</span>` : ""}
+        ${x.floor ? `<span class="fl">${fmtTon(x.floor)} TON</span>` : x.pct ? `<span class="pct">${esc(x.pct)}%</span>` : ""}
       </button>`).join("") : `<div class="hint" style="grid-column:1/-1">Ничего не нашлось</div>`;
     box.querySelectorAll("[data-v]").forEach((b) => b.onclick = () => {
       const v = b.dataset.v;
@@ -1920,7 +2023,10 @@ function pickGrid(id, items, selected, kind, coll, single){
     });
     after(box);
   };
-  return { html: `<div class="grid ${kind === "mk" ? "mk" : ""}" id="${id}"></div>`, draw, value: () => [...set] };
+  let last = "";
+  const drawKeep = (f) => { last = f || ""; draw(last); };
+  return { html: `<div class="grid ${kind === "mk" ? "mk" : ""}" id="${id}"></div>`, draw: drawKeep,
+    redraw: () => draw(last), value: () => [...set] };
 }
 /* Сводка в строке, сетка раскрывается по нажатию: у коллекции полсотни моделей, и
    без этого всё остальное уезжало бы далеко вниз. */
@@ -1958,6 +2064,8 @@ function drawerPick(id, title, items, selected, kind, coll, samples){
       return stop;
     },
     value: pick.value,
+    redraw: pick.redraw,
+    isOpen: () => !!$(id + "-dr") && $(id + "-dr").classList.contains("on"),
   };
 }
 
@@ -1974,9 +2082,11 @@ function monoRow(value){
         <input type="range" id="mono-range" min="50" max="90" step="1" value="${v}">
         <div class="scale"><span>50%</span><span>90%</span></div>
         <div class="hint" style="margin:8px 0 0">Придёт, если модель сочетается с фоном не хуже выбранного.</div>
+        <div id="mono-ex"></div>
       </div></div>`;
 }
-function bindMonoRow(){
+function bindMonoRow(slug, models){
+  const ex = () => { if(slug) loadMonoExamples(slug, models || []); };
   const range = $("mono-range");
   let on = $("mono-on").classList.contains("on");
   const paint = () => {
@@ -1990,11 +2100,25 @@ function bindMonoRow(){
   $("mono-on").onclick = () => {
     on = !on; $("mono-on").classList.toggle("on");
     $("mono-body").style.display = on ? "block" : "none"; haptic();
+    if(on) ex();
   };
+  if(on) ex();
   return () => (on ? Number(range.value) : 0);
 }
 
 /* ---------- красивый номер ---------- */
+/* Та же проверка, что у бота (numbers_pretty.matches): хоть одна из отмеченных цифр
+   (нет отмеченных - любая) встречается cnt раз, а с «Подряд» - cnt раз рядом. */
+function numMatches(num, digits, cnt, row){
+  const t = String(num).replace(/\D/g, "");
+  const ds = digits.length ? digits : "0123456789".split("");
+  return ds.some((d) => {
+    if(!row) return t.split(d).length - 1 >= cnt;
+    let best = 0, cur = 0;
+    for(const ch of t){ cur = ch === d ? cur + 1 : 0; best = Math.max(best, cur); }
+    return best >= cnt;
+  });
+}
 function numberBlock(value){
   const isPat = String(value || "").startsWith("p:");
   const p = String(value || "").split(":");
@@ -2013,7 +2137,7 @@ function numberBlock(value){
         <label>Сколько раз повторяется</label>
         ${segHtml("ncnt", [2, 3, 4, 5, 6].map((n) => [n, "×" + n]), p[1] || 3)}
         <div class="group plain" style="margin-top:10px"><div class="row"><span class="t"><b>Подряд</b>
-          <span>7777 подойдёт, 7177 нет</span></span>
+          <span>повторы стоят рядом, без других цифр между ними</span></span>
           <button class="tgl ${p[2] === "1" ? "on" : ""}" id="nrow"></button></div></div>
       </div>
       <div id="npat" style="display:${isPat ? "block" : "none"}">
@@ -2031,7 +2155,10 @@ function bindNumber(){
   let row = $("nrow").classList.contains("on");
   const digits = new Set([...document.querySelectorAll("[data-d].on")].map((b) => b.dataset.d));
   let cnt = Number($("ncnt").querySelector("button.on").dataset.k || 3);
-  /* Два примера - подходящий и похожий неподходящий: правило понятно без слов. */
+  /* Два примера - подходящий и похожий неподходящий: правило понятно без слов.
+     Оба проверяются тем же правилом, что у бота (numMatches = numbers_pretty.matches):
+     раньше пример «не подойдёт» не учитывал «Подряд», и без него 616 числился
+     неподходящим, хотя бот такой номер присылает. */
   const examples = () => {
     if(kind === "pattern"){
       const pat = ($("npattern").value || "").trim().toUpperCase();
@@ -2040,9 +2167,15 @@ function bindNumber(){
       const yes = pat.split("").map((ch) => (map[ch] = map[ch] || String(d++ % 10))).join("");
       return [yes, yes.slice(0, -1) + String((Number(yes.slice(-1)) + 1) % 10)];
     }
-    const d = digits.size ? [...digits][0] : "7";
-    const other = d === "1" ? "2" : "1";
-    return [d.repeat(cnt), d.repeat(Math.max(1, cnt - 2)) + other + d];
+    const pick = [...digits].sort();
+    const d = pick.length ? pick[0] : "7";
+    // «чужая» цифра - не из отмеченных, иначе она сама засчиталась бы повтором
+    const other = "1234567890".split("").find((x) => !pick.includes(x) && x !== d);
+    const cands = row
+      ? [[d.repeat(cnt), d.repeat(cnt - 1) + other + d]]
+      : [[d + other + d.repeat(cnt - 1), d.repeat(cnt - 1) + other]];
+    const [y, n] = cands[0];
+    return [numMatches(y, pick, cnt, row) ? y : "-", numMatches(n, pick, cnt, row) ? "-" : n];
   };
   const upd = () => { const [y, n] = on ? examples() : ["-", "-"]; $("nex-y").textContent = y; $("nex-n").textContent = n; };
   $("n-on").onclick = () => {
@@ -2116,7 +2249,9 @@ async function pickCollection(done, title){
     const list = COLLS.filter((x) => !q || String(x.name || x).toLowerCase().includes(q)).slice(0, 90);
     box.innerHTML = list.length ? list.map((x) => {
       const n = x.name || x;
-      return `<button class="opt ${n === chosen ? "on" : ""}" data-c="${esc(n)}">${art(n, "")}<span>${esc(n)}</span></button>`;
+      const f = (FLOORS || {})[norm(n)];
+      return `<button class="opt ${n === chosen ? "on" : ""}" data-c="${esc(n)}">${art(n, "")}<span>${esc(n)}</span>
+        ${f ? `<span class="fl">${fmtTon(f)} TON</span>` : ""}</button>`;
     }).join("") : `<div class="hint" style="grid-column:1/-1">Ничего не нашлось</div>`;
     box.querySelectorAll("[data-c]").forEach((b) => b.onclick = () => {
       box.querySelectorAll(".opt.on").forEach((x) => x.classList.remove("on"));
@@ -2133,7 +2268,11 @@ async function pickCollection(done, title){
     if(a && fxOn("add")){ FX.fly(a, "out"); await sleep(380); }
     closeSheet(); await done(chosen, a);
   };
-  try{ COLLS = (await call("collections", {})).items; }catch(e){ COLLS = null; }
+  try{
+    const [list, fl] = await Promise.all([call("collections", {}), collFloors()]);
+    COLLS = list.items;
+    if(COLLS) sortByFloor(COLLS, (x) => fl[norm(x.name || x)]);
+  }catch(e){ COLLS = null; }
   draw("");
 }
 
@@ -2159,6 +2298,7 @@ async function editColl(cid){
       <button id="c-en" class="${c.enabled ? "on" : ""}">${ic("power")}${c.enabled ? "включено" : "выключено"}</button>
       <button id="c-test">${ic("bell")}${c.pending ? "создаётся" : "уведомления"}</button>
       <button id="del" class="red">${ic("trash")}удалить</button></div>
+    <div class="group">${rowHtml({ tile: "teal", icon: "chart", title: "История цен", sub: "флор и последние продажи", attr: 'id="c-hist"' })}</div>
     <label>Фильтры подарка</label>${mp.html}${bp.html}
     ${monoRow(c.mono_min)}
     ${numberBlock(c.number)}
@@ -2170,7 +2310,9 @@ async function editColl(cid){
   after($("panel"));
   $("x").onclick = () => close();
   const s1 = mp.bind(), s2 = bp.bind();
-  const numOf = bindNumber(), monoOf = bindMonoRow();
+  const numOf = bindNumber(), monoOf = bindMonoRow(name, models.map((m) => m.name));
+  modelFloors(name, models, mp.redraw, mp.isOpen);
+  $("c-hist").onclick = () => openHistory(name, mp.value().length ? mp.value() : models.slice(0, 3).map((m) => m.name));
   let en = c.enabled;
   $("c-en").onclick = () => { en = !en; $("c-en").classList.toggle("on", en);
     $("c-en").innerHTML = ic("power") + (en ? "включено" : "выключено"); haptic(); };
@@ -2178,7 +2320,7 @@ async function editColl(cid){
   const close = () => { s1(); s2(); closeSheet(); };
   $("del").onclick = () => {
     const ask = (yes) => { if(yes){ close(); save("coll_del", { cid }, "Удалено"); } };
-    if(TG && TG.showConfirm) TG.showConfirm(`Удалить ${name}?`, ask); else ask(true);
+    if(TG && TG.showConfirm) TG.showConfirm(tr(`Удалить ${name}?`), ask); else ask(true);
   };
   $("ok").onclick = async () => {
     const numbers = ($("watch").value || "").split(",").map((x) => x.trim().replace("#", ""))
@@ -2216,6 +2358,7 @@ async function editFlip(fid){
       <button id="f-en" class="${f.enabled ? "on" : ""}">${ic("power")}${f.enabled ? "включено" : "выключено"}</button>
       <button id="del" class="red">${ic("trash")}освободить слот</button></div>
     ${f.paused ? `<div class="hint" style="margin:0 4px 10px;color:var(--orange)">Не хватает слотов - это отслеживание на паузе.</div>` : ""}
+    <div class="group">${rowHtml({ tile: "teal", icon: "chart", title: "История цен", sub: "флор и последние продажи", attr: 'id="f-hist"' })}</div>
     <label>Фильтры листинга</label>${mp.html}${bp.html}
     <label>Маркеты</label>${kp.html}
     <div class="hint">Пусто - любой маркет.</div>
@@ -2233,7 +2376,9 @@ async function editFlip(fid){
   after($("panel"));
   kp.draw("");
   const s1 = mp.bind(), s2 = bp.bind();
-  const numOf = bindNumber(), monoOf = bindMonoRow();
+  const numOf = bindNumber(), monoOf = bindMonoRow(f.slug, models.map((m) => m.name));
+  modelFloors(f.slug, models, mp.redraw, mp.isOpen);
+  $("f-hist").onclick = () => openHistory(f.slug, mp.value().length ? mp.value() : models.slice(0, 3).map((m) => m.name));
   let mode = f.mode === "all" ? "all" : "deals", en = f.enabled;
   const note = () => { $("mode-note").textContent = mode === "all"
     ? "Все новые листинги под фильтр - для тех, кто сам отправляет офферы."
@@ -2246,7 +2391,7 @@ async function editFlip(fid){
   $("x").onclick = close;
   $("del").onclick = () => {
     const ask = (yes) => { if(yes){ close(); save("flip_del", { id: fid }, "Слот освобождён"); } };
-    if(TG && TG.showConfirm) TG.showConfirm(`Удалить отслеживание ${name}?`, ask); else ask(true);
+    if(TG && TG.showConfirm) TG.showConfirm(tr(`Удалить отслеживание ${name}?`), ask); else ask(true);
   };
   $("ok").onclick = async () => {
     const val = (id) => $(id).value === "" ? null : Number($(id).value);
@@ -2407,7 +2552,6 @@ async function openLink(k){
   let texts = null;
   try{ texts = await call("texts", {}); }catch(e){ texts = null; }
   if(k === "support") openSupport(texts);
-  else if(k === "help") openText("Как это работает", "help", "orange", (texts && texts.help) || "Не загрузилось");
   else openText("Условия пользования", "doc", "teal", (texts && texts.terms) || "Не загрузилось");
 }
 function openSupport(texts){
@@ -2482,7 +2626,7 @@ function adminBroadcast(){
       try{ const r = await call("admin_broadcast", { text, who }); closeSheet(); render(); toast(`Отправляю ${r.targets} чел.`, "share"); }
       catch(e){ $("err").textContent = e.message; }
     };
-    if(TG && TG.showConfirm) TG.showConfirm("Отправить сообщение? Отменить нельзя.", doIt); else doIt(true);
+    if(TG && TG.showConfirm) TG.showConfirm(tr("Отправить сообщение? Отменить нельзя."), doIt); else doIt(true);
   };
 }
 function adminPromo(){
@@ -2633,6 +2777,875 @@ async function adminCollections(){
   draw("");
 }
 
+/* ===================== РЫНОК, НАХОДКИ, АЛЕРТЫ =====================
+   Данные для главной приходят отдельным запросом (home), а не в общем состоянии:
+   флоры и находки обновляются сами по себе, и тащить их в каждый ответ незачем.
+   Цены считает бот (Gift Satellite): без ключа их нет, и мы так и пишем, а не
+   рисуем правдоподобные числа. */
+let HOME = null, HOME_AT = 0, FLOORS = null, FLOORS_AT = 0, NEWC = null;
+
+function ago(sec){
+  const d = Math.max(0, Date.now() / 1000 - Number(sec || 0));
+  if(d < 90) return "только что";
+  if(d < 3600) return `${Math.round(d / 60)} мин назад`;
+  if(d < 86400) return `${Math.round(d / 3600)} ч назад`;
+  return `${Math.round(d / 86400)} д назад`;
+}
+const MONTHS = ["янв", "фев", "мар", "апр", "мая", "июн", "июл", "авг", "сен", "окт", "ноя", "дек"];
+function dayMonth(sec){
+  const d = new Date(Number(sec) * 1000);
+  // прошлогодняя дата без года читалась бы как недавняя
+  const y = d.getFullYear() !== new Date().getFullYear() ? ` ${d.getFullYear()}` : "";
+  return `${d.getDate()} ${MONTHS[d.getMonth()]}${y}`;
+}
+function openUrl(u){
+  if(!u) return;
+  if(/^https:\/\/t\.me\//.test(u) && TG && TG.openTelegramLink) TG.openTelegramLink(u);
+  else if(TG && TG.openLink) TG.openLink(u); else window.open(u, "_blank");
+}
+
+/* Главная: подгрузить раз в минуту и перерисовать только свой кусок. */
+async function loadHome(force){
+  if(!force && HOME && Date.now() - HOME_AT < 60e3) return;
+  try{ HOME = await call("home", {}); HOME_AT = Date.now(); }catch(e){ return; }
+  paintHomeExtra();
+}
+async function loadNewColls(){
+  if(NEWC) return;
+  try{
+    const r = await fetch(`${API_ART}/dates`);
+    const list = r.ok ? await r.json() : [];
+    await artIndex();
+    // Только подарки, у которых есть коллекция в каталоге (у остальных нет имени).
+    const byId = new Map([...ART.names.values()].map((v) => [String(v.id), v.name]));
+    NEWC = list.filter((x) => x && byId.has(String(x.id)))
+      .map((x) => ({ ...x, name: byId.get(String(x.id)) }))
+      .sort((a, b) => (b.releasedAt || 0) - (a.releasedAt || 0)).slice(0, 8);
+  }catch(e){ NEWC = []; }
+  paintHomeExtra();
+}
+function paintHomeExtra(){
+  const box = $("home-extra");
+  if(!box || VIEW !== "home") return;
+  keepArts(box, () => { box.innerHTML = homeExtraHtml(); });
+  bindHomeExtra(box);
+  after(box);
+}
+function homeExtraHtml(){
+  const h = HOME || { market: [], finds: [] };
+  let out = "";
+  if(h.market && h.market.length && (h.prices || h.market.some((m) => m.floor))){
+    out += `<div class="sec big">Рынок моих коллекций</div><div class="group">${h.market.map((m) => `
+      <button class="row mrow" data-mk="${esc(m.slug)}">${art(collName(m.slug), "", "mini")}
+        <span class="t"><b>${esc(collName(m.slug))}</b><span>${m.at ? "флор, " + ago(m.at) : "флор ещё не посчитан"}</span></span>
+        <span class="v w"><b class="num">${m.floor ? fmtTon(m.floor) + " TON" : "-"}</b>
+          ${m.change_24h != null ? deltaHtml(m.change_24h) : ""}</span></button>`).join("")}</div>`;
+  } else if(S && S.is_owner && HOME && !h.prices){
+    out += `<div class="sec big">Рынок моих коллекций</div>
+      <div class="hint">Цены появятся, когда к боту подключён ключ Gift Satellite.</div>`;
+  }
+  out += `<div class="sec big">Последние находки</div>`;
+  out += (h.finds && h.finds.length) ? `<div class="group">${h.finds.map((f, i) => `
+      <button class="row" data-find="${i}">${art(collName(f.slug), f.model, "mini")}
+        <span class="t"><b>${esc(collName(f.slug))}${f.num ? " #" + esc(f.num) : ""}</b>
+          <span>${f.kind === "listing" ? "листинг" : "улучшение"}${f.model ? " · " + esc(f.model) : ""} · ${ago(f.ts)}</span></span>
+        ${f.price ? `<span class="v w"><b class="num">${fmtTon(f.price)} TON</b></span>` : ""}</button>`).join("")}</div>`
+    : `<div class="hint">Здесь появятся подарки, о которых бот тебе написал.</div>`;
+  if(NEWC && NEWC.length){
+    out += `<div class="sec big">Новые коллекции</div><div class="hscroll">${NEWC.map((c) => `
+      <div class="gcard newc" style="--c1:#26324d;--c2:#121827">${sparkles(3, .35)}${art(c.name, "")}
+        <div class="nm">${esc(c.name)}</div>
+        <div class="sb">вышла ${dayMonth(c.releasedAt)}</div>
+        <div class="pr"><span>${c.upgradableAt ? "улучшения " + dayMonth(c.upgradableAt)
+          : c.upgradable ? "улучшается" : "без улучшений"}</span></div></div>`).join("")}</div>`;
+  }
+  if(h.status) out += statusHtml(h.status);
+  return out;
+}
+/* Состояние бота - только владельцу. Точка зелёная, если часть работает как надо. */
+function statusHtml(st){
+  const row = (ok, title, sub) => `<div class="row"><span class="sdot ${ok === null ? "mid" : ok ? "ok" : "bad"}"></span>
+    <span class="t"><b>${esc(title)}</b><span>${esc(sub)}</span></span></div>`;
+  const sn = st.sniper || {}, fl = st.flip || {}, g = st.gsb || {};
+  const passAgo = sn.last_pass ? Date.now() / 1000 - sn.last_pass : null;
+  const up = Math.round((st.uptime || 0) / 3600);
+  return `<div class="sec big">Состояние бота</div><div class="group plain">
+    ${row(passAgo !== null && passAgo < 900, "Слежение за улучшениями",
+      sn.last_pass ? `${nColl(sn.collections || 0)}, проход ${ago(sn.last_pass)}` : "первый проход ещё идёт")}
+    ${fl.enabled ? row(fl.notify_chat && fl.subscribed >= fl.tracked, "Листинги",
+      fl.notify_chat ? `подписок ${fl.subscribed} из ${fl.tracked}` : "не настроена группа уведомлений") : ""}
+    ${row(g.keys ? (g.dead ? null : true) : false, "Gift Satellite",
+      g.keys ? `ключей ${g.keys}${g.dead ? `, не принимаются ${g.dead}` : ", все работают"}` : "ключ не задан")}
+    ${row(st.floors_at ? Date.now() / 1000 - st.floors_at < 7200 : false, "Цены",
+      st.floors_at ? "флоры обновлены " + ago(st.floors_at) : "ещё не обновлялись")}
+    ${row(true, "Работает", `${up < 1 ? "меньше часа" : up + " ч"}, людей ${st.users || 0}`)}
+  </div>`;
+}
+function bindHomeExtra(box){
+  box.querySelectorAll("[data-mk]").forEach((b) => b.onclick = () => openHistory(b.dataset.mk, []));
+  box.querySelectorAll("[data-find]").forEach((b) => b.onclick = () => {
+    const f = (HOME.finds || [])[+b.dataset.find];
+    if(f) openUrl(f.link || `https://t.me/nft/${f.slug}-${f.num}`);
+  });
+}
+
+/* ---------- сортировка по цене ----------
+   Коллекции: флоры бот обходит раз в час, берём их одним запросом. Модели: бот
+   считает при первом запросе (несколько секунд), пока считает - отвечает pending,
+   и мы спрашиваем ещё раз. */
+async function collFloors(){
+  if(FLOORS && Date.now() - FLOORS_AT < 600e3) return FLOORS;
+  try{ FLOORS = (await call("floors", {})).collections || {}; FLOORS_AT = Date.now(); }catch(e){ FLOORS = FLOORS || {}; }
+  return FLOORS;
+}
+function sortByFloor(items, floorOf){
+  // дорогие первыми; без цены - после, в прежнем порядке (редкие раньше)
+  items.forEach((x, i) => { x._i = i; });
+  items.sort((a, b) => {
+    const fa = floorOf(a), fb = floorOf(b);
+    if(fa && fb) return fb - fa;
+    if(fa) return -1;
+    if(fb) return 1;
+    return a._i - b._i;
+  });
+}
+/* Флоры моделей: кладём в items[].floor, сортируем, перерисовываем. Пока человек
+   уже листает раскрытый список, порядок не трогаем - только подписи цен: прыгающий
+   под пальцем список и был одной из жалоб. */
+async function modelFloors(slug, items, redraw, isOpen){
+  const names = items.map((x) => x.name);
+  for(let i = 0; i < 18; i++){
+    let r = null;
+    try{ r = await call("model_floors", { slug, models: names }); }catch(e){ return; }
+    if(!r || r.why) return;
+    items.forEach((x) => { if(r.floors[x.name]) x.floor = r.floors[x.name]; });
+    if(!isOpen || !isOpen()) sortByFloor(items, (x) => x.floor);
+    redraw();
+    if(!r.pending || !$("sheet").classList.contains("on")) return;
+    await sleep(2500);
+  }
+}
+
+/* ---------- история цен ---------- */
+async function openHistory(slug, models){
+  const name = collName(slug);
+  const opts = [["", "Коллекция"]].concat((models || []).slice(0, 6).map((m) => [m, m]));
+  openSheet(sheroHtml(name, "", "", name, "история цен") + `
+    ${opts.length > 1 ? segHtml("hm", opts, "") : ""}
+    <div id="hbody"><div class="skel" style="height:160px"></div></div>
+    <button class="btn" style="margin-top:12px" id="h-alert">${ic("bell")}Ценовой алерт</button>`);
+  $("x").onclick = closeSheet;
+  let model = "";
+  const draw = async () => {
+    $("hbody").innerHTML = `<div class="skel" style="height:160px"></div>`;
+    let d = null;
+    try{ d = await call("model_history", { slug, model }); }catch(e){ $("hbody").innerHTML = `<div class="err">${esc(e.message)}</div>`; return; }
+    const pts = (d.floors || []).map((p) => ({ t: p.t * 1000, v: p.price }));
+    const last = pts.length ? pts[pts.length - 1].v : null;
+    const sales = (d.sales || []).slice(-8).reverse();
+    $("hbody").innerHTML = `
+      <div class="card hcard"><div class="hhead"><small>флор${model ? " модели" : ""}</small>
+        <b class="num">${last ? fmtTon(last) + " TON" : "-"}</b></div>
+        ${pts.length > 1 ? chartSvg(pts) : `<div class="hint" style="margin:6px 0 4px">${pts.length
+          ? "Пока одна точка: график появится через пару часов." : "Флор ещё не посчитан."}</div>`}</div>
+      <label>Последние продажи</label>
+      ${sales.length ? `<div class="group plain">${sales.map((s) => `<div class="row"><span class="t">
+          <b class="num">${fmtTon(s.price)} TON</b><span>${esc(((S.markets || []).find((m) => m.key === s.market) || {}).label || s.market || "")}${
+            s.backdrop ? " · " + esc(s.backdrop) : ""}</span></span>
+          <span class="v">${dayMonth(s.t)}</span></div>`).join("")}</div>`
+        : `<div class="hint">Продаж в базе бота пока нет: они копятся, пока модуль листингов следит за коллекцией.</div>`}`;
+  };
+  if(opts.length > 1) bindSeg("hm", (k) => { model = k; draw(); });
+  $("h-alert").onclick = () => newAlert(slug, model);
+  draw();
+}
+
+/* ---------- ценовые алерты ---------- */
+async function openAlerts(){
+  openSheet(`<h2><span class="tile red">${ic("bell")}</span>Ценовые алерты</h2>
+    <p class="sub">Напишу, когда флор опустится до твоей цены. Сработавший алерт выключается.</p>
+    <div id="abody"><div class="skel"></div></div>
+    <button class="btn blue" style="margin-top:10px" id="a-new">${ic("plus")}Новый алерт</button>`);
+  $("a-new").onclick = () => pickCollection((slug) => newAlert(slug, ""), "Коллекция для алерта");
+  let d = null;
+  try{ d = await call("alerts", {}); }catch(e){ $("abody").innerHTML = `<div class="err">${esc(e.message)}</div>`; return; }
+  const items = d.items || [];
+  $("abody").innerHTML = (d.prices === false ? `<div class="hint" style="margin-bottom:10px">Цены сейчас недоступны:
+      к боту не подключён Gift Satellite. Алерты сработают, когда цены появятся.</div>` : "") +
+    (items.length ? `<div class="group al">${items.map((a) => `
+      <button class="row" data-al="${a.id}">${art(collName(a.slug), a.model, "mini")}
+        <span class="t"><b>${esc(collName(a.slug))}${a.model ? " · " + esc(a.model) : ""}</b>
+          <span>${a.active ? `до ${fmtTon(a.price)} TON${a.floor ? ", сейчас " + fmtTon(a.floor) : ""}`
+            : `сработал: ${fmtTon(a.fired_price)} TON, ${ago(a.fired_at)}`}</span></span>
+        <span class="chip ${a.active ? "on" : "off"}">${a.active ? "включён" : "выключен"}</span></button>`).join("")}</div>`
+      : `<div class="hint">Алертов пока нет.</div>`);
+  after($("abody"));
+  $("abody").querySelectorAll("[data-al]").forEach((b) => b.onclick = () => {
+    const a = items.find((x) => x.id === +b.dataset.al);
+    if(!a) return;
+    const act = async (action, msg) => {
+      try{ await call(action, { id: a.id }); toast(msg, "bell"); openAlerts(); }catch(e){ toast(e.message, "help"); }
+    };
+    if(TG && TG.showPopup){
+      TG.showPopup({ message: tr(`${collName(a.slug)}${a.model ? " · " + a.model : ""}, до ${a.price} TON`),
+        buttons: [a.active ? null : { id: "on", type: "default", text: tr("Включить снова") },
+          { id: "del", type: "destructive", text: tr("Удалить") }, { type: "cancel" }].filter(Boolean) },
+        (id) => { if(id === "on") act("alert_rearm", "Алерт включён"); if(id === "del") act("alert_del", "Алерт удалён"); });
+    } else act(a.active ? "alert_del" : "alert_rearm", a.active ? "Алерт удалён" : "Алерт включён");
+  });
+}
+async function newAlert(slug, model){
+  const name = collName(slug);
+  openSheet(sheroHtml(name, model, "", name, "ценовой алерт") + `
+    <div id="nbody"><div class="skel"></div></div>`);
+  $("x").onclick = closeSheet;
+  const cat = await loadCatalog(slug);
+  if(!$("sheet").classList.contains("on")) return;
+  const items = (cat.models || []).map((m) => ({ name: m.name, pct: m.pct }));
+  const mp = pickGrid("am", items, model ? [model] : [], "model", slug, true);
+  $("nbody").innerHTML = `
+    <label>Модель - необязательно</label>${mp.html}
+    <div class="hint">Не выбрал модель - следим за флором всей коллекции.</div>
+    <label>Написать, когда флор не выше, TON</label>
+    <input type="number" id="ap" class="num" step="0.1" min="0.01" placeholder="например, 10">
+    <div class="hint" id="anow"></div>
+    <div class="err" id="aerr"></div>
+    <button class="btn blue" style="margin-top:8px" id="aok">${ic("bell")}Создать алерт</button>`;
+  mp.draw("");
+  const now = () => {
+    const m = mp.value()[0];
+    const x = m ? items.find((i) => i.name === m) : null;
+    const f = x ? x.floor : (FLOORS || {})[norm(slug)];
+    $("anow").textContent = f ? `Флор сейчас: ${fmtTon(f)} TON` : "";
+  };
+  $("am").addEventListener("pick", now);
+  collFloors().then(now);
+  modelFloors(slug, items, () => { mp.draw(""); now(); }, () => true);
+  $("aok").onclick = async () => {
+    const price = Number($("ap").value);
+    if(!(price > 0)){ $("aerr").textContent = "Укажи цену в TON"; return; }
+    try{
+      await call("alert_add", { slug, model: mp.value()[0] || "", price });
+      hapticOk(); toast("Алерт создан", "bell"); openAlerts();
+    }catch(e){ $("aerr").textContent = e.message; }
+  };
+}
+
+/* ---------- примеры монохромов ----------
+   Не выдуманы: бот берёт картинку каждой модели и считает её монохромность с
+   каждым фоном по той же формуле, что в уведомлениях. Показываем лучшие пары. */
+async function loadMonoExamples(slug, models){
+  const box = $("mono-ex");
+  if(!box) return;
+  for(let i = 0; i < 12; i++){
+    let r = null;
+    try{ r = await call("mono_examples", { slug, models }); }catch(e){ box.innerHTML = ""; return; }
+    if(!$("mono-ex")) return;
+    if(r.items && r.items.length){
+      box.innerHTML = `<div class="mx-title">Монохромы в этой коллекции</div><div class="mx">${r.items.map((x) => `
+        <div class="mxi" style="${bdVars(x.backdrop)}">${art(collName(slug), x.model)}
+          <span class="mxp">${x.score}%</span><span class="mxn">${esc(x.model)}</span><span class="mxb">${esc(x.backdrop)}</span></div>`).join("")}</div>`;
+      after(box);
+    } else if(!r.pending){ box.innerHTML = r.why ? "" : `<div class="hint" style="margin:8px 0 0">Ярких монохромов в коллекции не нашлось.</div>`; }
+    else box.innerHTML = `<div class="hint" style="margin:8px 0 0">Подбираю примеры монохромов...</div>`;
+    if(!r.pending) return;
+    await sleep(2500);
+  }
+}
+
+/* ---------- тихие часы ---------- */
+function quietHtml(q){
+  const on = !!(q && q.mode);
+  const hm = (m) => `${String(Math.floor(m / 60)).padStart(2, "0")}:${String(m % 60).padStart(2, "0")}`;
+  return `<div class="sec">Тихие часы</div>
+    <div class="group plain"><div class="row"><span class="tile indigo">${ic("clock")}</span>
+      <span class="t"><b>Тихие часы</b><span>ночью уведомления без звука или не приходят</span></span>
+      <button class="tgl ${on ? "on" : ""}" id="q-on"></button></div></div>
+    <div id="q-body" style="display:${on ? "block" : "none"}">
+      <div class="two"><div><label>С</label><input type="time" id="q-s" value="${hm(on ? q.start : 23 * 60)}"></div>
+        <div><label>До</label><input type="time" id="q-e" value="${hm(on ? q.end : 8 * 60)}"></div></div>
+      <label>Что делать с уведомлениями</label>
+      ${segHtml("q-m", [["silent", "Без звука"], ["skip", "Не присылать"]], on ? q.mode : "silent")}
+      <div class="hint">«Не присылать» - уведомление не придёт, но останется в «Последних находках» на главной.</div>
+      <button class="btn blue" style="margin-top:10px" id="q-ok">${ic("check")}Сохранить</button>
+    </div>`;
+}
+function bindQuiet(){
+  let mode = $("q-m") ? ($("q-m").querySelector("button.on") || {}).dataset.k || "silent" : "silent";
+  const mins = (v) => { const [h, m] = String(v || "0:0").split(":").map(Number); return (h || 0) * 60 + (m || 0); };
+  // смещение пояса в минутах к востоку от UTC: Москва = +180
+  const tz = -new Date().getTimezoneOffset();
+  const send = (q, msg) => save("settings", { quiet: q }, msg);
+  $("q-on").onclick = () => {
+    const on = !$("q-on").classList.contains("on");
+    $("q-on").classList.toggle("on", on); haptic();
+    $("q-body").style.display = on ? "block" : "none";
+    if(!on) send({ mode: "off", start: 0, end: 0, tz }, "Тихие часы выключены");
+  };
+  bindSeg("q-m", (k) => { mode = k; });
+  $("q-ok").onclick = () => {
+    const s = mins($("q-s").value), e = mins($("q-e").value);
+    if(s === e){ toast("Начало и конец совпадают", "help"); return; }
+    send({ mode, start: s, end: e, tz }, "Тихие часы сохранены");
+  };
+}
+
+/* ===================== АНГЛИЙСКИЙ =====================
+   Перевод интерфейса: русская фраза -> английская. Применяется подстановкой внутри
+   надписей (site/3d_texts.js), поэтому переводятся и надписи с числами: «4 коллекции»
+   -> «4 collections». Сообщения бота с подставленным значением - отдельными
+   шаблонами EN_RX. Новую русскую надпись в коде нужно добавить и сюда, иначе
+   англоязычный человек увидит её по-русски (проверка - tests/test_static.py). */
+const EN_DICT = {
+"«Не присылать» - уведомление не придёт, но останется в «Последних находках» на главной": "“Don't send” - the alert won't arrive, but it stays in “Recent finds” on the home screen",
+"Продаж в базе бота пока нет: они копятся, пока модуль листингов следит за коллекцией": "No sales in the bot's database yet: they build up while the listings module watches the collection",
+"Такой подарок придёт при любых модели и фоне. После срабатывания номер снимается сам": "Such a gift arrives with any model and backdrop. Once it fires, the number is removed automatically",
+"Добавь коллекцию - и я напишу, как только подарок в ней улучшат под твои фильтры": "Add a collection - I'll message you as soon as a gift in it is upgraded to match your filters",
+"Ловлю лоты на маркетах дешевле последних продаж. Слот - одна коллекция, навсегда": "I catch marketplace lots cheaper than recent sales. A slot is one collection, forever",
+"Бот закрыт, но поддержка - нет: иначе забаненный по ошибке не сможет сообщить": "The bot is closed to them, but support isn't: otherwise someone banned by mistake couldn't tell you",
+"Напишу, когда флор опустится до твоей цены. Сработавший алерт выключается": "I'll message you when the floor drops to your price. A triggered alert turns itself off",
+"к боту не подключён Gift Satellite. Алерты сработают, когда цены появятся": "Gift Satellite is not connected to the bot. Alerts will fire once prices appear",
+"Включи режим правки, затем удерживай палец на любой надписи в приложении": "Turn on edit mode, then press and hold any text in the app",
+"Только лоты со скидкой от последних продаж. Нужен порог: цена или скидка": "Only lots discounted against recent sales. Needs a threshold: price or discount",
+"Видно всем - в приложении и в приветствии бота. Пустое поле снимает его": "Visible to everyone - in the app and in the bot's welcome. An empty field removes it",
+"Сколько звёзд стоит один слот Flip Master. Применяется к новым счетам": "How many stars one Flip Master slot costs. Applies to new invoices",
+"Пусто - по рыночной. Своя цена не меняется при почасовом обновлении": "Empty - market price. Your own price is not changed by the hourly update",
+"Все новые листинги под фильтр - для тех, кто сам отправляет офферы": "All new listings matching the filter - for those who send offers themselves",
+"Для всех пользователей. На слабых телефонах их можно выключить": "For all users. They can be turned off for weak phones",
+"Добавь подарки - посчитаю общую стоимость и изменение за сутки": "Add gifts - I'll calculate the total value and the 24h change",
+"Поменяется везде, где стоит эта надпись, у всех пользователей": "It changes everywhere this text appears, for all users",
+"Разные буквы - разные цифры. Длина шаблона равна длине номера": "Different letters - different digits. The pattern length equals the number length",
+"Данных за этот срок ещё мало - показываю всё, что накопилось": "Not much data for this period yet - showing everything collected so far",
+"Придёт, если модель сочетается с фоном не хуже выбранного": "Arrives if the model matches the backdrop at least this well",
+"Тёмные фоны заметно дороже остальных - их стоит указать": "Dark backdrops are noticeably pricier than others - worth selecting them",
+"Опиши вопрос одним сообщением - ответит владелец бота": "Describe your question in one message - the bot owner will reply",
+"нужен порог: максимальная цена или минимальная скидка": "a threshold is needed: maximum price or minimum discount",
+"сюда встанет число, его можно переставить или убрать": "a number goes here, you can move or remove it",
+"у вас уже есть открытые обращения - дождитесь ответа": "you already have open tickets - please wait for a reply",
+"Сообщу, как только подарок улучшат под твои фильтры": "I'll tell you as soon as a gift is upgraded to match your filters",
+"Здесь появятся подарки, о которых бот тебе написал": "Gifts the bot has messaged you about will appear here",
+"Не выбрал модель - следим за флором всей коллекции": "No model selected - we watch the floor of the whole collection",
+"Поддерживается разметка Telegram. До 3500 символов": "Telegram formatting is supported. Up to 3500 characters",
+"Напиши новую надпись или нажми «Вернуть как было»": "Type the new text or tap “Restore original”",
+"Пока одна точка: график появится через пару часов": "Only one point so far: the chart will appear in a couple of hours",
+"Нужно хотя бы одно: скидка или бесплатные слоты": "At least one is needed: a discount or free slots",
+"Сначала без ответа. Ответ придёт человеку в чат": "Unanswered first. The reply goes to the person's chat",
+"Сообщение уйдёт всем выбранным. Отменить нельзя": "The message goes to everyone selected. It can't be undone",
+"повторы стоят рядом, без других цифр между ними": "repeats stand together, with no other digits between them",
+"Не хватает слотов - это отслеживание на паузе": "Not enough slots - this tracking is paused",
+"Подписка создаётся - уведомления скоро пойдут": "The subscription is being created - alerts will start soon",
+"Приходят тебе в чат. На работу бота не влияют": "They arrive in your chat. They don't affect how the bot works",
+"токен бота не задан - проверить подпись нечем": "the bot token is not set - nothing to verify the signature with",
+"Лови апгрейды и выгодные подарки раньше всех": "Catch upgrades and great deals before everyone",
+"Список коллекций недоступен - попробуй позже": "The collection list is unavailable - try again later",
+"Ссылка появится, когда бот сообщит своё имя": "The link will appear once the bot reports its name",
+"ночью уведомления без звука или не приходят": "at night alerts are silent or don't arrive",
+"прибыль или убыток, лучшие и худшие подарки": "profit or loss, best and worst gifts",
+"Выключенные не показываются при добавлении": "Turned-off ones are not shown when adding",
+"Цены появятся, когда к боту подключён ключ": "Prices will appear once the bot has a key for",
+"и напиши новую. Изменения сразу видят все": "and type a new one. Everyone sees the changes right away",
+"не удалось создать счёт, попробуйте позже": "couldn't create the invoice, please try later",
+"Telegram не выдал счёт, попробуйте позже": "Telegram didn't issue the invoice, please try later",
+"График появится, когда наберётся история": "The chart will appear once there is some history",
+"Правка надписей: удерживай любую надпись": "Editing texts: press and hold any text",
+"рассылка недоступна: бот не подключил её": "broadcast unavailable: the bot hasn't enabled it",
+"Удерживай любую надпись, чтобы изменить": "Press and hold any text to change it",
+"Ярких монохромов в коллекции не нашлось": "No strong monochromes found in this collection",
+"Слоты добавятся сразу, оплата не нужна": "Slots are added right away, no payment needed",
+"Займи слот коллекцией - кнопкой внизу": "Fill a slot with a collection - using the button below",
+"Отправить сообщение? Отменить нельзя": "Send the message? It can't be undone",
+"коллекции, слота, подарка в портфель": "a collection, a slot, a gift to the portfolio",
+"оплата недоступна: у бота нет токена": "payment unavailable: the bot has no token",
+"шаблон - только буквы, 2-10 символов": "pattern - letters only, 2-10 characters",
+"начало и конец - разное время суток": "start and end must be different times",
+"ловить подарки с особыми номерами": "catch gifts with special numbers",
+"нельзя закрыть доступ самому себе": "you can't block yourself",
+"нужна скидка или бесплатные слоты": "a discount or free slots is needed",
+"режим: без звука или не присылать": "mode: silent or don't send",
+"слишком много изменённых надписей": "too many changed texts",
+"Открой приложение кнопкой в боте": "Open the app with the button in the bot",
+"сколько показывать в уведомлении": "how many to show in the alert",
+"Минимальная скидка от продаж, %": "Minimum discount vs sales, %",
+"Уведомления приходят в чат бота": "Alerts arrive in the bot chat",
+"анимация подарка не запустилась": "gift animation didn't start",
+"без этого остальное не работает": "nothing else works without it",
+"не настроена группа уведомлений": "the alerts group is not set up",
+"отправлено - ответ придёт в чат": "sent - the reply will arrive in the chat",
+"Здесь появятся купленные слоты": "Purchased slots will appear here",
+"неизвестный вид фильтра номера": "unknown number filter type",
+"новая надпись: до 500 символов": "new text: up to 500 characters",
+"слот вылетает из экрана, салют": "the slot flies out of the screen, fireworks",
+"Вернуть все надписи как было?": "Restore all texts to the original?",
+"Оплата доступна только внутри": "Payment is only available inside",
+"за сколько дней брать продажи": "how many days of sales to use",
+"люди, платежи, акции, эффекты": "people, payments, promos, effects",
+"надпись: от 1 до 300 символов": "text: 1 to 300 characters",
+"цифра - от 0 до 9 или «любая»": "digit - 0 to 9 or “any”",
+"частота: 6h, 12h, day или off": "frequency: 6h, 12h, day or off",
+"эффекты: boot, buy, add, open": "effects: boot, buy, add, open",
+"Написать, когда флор не выше": "Message me when the floor is at most",
+"кто-то запустил бота впервые": "someone started the bot for the first time",
+"напишу, когда флор опустится": "I'll message you when the floor drops",
+"подарок выпрыгивает из шапки": "the gift jumps out of the header",
+"Подбираю примеры монохромов": "Finding monochrome examples",
+"Попробуй ещё раз чуть позже": "Try again a bit later",
+"Цены обновляются каждый час": "Prices update every hour",
+"в initData нет пользователя": "no user in initData",
+"нужны начало, конец и режим": "start, end and mode are needed",
+"текст длиннее 3500 символов": "text is longer than 3500 characters",
+"Выбери коллекцию из списка": "Pick a collection from the list",
+"Монохромы в этой коллекции": "Monochromes in this collection",
+"Нет экрана для этой строки": "No screen for this row",
+"Что делать с уведомлениями": "What to do with alerts",
+"логотип вылетает навстречу": "the logo flies towards you",
+"опишите проблему подробнее": "please describe the problem in more detail",
+"нужны пары «было - стало»": "“before - after” pairs are needed",
+"режим - «deals» или «all»": "mode - “deals” or “all”",
+"скидка на слот тебе и ему": "a slot discount for you and them",
+"Друг купит слот - скидка": "When a friend buys a slot - a discount of",
+"Начало и конец совпадают": "Start and end are the same",
+"Проверь, что бот запущен": "Check that the bot is running",
+"в initData нет auth_date": "no auth_date in initData",
+"количество - целое число": "quantity - a whole number",
+"сочетание модели с фоном": "how the model matches the backdrop",
+"флор и последние продажи": "floor and recent sales",
+"Ждать конкретные номера": "Wait for specific numbers",
+"Сколько раз повторяется": "How many times it repeats",
+"Слежение за улучшениями": "Upgrade tracking",
+"Цифры - можно несколько": "Digits - you can pick several",
+"нет доступа: нужен слот": "no access: a slot is needed",
+"отслеживание не найдено": "tracking not found",
+"скидка, слоты в подарок": "discount, free slots",
+"Все надписи возвращены": "All texts restored",
+"Модель - необязательно": "Model - optional",
+"Причина (необязательно": "Reason (optional",
+"Цены сейчас недоступны": "Prices are unavailable right now",
+"количество - от 1 до 6": "count - from 1 to 6",
+"кому: «all» или «flip»": "to: “all” or “flip”",
+"нужен список коллекций": "a list of collections is needed",
+"первый проход ещё идёт": "the first pass is still running",
+"подарить слот человеку": "give a slot to a person",
+"покупка слота звёздами": "slot purchases with stars",
+"Модель (необязательно": "Model (optional",
+"Не соединился с ботом": "Couldn't connect to the bot",
+"Режим правки выключен": "Edit mode is off",
+"Уведомления владельцу": "Owner notifications",
+"неверный часовой пояс": "invalid time zone",
+"нужен номер обращения": "a ticket number is needed",
+"нужен текст сообщения": "message text is needed",
+"тихие часы недоступны": "quiet hours are unavailable",
+"Добавлено в портфель": "Added to the portfolio",
+"Коллекция для алерта": "Collection for the alert",
+"Пока ничего не менял": "Nothing changed yet",
+"Пусто - любой маркет": "Empty - any marketplace",
+"Резкое движение цены": "Sharp price move",
+"Рынок моих коллекций": "Market of my collections",
+"Тихие часы выключены": "Quiet hours are off",
+"Тихие часы сохранены": "Quiet hours saved",
+"Удалить отслеживание": "Delete tracking",
+"Флор ещё не посчитан": "Floor not calculated yet",
+"должен ответить «ok»": "should answer “ok”",
+"коллекция не найдена": "collection not found",
+"обращение не найдено": "ticket not found",
+"поддержка недоступна": "support is unavailable",
+"поменять любой текст": "change any text",
+"режим правки включён": "edit mode is on",
+"свободных слотов нет": "no free slots",
+"только для владельца": "owner only",
+"флор ещё не посчитан": "floor not calculated yet",
+"Вернуть все надписи": "Restore all texts",
+"Коллекция для слота": "Collection for the slot",
+"Коллекция добавлена": "Collection added",
+"Лоты дешевле продаж": "Lots cheaper than sales",
+"Настройки сохранены": "Settings saved",
+"Не задан адрес бота": "The bot address is not set",
+"Объявление показано": "Announcement is shown",
+"Покупок ещё не было": "No purchases yet",
+"Приходят в чат бота": "They arrive in the bot chat",
+"Условия пользования": "Terms of use",
+"в initData нет hash": "no hash in initData",
+"номер - целое число": "number - a whole number",
+"портфель недоступен": "portfolio is unavailable",
+"такого в списке нет": "not in the list",
+"Добавить коллекцию": "Add collection",
+"Надпись возвращена": "Text restored",
+"Новые пользователи": "New users",
+"Ответ придёт в чат": "The reply will arrive in the chat",
+"Открытых обращений": "Open tickets",
+"Подарок в портфель": "Gift to portfolio",
+"Своя цена за штуку": "Your own price per item",
+"Ссылка скопирована": "Link copied",
+"Что сообщить людям": "What to tell people",
+"время в виде ЧЧ:ММ": "time as HH:MM",
+"ещё не обновлялись": "not updated yet",
+"по каждому подарку": "for each gift",
+"подарок в портфель": "gift to portfolio",
+"подпись не сошлась": "signature mismatch",
+"подпись просрочена": "signature expired",
+"позиция не найдена": "item not found",
+"Акция остановлена": "Promo stopped",
+"Бесплатных слотов": "Free slots",
+"Возвращена в меню": "Returned to the menu",
+"Данные о подарках": "Gift data",
+"Загрузочный экран": "Loading screen",
+"Максимальная цена": "Maximum price",
+"Нет связи с ботом": "No connection to the bot",
+"Ничего не нашлось": "Nothing found",
+"Открытие карточки": "Opening a card",
+"Плановые работы в": "Maintenance at",
+"Последние находки": "Recent finds",
+"Последние продажи": "Recent sales",
+"Скидка на слот, %": "Slot discount, %",
+"Только со слотами": "Only with slots",
+"алерты недоступны": "alerts are unavailable",
+"не хватает слотов": "not enough slots",
+"нужен id или @имя": "an id or @name is needed",
+"нужен числовой id": "a numeric id is needed",
+"такого алерта нет": "no such alert",
+"Алертов пока нет": "No alerts yet",
+"Вернуть как было": "Restore original",
+"Всего в портфеле": "Portfolio total",
+"Добавить подарок": "Add gift",
+"Изменить надпись": "Edit text",
+"Коллекции в меню": "Collections in the menu",
+"Надпись изменена": "Text changed",
+"Настройки модуля": "Module settings",
+"Объявление снято": "Announcement removed",
+"Оплата не прошла": "Payment failed",
+"Остановить акцию": "Stop the promo",
+"Отправить ссылку": "Send the link",
+"Пригласить друга": "Invite a friend",
+"Пришли по ссылке": "Joined via the link",
+"Сейчас акции нет": "No promo right now",
+"Фильтры листинга": "Listing filters",
+"видишь только ты": "only you see it",
+"добавлен подарок": "gift added",
+"неизвестный язык": "unknown language",
+"нужна цена в TON": "a price in TON is needed",
+"старое состояние": "old state",
+"язык, тихие часы": "language, quiet hours",
+"История покупок": "Purchase history",
+"Новая коллекция": "New collection",
+"Новые коллекции": "New collections",
+"Показать эффект": "Show the effect",
+"Продаж в алерте": "Sales in the alert",
+"Скидок наготове": "Discounts available",
+"Слот освобождён": "Slot freed",
+"Только выгодные": "Deals only",
+"Фильтры подарка": "Gift filters",
+"без порога цены": "no price limit",
+"модуль выключен": "the module is off",
+"нужна коллекция": "a collection is needed",
+"освободить слот": "free the slot",
+"флоры обновлены": "floors updated",
+"Акция запущена": "Promo started",
+"Включить снова": "Turn on again",
+"Закрыть доступ": "Block access",
+"Кому (числовой": "To (numeric",
+"Красивый номер": "Special number",
+"Не загрузилось": "Didn't load",
+"Попробуй позже": "Try later",
+"Сейчас закрыты": "Blocked now",
+"Сколько слотов": "How many slots",
+"Состояние бота": "Bot status",
+"Цена обновлена": "Price updated",
+"Ценовые алерты": "Price alerts",
+"Что случилось?": "What happened?",
+"напишите ответ": "write a reply",
+"не принимаются": "rejected",
+"сообщение всем": "message to everyone",
+"Алерт включён": "Alert turned on",
+"День рождения": "Birthday",
+"Доступ закрыт": "Access blocked",
+"Доступ открыт": "Access restored",
+"Мои коллекции": "My collections",
+"Обращений нет": "No tickets",
+"Покупка слота": "Slot purchase",
+"Портфель пуст": "Portfolio is empty",
+"Рыночная цена": "Market price",
+"Слот добавлен": "Slot added",
+"Слотов у тебя": "Your slots",
+"Создать алерт": "Create alert",
+"Теперь у него": "Now they have",
+"Ценовой алерт": "Price alert",
+"Что присылать": "What to send",
+"Чёрный список": "Blocklist",
+"без улучшений": "no upgrades",
+"и тебе, и ему": "for both you and them",
+"ключ не задан": "key not set",
+"ценовой алерт": "price alert",
+"Адрес данных": "Data address",
+"Алерт создан": "Alert created",
+"Алерт удалён": "Alert deleted",
+"Все листинги": "All listings",
+"Всё спокойно": "All quiet",
+"Напиши ответ": "Write a reply",
+"Напиши текст": "Write the text",
+"Не присылать": "Don't send",
+"Режим правки": "Edit mode",
+"Сколько дней": "How many days",
+"Укажи цену в": "Enter the price in",
+"Язык изменён": "Language changed",
+"все отвечены": "all answered",
+"все работают": "all working",
+"любая модель": "any model",
+"нет initData": "no initData",
+"нужен список": "a list is needed",
+"отслеживание": "tracking",
+"отслеживаний": "trackings",
+"отслеживания": "trackings",
+"показывается": "shown",
+"слот(а), ещё": "slot(s), for",
+"Выдать слот": "Give a slot",
+"Занять слот": "Take a slot",
+"История цен": "Price history",
+"Итог недели": "Weekly summary",
+"Купили слот": "Bought a slot",
+"Купить слот": "Buy a slot",
+"Мои подарки": "My gifts",
+"Новый алерт": "New alert",
+"Окно продаж": "Sales window",
+"Свой шаблон": "Custom pattern",
+"Скопировать": "Copy",
+"Список пуст": "The list is empty",
+"Уведомления": "Notifications",
+"Флор сейчас": "Floor now",
+"без причины": "no reason",
+"все маркеты": "all marketplaces",
+"идёт сейчас": "running now",
+"история цен": "price history",
+"меньше часа": "under an hour",
+"не подойдёт": "won't match",
+"нужно число": "a number is needed",
+"уведомления": "notifications",
+"Во сколько": "At what time",
+"Добавление": "Adding",
+"Количество": "Quantity",
+"Объявление": "Announcement",
+"Пока пусто": "Empty for now",
+"Слот занят": "Slot taken",
+"Слоты есть": "Slots available",
+"Тихие часы": "Quiet hours",
+"Цена слота": "Slot price",
+"без ответа": "unanswered",
+"без порога": "no limit",
+"нужен слот": "a slot is needed",
+"только что": "just now",
+"улучшается": "upgradable",
+"Без звука": "Silent",
+"Выключено": "Off",
+"Запустить": "Start",
+"Коллекция": "Collection",
+"Мои слоты": "My slots",
+"Монохромы": "Monochromes",
+"Настройки": "Settings",
+"Обращение": "Ticket",
+"Обращения": "Tickets",
+"Отправить": "Send",
+"Отправляю": "Sending to",
+"Поддержка": "Support",
+"Сохранено": "Saved",
+"Сохранить": "Save",
+"Стоимость": "Value",
+"Улучшения": "Upgrades",
+"бесплатно": "free",
+"выключено": "off",
+"коллекции": "collections",
+"коллекций": "collections",
+"коллекция": "collection",
+"любой фон": "any backdrop",
+"мин назад": "min ago",
+"отправлен": "sent",
+"скидка от": "discount from",
+"создаётся": "being created",
+"улучшение": "upgrade",
+"улучшения": "upgrades",
+"Включено": "On",
+"Включить": "Turn on",
+"Добавить": "Add",
+"За сутки": "24h",
+"Изменено": "Changed",
+"Листинги": "Listings",
+"Ответ на": "Reply to",
+"Ответить": "Reply",
+"Портфель": "Portfolio",
+"Работает": "Running",
+"Рассылка": "Broadcast",
+"включено": "on",
+"выключен": "off",
+"добавить": "add",
+"за сутки": "24h",
+"изменено": "changed",
+"или @имя": "or @name",
+"максимум": "max",
+"например": "for example",
+"не задан": "not set",
+"отвечено": "answered",
+"платежей": "payments",
+"подойдёт": "will match",
+"подписок": "subscriptions",
+"рыночная": "market",
+"сработал": "triggered",
+"Главная": "Home",
+"Админка": "Admin",
+"Маркеты": "Marketplaces",
+"Надписи": "Texts",
+"Открыть": "Open",
+"Повторы": "Repeats",
+"Профиль": "Profile",
+"Удалено": "Deleted",
+"Удалить": "Delete",
+"Эффекты": "Effects",
+"активен": "active",
+"активно": "active",
+"включён": "on",
+"д назад": "d ago",
+"за слот": "per slot",
+"листинг": "listing",
+"минимум": "min",
+"номер(а": "number(s",
+"удалить": "delete",
+"ч назад": "h ago",
+"частицы": "particles",
+"Выдать": "Give",
+"Готово": "Done",
+"Модели": "Models",
+"Неделя": "Week",
+"Оплаты": "Payments",
+"Отмена": "Cancel",
+"Подряд": "In a row",
+"Сводка": "Summary",
+"Скрыта": "Hidden",
+"Убрано": "Removed",
+"Убрать": "Remove",
+"Шаблон": "Pattern",
+"в меню": "in the menu",
+"занято": "used",
+"ключей": "keys",
+"модели": "models",
+"оплаты": "payments",
+"ошибка": "error",
+"подряд": "in a row",
+"проход": "pass",
+"сейчас": "now",
+"скрыта": "hidden",
+"скрыто": "hidden",
+"следим": "watching",
+"слотов": "slots",
+"Акция": "Promo",
+"Любой": "Any",
+"Месяц": "Month",
+"Минус": "Minus",
+"Ответ": "Reply",
+"Повод": "Occasion",
+"Порог": "Threshold",
+"Текст": "Text",
+"вышла": "released",
+"звёзд": "stars",
+"и ещё": "and",
+"любая": "any",
+"любой": "any",
+"людей": "people",
+"слота": "slots",
+"сутки": "24h",
+"Было": "Before",
+"Всем": "Everyone",
+"Идёт": "Running",
+"Фоны": "Backdrops",
+"Цены": "Prices",
+"Язык": "Language",
+"было": "was",
+"выкл": "off",
+"ждёт": "waiting",
+"люди": "people",
+"слот": "slot",
+"флор": "floor",
+"часа": "hours",
+"Все": "All",
+"Фон": "Backdrop",
+"авг": "Aug",
+"апр": "Apr",
+"вкл": "on",
+"дек": "Dec",
+"июл": "Jul",
+"июн": "Jun",
+"мар": "Mar",
+"мая": "May",
+"нет": "no",
+"ноя": "Nov",
+"окт": "Oct",
+"сен": "Sep",
+"фев": "Feb",
+"чел": "people",
+"янв": "Jan",
+"До": "To",
+"Ты": "You",
+"дн": "days",
+"до": "up to",
+"из": "of",
+"шт": "pcs",
+"Слот Flip Master": "Flip Master slot",
+"слот(а) в подарок": "free slot(s)",
+"действует акция": "a promo is running",
+"меньше минуты": "under a minute",
+"по акции": "promo",
+"на слоты": "off slots",
+"Осталось": "Left:",
+"добавлен": "added",
+"минута": "minute",
+"минуты": "minutes",
+"минут": "minutes",
+"часов": "hours",
+"день": "day",
+"дня": "days",
+"дней": "days",
+"час": "hour",
+"ч": "h",
+"С": "From"
+};
+const EN_RX = [
+[
+"^не\\ больше\\ (.+?)\\ включённых\\ алертов$",
+"no more than $1 active alerts"
+],
+[
+"^число\\ вне\\ диапазона\\ (.+?)–(.+?)$",
+"number out of range $1-$2"
+],
+[
+"^в\\ портфеле\\ уже\\ (.+?)\\ позиций$",
+"the portfolio already has $1 items"
+],
+[
+"^текст\\ длиннее\\ (.+?)\\ символов$",
+"text is longer than $1 characters"
+],
+[
+"^неизвестное\\ действие:\\ (.+?)$",
+"unknown action: $1"
+],
+[
+"^неизвестный\\ маркет:\\ (.+?)$",
+"unknown marketplace: $1"
+],
+[
+"^не\\ больше\\ (.+?)\\ значений$",
+"no more than $1 values"
+],
+[
+"^не\\ больше\\ (.+?)\\ номеров$",
+"no more than $1 numbers"
+],
+[
+"^не\\ разобрал\\ user:\\ (.+?)$",
+"couldn't parse user: $1"
+],
+[
+"^номер\\ \\-\\ от\\ 1\\ до\\ (.+?)$",
+"number - from 1 to $1"
+]
+].map(([p, r]) => [new RegExp(p), r]);
+
 /* ===================== СВОИ НАДПИСИ =====================
    Владелец меняет любую надпись прямо в приложении: включает в админке «Режим правки»,
    удерживает палец на надписи и пишет новую. Замены хранятся у бота и приходят всем
@@ -2653,12 +3666,47 @@ function txPattern(s){
   const k = txKey(s).replace(TX_NUM, (m) => { nums.push(m); return "{n}"; });
   return { k, nums };
 }
+/* Язык надписей. Тексты в коде русские; для английского их переводит словарь
+   (site/3d0_en.js). Свои надписи владельца хранятся по языкам: русские под исходным
+   ключом, английские - под «en:ключ», чтобы правка одного языка не трогала другой. */
+let LANG = "ru";
+try{ LANG = localStorage.getItem("gs_lang") === "en" ? "en" : "ru"; }catch(e){ LANG = "ru"; }
+const CYR = /[А-Яа-яЁё]/;
+const EN_RE = (() => {
+  const keys = Object.keys(EN_DICT).sort((a, b) => b.length - a.length)
+    .map((k) => k.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"));
+  // фраза - целыми словами: иначе короткое «до» заменилось бы внутри «Подарок»
+  return new RegExp("(^|[^А-Яа-яЁё])(" + keys.join("|") + ")(?=[^А-Яа-яЁё]|$)", "g");
+})();
+function enText(s){
+  for(const [rx, rep] of EN_RX) if(rx.test(s)) return s.replace(rx, rep);
+  // дважды: соседние фразы через один пробел второй раз ловятся целиком
+  return s.replace(EN_RE, (m, pre, ph) => pre + EN_DICT[ph]).replace(EN_RE, (m, pre, ph) => pre + EN_DICT[ph]);
+}
+const tr = (s) => (LANG === "en" && CYR.test(String(s || ""))) ? enText(String(s)) : s;
+function setLang(lang){
+  const next = lang === "en" ? "en" : "ru";
+  if(next === LANG) return;
+  LANG = next;
+  try{ localStorage.setItem("gs_lang", LANG); }catch(e){}
+  document.documentElement.lang = LANG;
+  txWalk(document.body);
+  txObs.takeRecords();
+}
 /* Чем заменить надпись, или null - оставить как есть. */
 function txLookup(text){
   const { k, nums } = txPattern(text);
-  if(!k || TX[k] == null) return null;
-  let i = 0;
-  return TX[k].replace(/\{n\}/g, () => (i < nums.length ? nums[i++] : ""));
+  if(!k) return null;
+  const own = LANG === "en" ? TX["en:" + k] : TX[k];
+  if(own != null){
+    let i = 0;
+    return own.replace(/\{n\}/g, () => (i < nums.length ? nums[i++] : ""));
+  }
+  if(LANG === "en" && CYR.test(k)){
+    const t = enText(txKey(text));
+    return t !== txKey(text) ? t : null;
+  }
+  return null;
 }
 /* Исходная надпись узла: если сейчас в нём наша замена - то, что было до неё. */
 function txOrigOf(n, cur){
@@ -2793,10 +3841,13 @@ function txOpen(target){
 }
 function txOpenKey(key){
   if(!key) return;
-  const has = TX[key] != null, withNum = key.includes("{n}");
+  // Владелец правит надпись на том языке, на котором сейчас смотрит приложение.
+  const sk = LANG === "en" && !key.startsWith("en:") ? "en:" + key : key;
+  const was = sk.startsWith("en:") ? enText(sk.slice(3)) : key;
+  const has = TX[sk] != null, withNum = key.includes("{n}");
   $("txed").innerHTML = `<div class="txcard">
     <h3>Изменить надпись</h3>
-    <div class="txwas"><span>Было</span>${esc(key)}</div>
+    <div class="txwas"><span>Было</span>${esc(was)}</div>
     <textarea id="txin" rows="3" maxlength="500"></textarea>
     ${withNum ? `<div class="hint">{n} - сюда встанет число, его можно переставить или убрать.</div>` : ""}
     <div class="hint">Поменяется везде, где стоит эта надпись, у всех пользователей.</div>
@@ -2804,13 +3855,13 @@ function txOpenKey(key){
     <div class="txbtns"><button class="btn" id="txno">Отмена</button>
       <button class="btn blue" id="txok">${ic("check")}Сохранить</button></div>
     ${has ? `<button class="btn ghost" id="txback">Вернуть как было</button>` : ""}</div>`;
-  $("txin").value = has ? TX[key] : key;
+  $("txin").value = has ? TX[sk] : was;
   $("txed").classList.add("on");
   setTimeout(() => { const i = $("txin"); i.focus(); i.select(); }, 60);
   const done = () => $("txed").classList.remove("on");
   const send = async (val) => {
     try{
-      await call("admin", { texts: { [key]: val } });
+      await call("admin", { texts: { [sk]: val } });
       done(); hapticOk(); toast(val ? "Надпись изменена" : "Надпись возвращена");
       if($("v-admin").classList.contains("on")) render();
     }catch(err){ $("txerr").textContent = err.message; }
@@ -2819,7 +3870,7 @@ function txOpenKey(key){
   $("txok").onclick = () => {
     const val = txKey($("txin").value);
     if(!val){ $("txerr").textContent = "Напиши новую надпись или нажми «Вернуть как было»"; return; }
-    send(val === key ? "" : val);
+    send(val === was ? "" : val);
   };
   if(has) $("txback").onclick = () => send("");
 }
@@ -2834,8 +3885,6 @@ function adminTexts(){
     <div class="group plain"><div class="row"><span class="t"><b>Режим правки</b>
       <span>видишь только ты</span></span>
       <button class="tgl ${TXEDIT ? "on" : ""}" id="tx-mode"></button></div></div>
-    <div class="group">${rowHtml({ tile: "indigo", icon: "spark", title: "Подпись на экране загрузки",
-      sub: txLookup(BRAND.tag) || BRAND.tag, attr: 'id="tx-tag"' })}</div>
     <label>Изменено: ${keys.length}</label>
     ${keys.length ? `<div class="group" data-notx>${keys.map((k, i) =>
       rowHtml({ title: TX[k], sub: "было: " + k, attr: `data-txk="${i}"` })).join("")}</div>
@@ -2847,14 +3896,13 @@ function adminTexts(){
     if(on){ closeSheet(); toast("Удерживай любую надпись, чтобы изменить", "edit"); }
     else $("tx-mode").classList.remove("on");
   };
-  $("tx-tag").onclick = () => txOpenKey(txPattern(BRAND.tag).k);
   $("panel").querySelectorAll("[data-txk]").forEach((b) => b.onclick = () => txOpenKey(keys[+b.dataset.txk]));
   if(keys.length) $("tx-reset").onclick = () => {
     const doIt = async (yes) => {
       if(!yes) return;
       if(await save("admin", { texts_reset: true }, "Все надписи возвращены")) adminTexts();
     };
-    if(TG && TG.showConfirm) TG.showConfirm("Вернуть все надписи как было?", doIt); else doIt(true);
+    if(TG && TG.showConfirm) TG.showConfirm(tr("Вернуть все надписи как было?"), doIt); else doIt(true);
   };
 }
 
@@ -2862,10 +3910,11 @@ function adminTexts(){
 function demoState(){
   return {
     uid: 1204450614, name: "Konstantin", photo: "", is_owner: true, lang: "ru",
-    settings: { sales_days: 7, sales_show: 3, premium_emoji: true },
+    settings: { sales_days: 7, sales_show: 3, premium_emoji: true,
+      quiet: { start: 1380, end: 480, mode: "silent", tz: 180 } },
     portfolio: { total: 1186.4, change_24h: 3.42, top: { slug: "PlushPepe", model: "Midas Pepe" } },
     effects: { boot: true, buy: true, add: true, open: true }, texts: {},
-    announcements: [{ kind: "promo", title: "Акция: −20% на слоты", text: "До 27 октября. Ещё 3 слота в подарок." }],
+    announcements: [{ kind: "promo", title: "Акция", text: "-20% на слоты, 3 слот(а) в подарок. Осталось 13 дней" }],
     collections: [
       { cid: 1, slug: "PlushPepe", title: "Plush Pepe", enabled: true, pending: false,
         models: ["Ninja Mike", "Steel Frog", "Gucci Leap"], backdrops: ["Onyx Black"], number: "7:3:1",
@@ -2907,6 +3956,56 @@ async function demoCall(action, payload){
     return { items: (payload && payload.all) ? all : all.filter((x) => !hidden.has(x.name)) };
   }
   if(action === "catalog") return { models: null, backdrops: null };
+  // ---- рынок (только для показа дизайна: числа примерные) ----
+  const now = Math.floor(Date.now() / 1000);
+  if(action === "home") return {
+    prices: true,
+    market: [{ slug: "Plush Pepe", floor: 5120, change_24h: 2.4, at: now - 1500 },
+      { slug: "Durov's Cap", floor: 712.5, change_24h: -1.8, at: now - 1500 },
+      { slug: "Swiss Watch", floor: 41.2, change_24h: 0.6, at: now - 1500 },
+      { slug: "Loot Bag", floor: 27.9, change_24h: 5.3, at: now - 1500 }],
+    finds: [{ kind: "listing", slug: "LootBag", model: "Pepe Bag", num: 4512, price: 24.5, ts: now - 600, link: "" },
+      { kind: "upgrade", slug: "PlushPepe", model: "Steel Frog", num: 1802, price: null, ts: now - 3000, link: "" },
+      { kind: "listing", slug: "SwissWatch", model: "Iced Out", num: 77, price: 38, ts: now - 9000, link: "" }],
+    status: { uptime: 52 * 3600, sniper: { collections: 4, last_pass: now - 40 },
+      flip: { enabled: true, tracked: 2, subscribed: 2, notify_chat: true },
+      gsb: { keys: 2, dead: 0 }, floors_at: now - 1500, users: 184 } };
+  if(action === "floors"){
+    await artIndex();
+    const out = {};
+    [...ART.names.values()].forEach((v, i) => { out[norm(v.name)] = Math.round(2000 / (i + 1) * 100) / 100 + 3; });
+    return { collections: out };
+  }
+  if(action === "model_floors"){
+    const out = {};
+    (payload.models || []).forEach((m, i) => { out[m] = Math.round((900 / (i + 2) + 5) * 100) / 100; });
+    return { floors: out, pending: false };
+  }
+  if(action === "model_history"){
+    const pts = [];
+    let v = 600;
+    for(let i = 24 * 7; i >= 0; i--){ v += Math.sin(i / 7) * 8 + (Math.random() - .5) * 6; pts.push({ t: now - i * 3600, price: Math.round(v * 100) / 100 }); }
+    return { floors: pts, sales: [{ t: now - 7200, price: 612, market: "portals", backdrop: "Black" },
+      { t: now - 86400, price: 640, market: "tonnel", backdrop: "Onyx Black" }] };
+  }
+  if(action === "mono_examples") return { pending: false, items: [
+    { model: "Steel Frog", backdrop: "Gunmetal", score: 93 }, { model: "Ninja Mike", backdrop: "Onyx Black", score: 88 },
+    { model: "Gucci Leap", backdrop: "Satin Gold", score: 82 }] };
+  if(action === "alerts") return { prices: true, items: DEMO_S.alerts || (DEMO_S.alerts = [
+    { id: 1, slug: "PlushPepe", model: "", price: 5000, active: true, floor: 5120 },
+    { id: 2, slug: "LootBag", model: "Pepe Bag", price: 25, active: false, fired_at: now - 4000, fired_price: 24.5 }]) };
+  if(action === "alert_add"){
+    DEMO_S.alerts = DEMO_S.alerts || [];
+    DEMO_S.alerts.unshift({ id: Date.now(), slug: payload.slug, model: payload.model, price: payload.price, active: true });
+    return { ok: true, state: DEMO_S };
+  }
+  if(action === "alert_del"){ DEMO_S.alerts = (DEMO_S.alerts || []).filter((a) => a.id !== payload.id); return { ok: true, state: DEMO_S }; }
+  if(action === "alert_rearm"){ (DEMO_S.alerts || []).forEach((a) => { if(a.id === payload.id) a.active = true; }); return { ok: true, state: DEMO_S }; }
+  if(action === "settings"){
+    if(payload.quiet) DEMO_S.settings.quiet = payload.quiet.mode === "off" ? null : payload.quiet;
+    if(payload.lang) DEMO_S.lang = payload.lang;
+    return { ok: true, state: DEMO_S };
+  }
   if(action === "slot_invoice") return { link: "" };
   if(action === "admin"){
     if(payload.texts_reset) DEMO_S.texts = {};
@@ -3012,8 +4111,6 @@ function bootStart(){
   const b = $("boot"), w = $("boot-logo");
   w.getAnimations().forEach((x) => x.cancel());
   w.innerHTML = `<div class="lg-float">${BRAND.svg}</div>`;
-  $("boot-word").innerHTML = BRAND.word;
-  $("boot-tag").textContent = BRAND.tag;
   const anim = fxOn("boot");
   b.classList.remove("play", "out", "still", "gone", "hit");
   void b.offsetWidth;
@@ -3111,12 +4208,9 @@ addEventListener("resize", moveInd);
 ["gesturestart", "gesturechange", "gestureend"].forEach((ev) =>
   document.addEventListener(ev, (e) => e.preventDefault(), { passive: false }));
 document.addEventListener("touchmove", (e) => { if(e.touches.length > 1) e.preventDefault(); }, { passive: false });
-let lastTap = 0;
-document.addEventListener("touchend", (e) => {
-  const now = Date.now();
-  if(now - lastTap < 300 && !e.target.closest("input")) e.preventDefault();
-  lastTap = now;
-}, { passive: false });
+/* Двойное касание НЕ гасим в touchend: так терялось второе быстрое нажатие (две
+   цифры подряд, две модели подряд). Увеличение по двойному касанию отключает
+   touch-action: manipulation в стилях - нажатия при этом доходят все. */
 
 if(TG){
   TG.ready(); TG.expand();
