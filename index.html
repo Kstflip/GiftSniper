@@ -701,6 +701,9 @@ nav{grid-template-columns:repeat(5,minmax(0,1fr))}
 .seg.wrap .thumb{display:none}
 /* узкие телефоны: заголовки малых плиток не упираются в края */
 .hero.small h2{font-size:clamp(16px,5vw,21px);overflow-wrap:anywhere}
+.seg.chips{flex-wrap:nowrap;overflow-x:auto;margin:0 -16px;padding:0 16px;scrollbar-width:none}
+.seg.chips::-webkit-scrollbar{display:none}
+.seg.chips button{flex:0 0 auto}
 .credit{display:block;margin:-2px auto 8px;padding:6px 10px;font-size:12px;color:var(--muted-2);background:none}
 /* Правка надписей: полоса сверху, пока режим включён, и окно правки поверх всего. */
 #txbar{position:fixed;left:12px;right:12px;top:calc(10px + var(--tg-content-safe-area-inset-top,0px));z-index:130;
@@ -733,6 +736,181 @@ body.txedit,body.txedit *{-webkit-user-select:none;user-select:none;-webkit-touc
 .txcard .btn{height:48px}
 .txcard .btn.ghost{height:42px;margin-top:4px}
 @keyframes txIn{from{opacity:0;transform:translateY(-10px) scale(.97)}to{opacity:1;transform:none}}
+/* ---------- баннеры из слоёв ---------- */
+.bnr.v2{display:block;padding:0;min-height:0;aspect-ratio:2.4/1;--u:3.3px}
+.bnr-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0;pointer-events:none;user-select:none;-webkit-user-drag:none}
+.bnr-dim{position:absolute;inset:0;z-index:0;background:#000;pointer-events:none}
+.bnr.v2 .sparkles{z-index:1}
+.bl{position:absolute;z-index:2;white-space:nowrap;line-height:1.15;letter-spacing:-.01em;transform-origin:50% 50%}
+.bl-text.pad{padding:.12em .45em;border-radius:.4em}
+.bl-btn{padding:.5em 1.15em;border-radius:999px;font-weight:700;box-shadow:0 .2em .6em rgba(0,0,0,.25)}
+.bl-gift{aspect-ratio:1}
+.bl-gift>.art{width:100%;height:100%;filter:drop-shadow(0 .6em 1em rgba(0,0,0,.35))}
+.bnr.shine::after{content:"";position:absolute;inset:-20% auto -20% -40%;width:30%;z-index:3;pointer-events:none;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.35),transparent);transform:skewX(-20deg);
+  animation:bnShine 3.8s ease-in-out infinite}
+@keyframes bnShine{0%,55%{left:-40%}100%{left:130%}}
+.bned{margin:6px 0 0;touch-action:none;user-select:none;-webkit-user-select:none;border-radius:22px}
+.bned .bnr{cursor:default;outline:1px dashed rgba(255,255,255,.18);outline-offset:-1px}
+.bned.bgsel .bnr{outline:2px solid #ffd60a;outline-offset:2px}
+.bned .bl.sel{outline:1.5px dashed #ffd60a;outline-offset:3px}
+.bnadd{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-top:12px}
+.bnadd button{min-width:0;height:50px;border-radius:13px;background:var(--s2);font-size:12px;font-weight:600;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bnadd .ico{width:16px;height:16px}
+.bnlayers{display:flex;gap:7px;overflow-x:auto;margin:10px -16px 0;padding:0 16px 2px;scrollbar-width:none}
+.bnlayers::-webkit-scrollbar{display:none}
+.bnlayers button{flex:0 0 auto;height:34px;padding:0 12px;border-radius:17px;background:var(--s1);font-size:13px;
+  display:flex;align-items:center;gap:6px;box-shadow:inset 0 0 0 1.5px transparent;white-space:nowrap}
+.bnlayers button.on{box-shadow:inset 0 0 0 1.5px #ffd60a;background:var(--s2)}
+.bnlayers .ico{width:15px;height:15px}
+.bnprops{margin-top:10px}
+.bnprops label{margin-top:14px}
+.bnsl{display:grid;grid-template-columns:92px 1fr 46px;align-items:center;gap:8px;margin-top:8px}
+.bnsl span{font-size:13px;color:var(--muted)}
+.bnsl b{font-size:13px;text-align:right}
+.bnsl input{margin:0}
+.bnpal{display:flex;flex-wrap:wrap;gap:8px}
+.bnpal>button,.bnpal>label{width:32px;height:32px;border-radius:50%;box-shadow:inset 0 0 0 1px rgba(255,255,255,.2);margin:0;
+  display:grid;place-items:center;position:relative}
+.bnpal>.on{box-shadow:0 0 0 2px var(--s1),0 0 0 4px #ffd60a}
+.bnpal .ico{width:15px;height:15px}
+.bnsw0{background:var(--s3)}
+.bnpick{background:conic-gradient(#ff453a,#ffd60a,#30d158,#40c8e0,#2f7cf6,#bf5af2,#ff453a);cursor:pointer;overflow:hidden}
+.bnpick input{position:absolute;inset:0;opacity:0;width:100%;height:100%;cursor:pointer;padding:0;border:none}
+.bnc.bnpick{display:grid;place-items:center;position:relative;margin:0}
+.bnlact{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-top:14px}
+.bnlact button{height:40px;border-radius:12px;background:var(--s2);font-size:12px;font-weight:600;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:2px}
+.bnlact .ico{width:15px;height:15px}
+.bnlact .red{color:var(--red)}
+.bnlist{display:flex;flex-direction:column;gap:12px;margin-bottom:6px}
+.bnitem{background:var(--s1);border-radius:20px;padding:8px 8px 4px;cursor:pointer}
+.bnmini .bnr{pointer-events:none;border-radius:15px}
+.bnmeta{display:flex;align-items:center;gap:6px;padding:8px 4px 4px}
+.bnmeta .t{flex:1;min-width:0}
+.bnmeta .t b{display:block;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bnmeta .t span{display:block;font-size:12.5px;color:var(--muted)}
+input[type=datetime-local]{display:block;width:100%;min-width:0;max-width:100%;box-sizing:border-box;height:50px;
+  padding:0 12px;border-radius:15px;border:none;background:var(--s1);color:var(--text);font-size:15px;
+  color-scheme:dark;-webkit-appearance:none;appearance:none}
+.bnprops input[type=datetime-local],.bnprops input[type=text]{background:var(--s2)}
+/* ---------- бонусные звёзды: шапка главной ---------- */
+.brandrow.home{position:relative}
+.brandrow .grow{flex:1}
+.lgbtn{padding:0;width:30px;height:30px;flex:0 0 30px;border-radius:9px;touch-action:manipulation}
+.lgbtn svg{width:30px;height:30px}
+.taphint{display:flex;align-items:center;gap:3px;font-size:11.5px;font-weight:600;color:#ffd60a;
+  letter-spacing:0;white-space:nowrap;margin-left:2px;animation:hintBob 1.6s ease-in-out infinite}
+.taphint .arr{width:22px;height:15px;fill:none;stroke:#ffd60a;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round;
+  transform:scaleX(1);order:-1}
+@keyframes hintBob{0%,100%{transform:translateX(0)}50%{transform:translateX(-5px)}}
+.nukebtn{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;flex:0 0 32px;
+  background:radial-gradient(circle at 40% 35%,#ffe34d,#e0a800);box-shadow:0 0 0 2px #1d1d1f,0 4px 14px rgba(255,214,10,.35)}
+.nukebtn .ico{width:20px;height:20px;fill:#111;stroke:none}
+.nukebtn:active{transform:scale(.88)}
+.starpill{display:flex;align-items:center;gap:5px;height:32px;padding:0 11px 0 8px;border-radius:999px;
+  background:linear-gradient(180deg,#3a3016,#231d0c);box-shadow:inset 0 0 0 1px rgba(255,214,10,.35);color:#ffd60a;font-size:15px}
+.starpill .ico{width:17px;height:17px;fill:#ffd60a;stroke:none}
+.plusfly{position:fixed;z-index:255;pointer-events:none;display:flex;align-items:center;gap:3px;
+  font-weight:850;font-size:22px;color:#ffd60a;text-shadow:0 0 14px rgba(255,214,10,.7),0 2px 4px #000}
+.plusfly .ico{width:22px;height:22px;fill:#ffd60a;stroke:none}
+.ringp{position:fixed;z-index:248;width:120px;height:120px;border-radius:50%;border:4px solid #fff;pointer-events:none;
+  box-shadow:0 0 30px currentColor}
+/* ---------- окно баланса и 3D-монеты ---------- */
+.bcoin-wrap{display:grid;place-items:center;padding:8px 0 4px}
+.bbal{text-align:center}
+.bbal b{display:block;font-size:44px;font-weight:850;color:#ffd60a;letter-spacing:-1px}
+.bbal span{color:var(--muted);font-size:14px}
+.bdays .bdt{display:flex;justify-content:space-between;font-size:15px}
+.bdays .bdt span{color:var(--muted)}
+.bbar{height:8px;border-radius:9px;background:var(--s3);margin-top:10px;overflow:hidden}
+.bbar i{display:block;height:100%;border-radius:inherit;background:linear-gradient(90deg,#ffd60a,#ff9f0a)}
+.tx .amt.plus{color:#ffd60a}
+.bcoin{--d:120px;width:var(--d);height:var(--d);perspective:600px;touch-action:none;cursor:grab}
+.bcoin.big{--d:132px}
+.bcoin.small{--d:58px;pointer-events:none}
+.bcoin .c3{position:relative;width:100%;height:100%;transform-style:preserve-3d}
+.bcoin .c3>i{position:absolute;inset:0;border-radius:50%;background:var(--c2)}
+.bcoin .cf{position:absolute;inset:0;border-radius:50%;display:grid;place-items:center;backface-visibility:hidden;
+  background:radial-gradient(circle at 35% 30%,#fff8 0,transparent 32%),radial-gradient(circle,var(--c1) 58%,var(--c2) 60%,var(--c1) 66%,var(--c2) 100%);
+  box-shadow:inset 0 0 0 3px rgba(255,255,255,.25),inset 0 -6px 14px rgba(0,0,0,.25)}
+.bcoin .front{transform:translateZ(5.2px)}
+.bcoin .back{transform:rotateY(180deg) translateZ(5.2px);flex-direction:column;gap:2px;text-align:center}
+.bcoin .cf .ico{width:44%;height:44%;fill:#fff;stroke:rgba(0,0,0,.25);stroke-width:.6;filter:drop-shadow(0 2px 2px rgba(0,0,0,.3))}
+.bcoin .back b{font-size:calc(var(--d) * .2);font-weight:900;color:#fff;text-shadow:0 2px 3px rgba(0,0,0,.35);display:block}
+.bcoin .back span{font-size:calc(var(--d) * .085);font-weight:700;color:#fff;max-width:70%;line-height:1.1}
+.bcoin .back .ico{width:30%;height:30%}
+.bcoin.locked .cf .ico{opacity:.45}
+.bcoin.small .c3{animation:coinSway 5s ease-in-out infinite}
+@keyframes coinSway{0%,100%{transform:rotateY(-25deg) rotateX(8deg)}50%{transform:rotateY(25deg) rotateX(-4deg)}}
+.achtop{display:flex;align-items:center;gap:16px;background:var(--s1);border-radius:var(--r-l);padding:16px;margin-bottom:12px}
+.achn b{display:block;font-size:19px;font-weight:800}
+.achn span{display:block;color:var(--muted);font-size:14px;margin-top:2px}
+.achn em{display:block;font-style:normal;color:#ffd60a;font-size:13px;margin-top:8px}
+.achgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.achc{display:flex;flex-direction:column;align-items:center;gap:7px;padding:12px 4px 10px;border-radius:16px;background:var(--s1);
+  box-shadow:inset 0 0 0 1.5px transparent;transition:box-shadow .2s}
+.achc.on{box-shadow:inset 0 0 0 1.5px #ffd60a}
+.achc>span{font-size:12px;font-weight:600;text-align:center;line-height:1.2;min-height:29px}
+/* ---------- игра «Угадай цену» ---------- */
+.gstage{position:relative;width:200px;height:200px;margin:6px auto 4px;border-radius:50%;
+  background:radial-gradient(circle,rgba(255,55,95,.28),transparent 68%)}
+.gstage .gart{position:absolute;inset:26px;width:auto;height:auto}
+.gring{position:absolute;inset:0;width:100%;height:100%;transform:rotate(-90deg)}
+.gring circle{fill:none;stroke:var(--s3);stroke-width:6}
+.gring circle+circle{stroke:#ff375f;stroke-linecap:round;transition:stroke-dashoffset .1s linear}
+.gsec{position:absolute;right:0;bottom:6px;width:46px;height:46px;border-radius:50%;display:grid;place-items:center;
+  background:#1c1c1e;box-shadow:0 0 0 3px #ff375f;font-weight:850;font-size:19px}
+.gsec.hot{color:#ff375f;animation:pulse .5s ease-in-out infinite alternate}
+@keyframes pulse{to{transform:scale(1.15)}}
+.gname{text-align:center;font-weight:800;font-size:19px;margin-bottom:14px}
+.gin{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.gin input{flex:1;font-size:22px;font-weight:700;text-align:center}
+.gin span{color:var(--muted);font-weight:700}
+.gres{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:4px 0 12px}
+.gres>div{background:var(--s1);border-radius:16px;padding:12px;text-align:center}
+.gres span{display:block;color:var(--muted);font-size:13px}
+.gres b{display:block;font-size:20px;margin-top:3px}
+.gres.win>div:first-child{box-shadow:inset 0 0 0 1.5px var(--green)}
+/* ---------- ядерная кнопка ---------- */
+.bomb{position:fixed;left:0;top:0;z-index:252;width:80px;height:146px;pointer-events:none;
+  filter:drop-shadow(0 10px 20px rgba(0,0,0,.6))}
+.bomb svg{width:100%;height:100%}
+.nflash{position:fixed;inset:0;z-index:249;pointer-events:none;
+  background:radial-gradient(circle at 50% 46%,#fff 0,#fffbe6 30%,rgba(220,255,200,.9) 60%,rgba(255,255,255,.75))}
+.mush{position:fixed;z-index:247;width:230px;height:300px;pointer-events:none;filter:blur(1.5px)}
+.mush i{position:absolute;display:block;border-radius:50%}
+.mush .stem{left:42%;width:16%;top:38%;height:62%;border-radius:40% 40% 20% 20%;
+  background:linear-gradient(180deg,#ffb347,#a35a2a 60%,rgba(80,60,50,0))}
+.mush .cap{left:6%;width:88%;top:6%;height:40%;background:radial-gradient(circle at 50% 70%,#fff3c4,#ffb347 30%,#c2512a 62%,rgba(90,70,60,.85))}
+.mush .c2{left:22%;width:56%;top:0;height:26%;background:radial-gradient(circle at 50% 80%,#ffe08a,#e07a2a 50%,rgba(110,80,70,.8))}
+.mush .ring{left:20%;width:60%;top:52%;height:12%;background:radial-gradient(ellipse,rgba(255,200,140,.7),transparent 70%)}
+/* огонь поверх всего: только картинка, нажатия проходят насквозь */
+#fire{position:fixed;inset:0;z-index:110;pointer-events:none;overflow:hidden;
+  box-shadow:inset 0 0 70px rgba(255,90,20,.45),inset 0 -40px 90px rgba(255,120,30,.35);animation:fireGlow 1.2s ease-in-out infinite alternate}
+@keyframes fireGlow{to{box-shadow:inset 0 0 90px rgba(255,110,30,.55),inset 0 -60px 120px rgba(255,140,40,.45)}}
+#fire .tongues{position:absolute;left:0;right:0;bottom:0;height:200px;mix-blend-mode:screen}
+#fire .tongues i{position:absolute;bottom:-20px;width:15%;height:var(--h);border-radius:50% 50% 20% 20% / 70% 70% 30% 30%;
+  background:radial-gradient(ellipse at 50% 85%,#fff3b0 0,#ffb347 25%,#ff5a1f 55%,rgba(255,40,0,0) 75%);
+  transform-origin:50% 100%;animation:flame var(--d) ease-in-out var(--dl) infinite alternate;filter:blur(3px);opacity:.6}
+@keyframes flame{0%{transform:scaleY(.75) scaleX(1.05) skewX(-4deg)}50%{transform:scaleY(1.1) scaleX(.9) skewX(5deg)}100%{transform:scaleY(.9) scaleX(1) skewX(-2deg)}}
+#fire .side{position:absolute;top:0;bottom:0;width:26px;background:linear-gradient(90deg,rgba(255,110,30,.35),transparent);
+  animation:fireGlow 1s ease-in-out infinite alternate}
+#fire .side.r{right:0;transform:scaleX(-1)}
+#fire .side.l{left:0}
+body.nuked .hero,body.nuked .gcard,body.nuked .group,body.nuked .card,body.nuked .track{
+  box-shadow:inset 0 0 0 1px rgba(255,120,40,.35),inset 0 -18px 30px -12px rgba(255,90,20,.35);animation:scorch 1.6s ease-in-out infinite alternate}
+@keyframes scorch{to{box-shadow:inset 0 0 0 1px rgba(255,160,60,.55),inset 0 -24px 36px -12px rgba(255,120,30,.5)}}
+body.nuked .brandrow b{color:#ffb347;text-shadow:0 0 12px rgba(255,90,20,.7)}
+/* мутанты: своя часть подарка и чужая, переливается цветом и подрагивает */
+.art.mutant>img,.art.mutant>.lot,.art.mutant>.mono{clip-path:var(--mclip)}
+.art .mutpart{position:absolute;inset:0;z-index:2;pointer-events:none;
+  filter:hue-rotate(var(--hue)) saturate(1.4) drop-shadow(0 0 6px rgba(157,255,92,.6));animation:mutJit 2.6s steps(1) infinite}
+.art .mutpart>.art{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;
+  margin:0!important;top:0!important;right:0!important;bottom:0!important;left:0!important;filter:none!important;animation:none!important}
+@keyframes mutJit{0%,86%,100%{transform:none}88%{transform:translate(2px,-1px) skewX(6deg)}91%{transform:translate(-3px,1px)}94%{transform:translate(1px,2px) skewX(-5deg)}}
+@media (prefers-reduced-motion:reduce){.taphint,#fire,#fire .tongues i,.art .mutpart,.bcoin.small .c3{animation:none!important}}
 </style>
 </head>
 <body>
@@ -809,6 +987,9 @@ body.txedit,body.txedit *{-webkit-user-select:none;user-select:none;-webkit-touc
   <symbol id="i-ban" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.6"/><path d="m6 6 12 12"/></symbol>
   <symbol id="i-users" viewBox="0 0 24 24"><circle cx="9" cy="8.4" r="3.3"/><path d="M3 19.5c.7-3.4 3.1-5.1 6-5.1s5.3 1.7 6 5.1"/><path d="M16 5.5a3.3 3.3 0 0 1 0 6.3M17.4 14.8c2 .7 3.3 2.3 3.7 4.7"/></symbol>
   <symbol id="i-card" viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="12.4" rx="2.6"/><path d="M3 10.2h18M6.5 14.6h3.5"/></symbol>
+  <symbol id="i-nuke" viewBox="0 0 24 24"><circle cx="12" cy="12" r="2"/><path d="M10.4 9.4 7 3.6A9.5 9.5 0 0 1 17 3.6l-3.4 5.8a3 3 0 0 0-3.2 0z"/><path d="M10.4 9.4 7 3.6A9.5 9.5 0 0 1 17 3.6l-3.4 5.8a3 3 0 0 0-3.2 0z" transform="rotate(120 12 12)"/><path d="M10.4 9.4 7 3.6A9.5 9.5 0 0 1 17 3.6l-3.4 5.8a3 3 0 0 0-3.2 0z" transform="rotate(240 12 12)"/></symbol>
+  <symbol id="i-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.6"/><circle cx="12" cy="12" r="4.6"/><circle cx="12" cy="12" r="1"/></symbol>
+  <symbol id="i-medal" viewBox="0 0 24 24"><path d="M8 3h8l-2.4 6.2M8 3l2.4 6.2"/><circle cx="12" cy="14.6" r="5.8"/><path d="m12 11.6 1 2 2.2.3-1.6 1.5.4 2.2-2-1-2 1 .4-2.2-1.6-1.5 2.2-.3z"/></symbol>
   <symbol id="i-spark" viewBox="0 0 24 24"><path d="M12 3c.6 4.3 2.2 6 6.6 6.6-4.4.6-6 2.3-6.6 6.6-.6-4.3-2.2-6-6.6-6.6C9.8 9 11.4 7.3 12 3z"/><path d="M18.5 15.2c.3 1.9 1 2.6 2.9 2.9-1.9.3-2.6 1-2.9 2.9-.3-1.9-1-2.6-2.9-2.9 1.9-.3 2.6-1 2.9-2.9z"/></symbol>
   <symbol id="i-power" viewBox="0 0 24 24"><path d="M12 3.4v7.2"/><path d="M7.2 6.4a7.4 7.4 0 1 0 9.6 0"/></symbol>
   <symbol id="i-hash" viewBox="0 0 24 24"><path d="M9.4 4 7.6 20M16.4 4l-1.8 16M4.5 9h15M3.8 15h15"/></symbol>
@@ -1280,6 +1461,25 @@ async function playArt(el){
   }catch(e){ box.remove(); console.warn("анимация подарка не запустилась", e); }
 }
 
+/* Картинки бота (логотипы маркетов, баннеры) - через запрос данных, а не ссылкой:
+   бесплатный ngrok на прямую ссылку отдаёт страницу-предупреждение вместо картинки.
+   Логотипы маленькие и не меняются - помним их в браузере; баннеры - только в памяти. */
+const ASSETS = new Map();
+function assetUrl(kind, name){
+  if(!name || DEMO) return Promise.resolve("");
+  const k = kind + ":" + name;
+  if(ASSETS.has(k)) return ASSETS.get(k);
+  let cached = null;
+  if(kind === "market") try{ cached = localStorage.getItem("gs_a_" + k); }catch(e){ cached = null; }
+  const p = cached ? Promise.resolve(cached) : call("asset", { kind, name }).then((r) => {
+    const d = (r && r.data) || "";
+    if(d && kind === "market") try{ localStorage.setItem("gs_a_" + k, d); }catch(e){ /* память полна - возьмём в следующий раз снова */ }
+    return d;
+  }).catch(() => "");
+  ASSETS.set(k, p);
+  return p;
+}
+
 /* ===================== СООБЩЕНИЯ ===================== */
 let tt = null;
 function toast(text, icon){
@@ -1310,6 +1510,8 @@ async function call(action, payload){
 function setState(st){
   S = st;
   if(!S) return;
+  // от этого мига досчитываем время до бонуса (часы бота, не телефона)
+  if(S.bonus) S.bonus._at = Date.now();
   if(S.effects) applyEffects(S.effects);
   if(S.lang) setLang(S.lang);
   if(S.texts) setTexts(S.texts);
@@ -1322,7 +1524,7 @@ async function save(action, payload, msg){
 
 /* Тихое обновление: подписка в Gift Satellite создаётся не мгновенно, и статус
    «создаётся» иначе менялся бы только после перезагрузки. */
-let refreshTimer = null;
+let refreshTimer = null, STALE = false;
 async function refreshState(){
   if(document.hidden || !S) return;
   try{
@@ -1331,12 +1533,24 @@ async function refreshState(){
     if(!next) return;
     const was = JSON.stringify(S);
     setState(next);
-    if(was !== JSON.stringify(S) && !$("sheet").classList.contains("on")) render();
+    if(was === JSON.stringify(S)) return;
+    // окно открыто - перерисуем, когда закроется (см. closeSheet), а не под пальцем
+    if($("sheet").classList.contains("on")) STALE = true; else render();
   }catch(e){ /* нет связи - попробуем в следующий раз */ }
+}
+/* Пока что-то «создаётся», спрашиваем чаще: человек ждёт, когда статус сменится на
+   «активно», и без этого видел смену только после перезагрузки страницы. */
+function anyPending(){
+  return !!S && ((S.collections || []).some((c) => c.pending) ||
+    ((S.flip && S.flip.items) || []).some((f) => f.pending));
 }
 function startRefresh(){
   if(refreshTimer) return;
-  refreshTimer = setInterval(refreshState, 15000);
+  const loop = async () => {
+    await refreshState();
+    refreshTimer = setTimeout(loop, anyPending() ? 4000 : 15000);
+  };
+  refreshTimer = setTimeout(loop, anyPending() ? 4000 : 15000);
   document.addEventListener("visibilitychange", () => { if(!document.hidden) refreshState(); });
 }
 
@@ -1468,18 +1682,21 @@ function marketIcon(key){
   const safe = String(key || "").replace(/[^a-z0-9_-]/gi, "");
   const own = `<svg viewBox="0 0 32 32"><use href="#m-${esc(MARKET_ART[safe] || safe)}"/></svg>`;
   const fromBot = ((S && S.markets) || []).find((m) => m.key === safe);
-  const url = fromBot && fromBot.icon ? API + fromBot.icon : "";
-  return `<span class="mk" ${url ? `data-mkurl="${esc(url)}"` : ""}>${own}</span>`;
+  const has = fromBot && fromBot.icon;
+  return `<span class="mk" ${has ? `data-mkkey="${esc(safe)}"` : ""}>${own}</span>`;
 }
 function loadMarketIcons(root){
-  (root || document).querySelectorAll(".mk[data-mkurl]:not([data-mkd])").forEach((el) => {
+  (root || document).querySelectorAll(".mk[data-mkkey]:not([data-mkd])").forEach((el) => {
     el.dataset.mkd = "1";
-    const img = new Image();
-    img.onload = () => { el.innerHTML = ""; el.appendChild(img); };
-    img.src = el.dataset.mkurl;
+    assetUrl("market", el.dataset.mkkey).then((u) => {
+      if(!u) return;
+      const img = new Image();
+      img.onload = () => { el.innerHTML = ""; el.appendChild(img); };
+      img.src = u;
+    });
   });
 }
-function after(root){ setTimeout(() => { hydrateArt(root); loadMarketIcons(root); }, 0); }
+function after(root){ setTimeout(() => { hydrateArt(root); loadMarketIcons(root); if(NUKED) mutateArts(root); }, 0); }
 
 /* ===================== ОТРИСОВКА ===================== */
 function render(){
@@ -1516,7 +1733,7 @@ function keepArts(root, paint){
   if(root && old.size) root.querySelectorAll(".art[data-ac]:not([data-ah])").forEach((n) => {
     const o = (old.get(artKey(n)) || []).shift();
     if(!o) return;
-    const keep = ["anim", "wait"].filter((c) => o.classList.contains(c));
+    const keep = ["anim", "wait", "mutant"].filter((c) => o.classList.contains(c));
     o.className = n.className;
     keep.forEach((c) => o.classList.add(c));
     n.replaceWith(o);
@@ -1542,7 +1759,7 @@ function renderHome(){
   const flipArt = f0 ? art(f0.slug, f0.models[0], "", true) : art("Swiss Watch", "", "", true);
   const pfArt = art((pf && pf.top && pf.top.slug) || "Loot Bag", (pf && pf.top && pf.top.model) || "", "", true);
   $("v-home").innerHTML = `
-    <div class="brandrow">${BRAND.svg}<b>${BRAND.name}</b></div>
+    ${brandHome()}
     ${bannersBlock()}
     <button class="hero g-blue" data-go="sniper">
       <span class="bgc">${sparkles(9)}${silhouettes()}</span>
@@ -1577,6 +1794,8 @@ function renderHome(){
         </button>`).join("")}</div>` : ""}
     <div id="home-extra">${homeExtraHtml()}</div>`;
   bindBanners();
+  bindBrand();
+  bonusNews();
   bindHomeExtra($("home-extra"));
   loadHome(); loadNewColls();
   bindGo($("v-home"));
@@ -1922,6 +2141,11 @@ function renderProfile(){
       <div><b class="num">${fl.slots_total === null ? "∞" : fl.slots_total}</b><span>слотов</span></div>
       <div><b class="num">${fl.slots_used}</b><span>занято</span></div>
       <div><b class="num">${S.collections.length}</b><span>коллекций</span></div></div>
+    ${S.bonus ? `<div class="group">${rowHtml({ tile: "yellow", icon: "star", title: "Бонусные звёзды",
+      sub: "только на слот Flip Master", value: `<b class="bval">${S.bonus.stars}</b>`, attr: 'id="p-bonus"' })}
+      ${rowHtml({ tile: "orange", icon: "medal", title: "Достижения",
+        value: `${Object.keys(S.bonus.achievements || {}).length}/${Object.keys(ACH).length}`, attr: 'id="p-ach"' })}
+      ${rowHtml({ tile: "pink", icon: "target", title: "Угадай цену", sub: "раз в день", attr: 'id="p-guess"' })}</div>` : ""}
     <div class="group">
       ${rowHtml({ tile: "blue", icon: "users", title: "Пригласить друга", sub: "скидка на слот тебе и ему", attr: 'id="p-ref"' })}
       ${rowHtml({ tile: "green", icon: "history", title: "История покупок",
@@ -1950,6 +2174,11 @@ function renderProfile(){
   $("p-ref").onclick = () => openRef();
   $("p-tx").onclick = () => openTx();
   $("p-al").onclick = () => openAlerts();
+  if($("p-bonus")){
+    $("p-bonus").onclick = () => openBonus();
+    $("p-ach").onclick = () => openAchievements();
+    $("p-guess").onclick = () => openGuess();
+  }
   fab(null);
 }
 
@@ -2038,6 +2267,7 @@ function closeSheet(force){
   SHEET_GUARD = null;
   sh.classList.add("closing");
   clearTimeout(sheetTimer);
+  if(STALE){ STALE = false; setTimeout(render, 300); }
   sheetTimer = setTimeout(() => {
     sh.classList.remove("on", "closing");
     $("panel").querySelectorAll(".art").forEach((a) => { if(a._anim){ a._anim.destroy(); ART.live.delete(a); } });
@@ -2392,9 +2622,8 @@ async function editColl(cid){
   const mp = drawerPick("mp", "Модели", models, c.models, "model", name, models.slice(0, 3).map((m) => m.name));
   const bp = drawerPick("bp", "Фоны", bds, c.backdrops, "bd", name, ["Onyx Black", "Black", "Satin Gold"]);
   $("sbody").innerHTML = `
-    <div class="acts" style="--n:3">
+    <div class="acts" style="--n:2">
       <button id="c-en" class="${c.enabled ? "on" : ""}">${ic("power")}${c.enabled ? "включено" : "выключено"}</button>
-      <button id="c-test">${ic("bell")}${c.pending ? "создаётся" : "уведомления"}</button>
       <button id="del" class="red">${ic("trash")}удалить</button></div>
     ${histAlertRow("c")}
     <label>Фильтры подарка</label>${mp.html}${bp.html}
@@ -2414,7 +2643,6 @@ async function editColl(cid){
   let en = c.enabled;
   $("c-en").onclick = () => { en = !en; $("c-en").classList.toggle("on", en);
     $("c-en").innerHTML = ic("power") + (en ? "включено" : "выключено"); haptic(); };
-  $("c-test").onclick = () => toast(c.pending ? "Подписка создаётся - уведомления скоро пойдут" : "Уведомления приходят в чат бота", "bell");
   $("del").onclick = () => {
     const ask = (yes) => { if(yes){ s1(); s2(); closeSheet(true); save("coll_del", { cid }, "Удалено"); } };
     if(TG && TG.showConfirm) TG.showConfirm(tr(`Удалить ${name}?`), ask); else ask(true);
@@ -3047,7 +3275,7 @@ async function openHistory(slug, models){
   const name = collName(slug);
   const opts = [["", "Коллекция"]].concat((models || []).slice(0, 6).map((m) => [m, m]));
   openSheet(sheroHtml(name, "", "", name, "история цен") + `
-    ${opts.length > 1 ? segHtml("hm", opts, "") : ""}
+    ${opts.length > 1 ? segHtml("hm", opts, "").replace('class="seg"', 'class="seg wrap chips"') : ""}
     <div id="hbody"><div class="skel" style="height:160px"></div></div>`);
   $("x").onclick = closeSheet;
   let model = "";
@@ -3211,40 +3439,102 @@ function bindQuiet(){
    Карусель вверху главной: действующая акция и объявление (собираются из
    state.announcements) и баннеры владельца (state.banners). Если баннеров
    несколько, они сменяют друг друга каждые 5 секунд; можно листать пальцем.
-   Выключатель в админке прячет карусель целиком. */
+   Выключатель в админке прячет карусель целиком.
+
+   Баннер - фон (цвет или картинка с кадром) и слои поверх: текст, кнопка, подарок,
+   таймер. Положение слоя - в процентах баннера, размер - в сотых его ширины (--u),
+   поэтому баннер одинаковый на любом телефоне и в предпросмотре редактора. */
 const BN_COLORS = { violet: ["#7b5cff", "#b45cf2"], blue: ["#3f8cff", "#1d5fd6"], green: ["#2fbf71", "#138a52"],
   orange: ["#ff9f43", "#ff6b3d"], pink: ["#ff5fa2", "#c2337a"], dark: ["#2a2f3d", "#12151e"] };
 const BN_GO = [["sniper", "Улучшения"], ["flip", "Листинги"], ["portfolio", "Портфель"], ["buy", "Купить слот"],
   ["profile", "Профиль"]];
+const BN_AUD = [["all", "Всем"], ["slots", "Со слотами"], ["noslots", "Без слотов"], ["ru", "Русский"], ["en", "English"]];
+const BN_PAL = ["#ffffff", "#000000", "#ffd60a", "#ff9f0a", "#ff453a", "#ff375f", "#bf5af2", "#5e5ce6", "#2f7cf6",
+  "#40c8e0", "#30d158", "#8e8e93"];
+const BN_LAYER_NAMES = { text: "Текст", button: "Кнопка", gift: "Подарок", timer: "Таймер" };
 let bnTimer = 0;
 
+/* Картинка баннера: только что загруженная - сразу из памяти; с бота - через
+   assetUrl (см. 3a_core.js), и подставляется в разметку, когда придёт. */
 function bannerImg(b){
-  const f = b && b.bg && b.bg.image;
-  if(b && b._local) return b._local;           // только что загруженная, ещё не с сервера
-  return f && API ? `${API}/api/banner/${encodeURIComponent(f)}` : "";
+  if(b && b._local) return b._local;
+  return "";
 }
+function fillBannerImages(root){
+  (root || document).querySelectorAll("[data-bnimg]").forEach((el) => {
+    const f = el.dataset.bnimg;
+    delete el.dataset.bnimg;
+    assetUrl("banner", f).then((u) => {
+      if(!u) return;
+      if(el.tagName === "IMG") el.src = u; else el.style.backgroundImage = `url('${u}')`;
+    });
+  });
+}
+function shade(hex, k){
+  const n = parseInt(String(hex).slice(1), 16);
+  const f = (v) => Math.max(0, Math.min(255, Math.round(v * k))).toString(16).padStart(2, "0");
+  return "#" + f(n >> 16) + f((n >> 8) & 255) + f(n & 255);
+}
+function bnBgCss(bg){
+  const c = (bg && bg.color) || "violet";
+  if(c[0] === "#") return `background:linear-gradient(120deg,${c},${shade(c, .62)})`;
+  const p = BN_COLORS[c] || BN_COLORS.violet;
+  return `background:linear-gradient(120deg,${p[0]},${p[1]})`;
+}
+/* Акция и объявление - тоже баннеры из слоёв, чтобы карусель была одинаковой. */
 function homeBanners(){
   if(!S || S.banners_on === false) return [];
-  const auto = (S.announcements || []).map((a) => a.kind === "promo"
-    ? { title: a.title, text: a.text, bg: { color: "violet" }, auto: true,
-        button: S.flip && S.flip.enabled ? { action: "go", target: "buy", text: "Купить слот" } : null }
-    : { title: a.title, text: a.text, bg: { color: "blue" }, auto: true, notice: true });
+  const auto = (S.announcements || []).map((a) => {
+    const promo = a.kind === "promo";
+    // слева, с переносом строк: тексты акции и объявления бывают длинными
+    const layers = [
+      { type: "text", text: a.title || "", x: 5, y: promo ? 22 : 30, size: 6.4, weight: 800, color: "#ffffff", w: 90 },
+      { type: "text", text: a.text || "", x: 5, y: promo ? 49 : 62, size: 4.3, weight: 400, color: "#f0f0f5", w: 90 }];
+    if(promo && S.flip && S.flip.enabled) layers.push({ type: "button", text: "Купить слот", action: "go", target: "buy",
+      x: 5, y: 80, size: 4.2, weight: 700, color: "#000000", bgc: "#ffffff" });
+    return { auto: true, notice: !promo, bg: { color: promo ? "violet" : "blue" }, fx: { sparkles: true },
+      layers: layers.filter((l) => l.text), left: true };
+  });
   // акция и объявление - первыми: они про «сейчас»
   return auto.concat(S.banners || []);
 }
+function layerCss(L, left){
+  const base = `left:${L.x}%;top:${L.y}%;transform:translate(${left ? "0" : "-50%"},-50%) rotate(${L.r || 0}deg)`;
+  if(L.type === "gift") return `${base};width:calc(var(--u) * ${L.size})`;
+  let s = `${base};font-size:calc(var(--u) * ${L.size});color:${L.color || "#fff"};font-weight:${L.weight || 600}`;
+  if(L.w) s += `;width:${L.w}%;white-space:normal`;
+  if(L.shadow) s += ";text-shadow:0 .06em .18em rgba(0,0,0,.55)";
+  if(L.outline) s += ";-webkit-text-stroke:.12em #000;paint-order:stroke fill";
+  if(L.bgc) s += `;background:${L.bgc}`;
+  return s;
+}
+function cdText(to, prefix){
+  let s = Math.max(0, Math.floor(to - Date.now() / 1000));
+  if(!s) return (prefix ? prefix + " " : "") + "00:00:00";
+  const d = Math.floor(s / 86400); s %= 86400;
+  const p = (n) => String(n).padStart(2, "0");
+  const t = `${p(Math.floor(s / 3600))}:${p(Math.floor(s % 3600 / 60))}:${p(s % 60)}`;
+  return `${prefix ? prefix + " " : ""}${d ? `${d} д ` : ""}${t}`;
+}
+function layerHtml(L, i, b){
+  const notx = b.auto && !b.notice ? "" : "data-notx";
+  const st = layerCss(L, b.left);
+  if(L.type === "gift") return `<div class="bl bl-gift" data-li="${i}" style="${st}">${art(L.coll, L.model || "", "", true)}</div>`;
+  if(L.type === "timer") return `<div class="bl bl-text ${L.bgc ? "pad" : ""}" data-li="${i}" data-cd="${L.to}"
+    data-cdp="${esc(L.text || "")}" ${notx} style="${st}">${esc(cdText(L.to, L.text))}</div>`;
+  const cls = L.type === "button" ? "bl-btn" : `bl-text ${L.bgc ? "pad" : ""}`;
+  return `<div class="bl ${cls}" data-li="${i}" ${notx} style="${st}">${esc(L.text || "")}</div>`;
+}
 function bannerHtml(b, i){
-  const c = BN_COLORS[(b.bg || {}).color] || BN_COLORS.violet;
+  const bg = b.bg || {};
   const img = bannerImg(b);
-  const bg = img ? `background:#111 url('${esc(img)}') center/cover`
-    : `background:linear-gradient(120deg,${c[0]},${c[1]})`;
-  const btn = b.button && b.button.action && b.button.action !== "none"
-    ? `<span class="bnr-b">${esc(b.button.text || "")}</span>` : "";
-  const hasArt = b.art && b.art.coll;
-  return `<div class="bnr ${img ? "img" : ""} ${hasArt ? "with-art" : ""}" data-bn="${i}" style="${bg}">
-    ${img ? "" : sparkles(5, .35)}
-    <div class="bnr-t" ${b.auto && !b.notice ? "" : "data-notx"}>${b.title ? `<b>${esc(b.title)}</b>` : ""}${b.text
-      ? `<span>${esc(b.text)}</span>` : ""}${btn}</div>
-    ${hasArt ? art(b.art.coll, b.art.model || "", "bnr-art", true) : ""}</div>`;
+  const fx = b.fx || {};
+  const imgTag = bg.image || img ? `<img class="bnr-img" alt="" ${img ? `src="${esc(img)}"` : `data-bnimg="${esc(bg.image)}"`}
+      style="object-position:${bg.x ?? 50}% ${bg.y ?? 50}%;transform-origin:${bg.x ?? 50}% ${bg.y ?? 50}%;transform:scale(${bg.z || 1})">
+    <div class="bnr-dim" style="opacity:${bg.dim ?? .25}"></div>` : "";
+  return `<div class="bnr v2 ${fx.shine ? "shine" : ""}" data-bn="${i}" style="${imgTag ? "background:#111" : bnBgCss(bg)}">
+    ${imgTag}${fx.sparkles ? sparkles(6, .45) : ""}
+    ${(b.layers || []).map((L, n) => layerHtml(L, n, b)).join("")}</div>`;
 }
 function bannersBlock(){
   const list = homeBanners();
@@ -3252,11 +3542,38 @@ function bannersBlock(){
   return `<div class="bnrs" id="bnrs"><div class="bnr-track" id="bnr-track">${list.map(bannerHtml).join("")}</div>
     ${list.length > 1 ? `<div class="bnr-dots">${list.map((_, i) => `<i class="${i ? "" : "on"}"></i>`).join("")}</div>` : ""}</div>`;
 }
+/* Сотая ширины баннера - в переменную --u: от неё считаются размеры слоёв. */
+const bnRO = "ResizeObserver" in window ? new ResizeObserver((list) => list.forEach((en) => {
+  const w = en.contentRect.width;
+  if(w) en.target.style.setProperty("--u", (w / 100).toFixed(3) + "px");
+})) : null;
+function sizeBanners(root){
+  (root || document).querySelectorAll(".bnr.v2").forEach((el) => {
+    if(el.clientWidth) el.style.setProperty("--u", (el.clientWidth / 100).toFixed(3) + "px");
+    if(bnRO) bnRO.observe(el);
+  });
+}
+// таймеры на баннерах - раз в секунду, только видимые
+setInterval(() => {
+  if(document.hidden) return;
+  document.querySelectorAll("[data-cd]").forEach((el) => {
+    if(el.offsetParent) el.textContent = tr(cdText(Number(el.dataset.cd), el.dataset.cdp));
+  });
+}, 1000);
+const BN_SEEN = new Set();
 function bindBanners(){
   clearInterval(bnTimer);
   const tr = $("bnr-track");
   if(!tr) return;
+  fillBannerImages(tr);
+  sizeBanners(tr);
   const list = homeBanners();
+  // показы: баннеры владельца, один раз за заход (бот ещё раз отсеет повторы за сутки)
+  const fresh = list.filter((b) => b.id && !BN_SEEN.has(b.id)).map((b) => b.id);
+  if(fresh.length && !DEMO){
+    fresh.forEach((id) => BN_SEEN.add(id));
+    call("banner_seen", { ids: fresh }).catch(() => { /* статистика не важнее главной */ });
+  }
   const dots = [...document.querySelectorAll("#bnrs .bnr-dots i")];
   const step = () => (tr.children[1] ? tr.children[1].offsetLeft - tr.children[0].offsetLeft : tr.clientWidth) || 1;
   const idx = () => Math.round(tr.scrollLeft / step());
@@ -3270,15 +3587,23 @@ function bindBanners(){
     if(Date.now() - touched < 7000 || $("sheet").classList.contains("on") || document.hidden) return;
     tr.scrollTo({ left: ((idx() + 1) % list.length) * step(), behavior: REDUCED ? "auto" : "smooth" });
   }, 5000);
-  tr.querySelectorAll("[data-bn]").forEach((el) => el.onclick = () => bannerAct(list[+el.dataset.bn]));
+  tr.querySelectorAll("[data-bn]").forEach((el) => el.onclick = (e) => {
+    const b = list[+el.dataset.bn];
+    const hit = e.target.closest(".bl-btn");
+    const L = hit ? b.layers[+hit.dataset.li] : null;
+    // нажали на кнопку - её действие; мимо - действие баннера или первой кнопки
+    const act = L || (b.tap && b.tap.action !== "none" ? b.tap : (b.layers || []).find((x) => x.type === "button"));
+    if(!act) return;
+    if(b.id && !DEMO) call("banner_tap", { id: b.id }).catch(() => { /* не мешаем переходу */ });
+    bannerAct(act);
+  });
 }
-function bannerAct(b){
-  const btn = b && b.button;
-  if(!btn || !btn.action || btn.action === "none") return;
+function bannerAct(a){
+  if(!a || !a.action || a.action === "none") return;
   haptic();
-  if(btn.action === "url") openUrl(btn.target);
-  else if(btn.target === "buy"){ go("flip"); setTimeout(buySlot, 450); }
-  else go(btn.target);
+  if(a.action === "url") openUrl(a.target);
+  else if(a.target === "buy"){ go("flip"); setTimeout(buySlot, 450); }
+  else go(a.target);
 }
 
 /* ---------- админка: список баннеров ---------- */
@@ -3288,33 +3613,40 @@ async function adminBanners(){
     <div id="bnbody"><div class="skel"></div></div>`);
   let d = null;
   try{ d = await call("banners", {}); }catch(e){ $("bnbody").innerHTML = `<div class="err">${esc(e.message)}</div>`; return; }
-  const items = d.items || [];
+  const items = d.items || [], stats = d.stats || {};
   $("bnbody").innerHTML = `
     <div class="group plain"><div class="row"><span class="t"><b>Показывать баннеры</b>
       <span>выключено - на главной нет баннеров, в том числе акции и объявления</span></span>
       <button class="tgl ${d.on ? "on" : ""}" id="bn-on"></button></div></div>
-    ${items.length ? `<div class="group">${items.map((b, i) => {
-      const c = BN_COLORS[(b.bg || {}).color] || BN_COLORS.violet;
-      return `<div class="row bnrow" data-bi="${i}">
-        <span class="bnsw" style="${b.bg && b.bg.image ? `background:#111 url('${esc(bannerImg(b))}') center/cover`
-          : `background:linear-gradient(120deg,${c[0]},${c[1]})`}"></span>
-        <span class="t"><b>${esc(b.title || b.text || "Баннер")}</b><span>${b.enabled === false ? "скрыт" : "показывается"}${
-          b.art && b.art.coll ? " · " + esc(collName(b.art.coll)) : ""}</span></span>
-        <button class="round sm" data-up="${i}" ${i ? "" : "disabled"}>${ic("up")}</button>
-        <button class="round sm" data-dn="${i}" ${i < items.length - 1 ? "" : "disabled"}>${ic("down")}</button></div>`;
+    ${items.length ? `<div class="bnlist">${items.map((b, i) => {
+      const s = stats[b.id] || { views: 0, taps: 0 };
+      const first = (b.layers || []).find((l) => l.type === "text" || l.type === "button");
+      return `<div class="bnitem" data-bi="${i}">
+        <div class="bnmini">${bannerHtml(b, i)}</div>
+        <div class="bnmeta"><span class="t"><b data-notx>${esc((first && first.text) || "Баннер")}</b>
+          <span>${b.enabled === false ? "скрыт" : "показывается"} · показы ${s.views} · нажатия ${s.taps}</span></span>
+          <button class="round sm" data-up="${i}" ${i ? "" : "disabled"}>${ic("up")}</button>
+          <button class="round sm" data-dn="${i}" ${i < items.length - 1 ? "" : "disabled"}>${ic("down")}</button></div></div>`;
     }).join("")}</div>` : `<div class="hint">Своих баннеров пока нет.</div>`}
     <button class="btn blue" style="margin-top:10px" id="bn-new">${ic("plus")}Новый баннер</button>`;
   after($("bnbody"));
+  fillBannerImages($("bnbody"));
+  sizeBanners($("bnbody"));
   $("bn-on").onclick = async () => {
     const on = !$("bn-on").classList.contains("on");
     $("bn-on").classList.toggle("on", on); haptic();
     try{ await call("banner_save", { on }); toast(on ? "Баннеры показываются" : "Баннеры скрыты"); }
     catch(e){ toast(e.message, "help"); }
   };
-  $("bn-new").onclick = () => editBanner({ title: "", text: "", bg: { color: "violet" }, button: { action: "none" }, enabled: true });
+  $("bn-new").onclick = () => editBanner({ bg: { color: "violet" }, enabled: true, fx: { shine: false, sparkles: true },
+    audience: "all", when: { from: 0, to: 0 }, tap: { action: "none", target: "" },
+    layers: [{ type: "text", text: "Заголовок", x: 50, y: 40, r: 0, size: 7, color: "#ffffff", weight: 800, shadow: true },
+      { type: "text", text: "Короткий текст", x: 50, y: 64, r: 0, size: 4.2, color: "#f0f0f5", weight: 400 }] });
   $("bnbody").querySelectorAll("[data-bi]").forEach((r) => r.onclick = (e) => {
     if(e.target.closest("[data-up],[data-dn]")) return;
-    editBanner(JSON.parse(JSON.stringify(items[+r.dataset.bi])));
+    const b = JSON.parse(JSON.stringify(items[+r.dataset.bi]));
+    b._stats = stats[b.id] || { views: 0, taps: 0 };
+    editBanner(b);
   });
   const move = async (i, step) => {
     try{ await call("banner_move", { id: items[i].id, step }); adminBanners(); }catch(e){ toast(e.message, "help"); }
@@ -3324,103 +3656,397 @@ async function adminBanners(){
 }
 
 /* ---------- админка: редактор баннера ----------
-   Сверху живой предпросмотр - тот же баннер, что увидят люди. */
+   Сверху живой предпросмотр - тот же баннер, что увидят люди. Слой выбирается
+   нажатием; один палец двигает, два - увеличивают и поворачивают. Если выбран фон
+   с картинкой, пальцы двигают и увеличивают картинку (кадр). Ползунки ниже - для
+   точной настройки. */
+function dtLocal(ts){
+  if(!ts) return "";
+  const d = new Date(ts * 1000), p = (n) => String(n).padStart(2, "0");
+  return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}T${p(d.getHours())}:${p(d.getMinutes())}`;
+}
+function fromLocal(v){
+  const t = v ? new Date(v).getTime() : NaN;
+  return isFinite(t) ? Math.floor(t / 1000) : 0;
+}
+function swatches(id, value, allowNone){
+  return `<div class="bnpal" id="${id}">${allowNone ? `<button class="bnsw0 ${value ? "" : "on"}" data-v="">${ic("cross")}</button>` : ""}
+    ${BN_PAL.map((c) => `<button class="${c === value ? "on" : ""}" data-v="${c}" style="background:${c}"></button>`).join("")}
+    <label class="bnpick ${value && !BN_PAL.includes(value) ? "on" : ""}" style="${value && !BN_PAL.includes(value) ? `background:${value}` : ""}">
+      ${ic("plus")}<input type="color" value="${value || "#ffffff"}"></label></div>`;
+}
+function bindSwatches(id, onPick){
+  const box = $(id);
+  if(!box) return;
+  const set = (v) => {
+    box.querySelectorAll(".on").forEach((x) => x.classList.remove("on"));
+    const b = box.querySelector(`[data-v="${v}"]`);
+    if(b) b.classList.add("on");
+    else if(v){ const p = box.querySelector(".bnpick"); p.classList.add("on"); p.style.background = v; }
+    onPick(v);
+  };
+  box.querySelectorAll("[data-v]").forEach((b) => b.onclick = () => { haptic(); set(b.dataset.v); });
+  box.querySelector("input[type=color]").oninput = (e) => set(e.target.value.toLowerCase());
+}
+function slider(id, label, min, max, step, value, suf){
+  return `<div class="bnsl"><span>${label}</span><input type="range" id="${id}" min="${min}" max="${max}" step="${step}" value="${value}">
+    <b id="${id}-v">${Math.round(value * 10) / 10}${suf || ""}</b></div>`;
+}
+
 function editBanner(ed){
-  ed.button = ed.button || { action: "none" };
+  ed.layers = ed.layers || [];
   ed.bg = ed.bg || { color: "violet" };
-  const bgKind = ed.bg.image || ed._local ? "image" : "color";
+  ed.fx = ed.fx || {};
+  ed.when = ed.when || { from: 0, to: 0 };
+  ed.tap = ed.tap || { action: "none", target: "" };
+  ed.audience = ed.audience || "all";
+  if(ed._sel === undefined) ed._sel = ed.layers.length ? 0 : null;
+  const hasImg = () => !!(ed.bg.image || ed._local);
+  const bgKind = hasImg() ? "image" : "color";
+  const st = ed._stats;
   openSheet(`<h2><span class="tile purple">${ic("mega")}</span>${ed.id ? "Баннер" : "Новый баннер"}</h2>
-    <div class="bnprev" id="bnprev"></div>
-    <label>Заголовок</label><input type="text" id="bn-t" maxlength="60" placeholder="Redo улучшен" value="${esc(ed.title || "")}">
-    <label>Текст</label><input type="text" id="bn-x" maxlength="140" placeholder="Торги запущены" value="${esc(ed.text || "")}">
+    <div class="bned" id="bned"></div>
+    <div class="hint" style="margin:6px 4px 0">Нажми на слой и двигай пальцем. Двумя пальцами - размер и поворот.</div>
+    <div class="bnadd">
+      <button data-add="text">${ic("edit")}Текст</button><button data-add="button">${ic("share")}Кнопка</button>
+      <button data-add="gift">${ic("gift")}Подарок</button><button data-add="timer">${ic("clock")}Таймер</button></div>
+    <div class="bnlayers" id="bn-layers"></div>
+    <div id="bn-props"></div>
     <label>Фон</label>${segHtml("bn-bg", [["color", "Цвет"], ["image", "Картинка"]], bgKind)}
-    <div id="bn-colors" class="bncolors" style="display:${bgKind === "color" ? "flex" : "none"}">${Object.entries(BN_COLORS).map(([k, c]) =>
-      `<button class="bnc ${ed.bg.color === k ? "on" : ""}" data-c="${k}" style="background:linear-gradient(120deg,${c[0]},${c[1]})"></button>`).join("")}</div>
+    <div id="bn-colors" style="display:${bgKind === "color" ? "block" : "none"}">
+      <div class="bncolors">${Object.entries(BN_COLORS).map(([k, c]) =>
+        `<button class="bnc ${ed.bg.color === k ? "on" : ""}" data-c="${k}" style="background:linear-gradient(120deg,${c[0]},${c[1]})"></button>`).join("")}
+        <label class="bnc bnpick ${(ed.bg.color || "")[0] === "#" ? "on" : ""}" style="${(ed.bg.color || "")[0] === "#" ? bnBgCss(ed.bg) : ""}">${ic("plus")}
+          <input type="color" id="bn-cc" value="${(ed.bg.color || "")[0] === "#" ? ed.bg.color : "#7b5cff"}"></label></div></div>
     <div id="bn-imgbox" style="display:${bgKind === "image" ? "block" : "none"}">
-      <input type="file" id="bn-file" accept="image/png,image/jpeg,image/webp" style="display:none">
-      <button class="btn" id="bn-up">${ic("plus")}Загрузить картинку</button>
-      <div class="hint">Лучше горизонтальная, примерно 3 к 1. Текст и подарок будут поверх неё.</div></div>
-    <label>Подарок с анимацией</label>
-    <div class="two"><button class="btn" id="bn-gift">${ic("gift")}${ed.art && ed.art.coll ? esc(collName(ed.art.coll)) : "Выбрать"}</button>
-      ${ed.art && ed.art.coll ? `<button class="btn ghost" id="bn-nogift">Убрать</button>` : ""}</div>
-    <div id="bn-models"></div>
-    <label>Кнопка</label>${segHtml("bn-act", [["none", "Нет"], ["go", "Раздел"], ["url", "Ссылка"]], ed.button.action || "none")}
-    <div id="bn-btn" style="display:${ed.button.action && ed.button.action !== "none" ? "block" : "none"}">
-      <input type="text" id="bn-bt" maxlength="24" placeholder="Вперёд!" style="margin-top:10px" value="${esc(ed.button.text || "")}">
-      <div id="bn-go" style="margin-top:10px;display:${ed.button.action === "go" ? "block" : "none"}">${segHtml("bn-target", BN_GO,
-        ed.button.action === "go" ? ed.button.target : "sniper").replace('class="seg"', 'class="seg wrap"')}</div>
-      <input type="text" id="bn-url" placeholder="https://t.me/..." style="margin-top:10px;display:${ed.button.action === "url" ? "block" : "none"}"
-        value="${esc(ed.button.action === "url" ? ed.button.target || "" : "")}"></div>
+      <input type="file" id="bn-file" accept="image/*" style="display:none">
+      <button class="btn" id="bn-up">${ic("plus")}${hasImg() ? "Другая картинка" : "Загрузить картинку"}</button>
+      <div id="bn-crop"></div></div>
+    <label>Эффекты</label>
+    <div class="group plain">
+      <div class="row"><span class="t"><b>Блик</b><span>по баннеру пробегает свет</span></span><button class="tgl ${ed.fx.shine ? "on" : ""}" id="bn-shine"></button></div>
+      <div class="row"><span class="t"><b>Искры</b><span>мерцающие звёздочки</span></span><button class="tgl ${ed.fx.sparkles ? "on" : ""}" id="bn-spk"></button></div></div>
+    <label>Нажатие на баннер</label>
+    ${segHtml("bn-tap", [["none", "Как кнопка"], ["go", "Раздел"], ["url", "Ссылка"]], ed.tap.action || "none")}
+    <div id="bn-tapgo" style="margin-top:10px;display:${ed.tap.action === "go" ? "block" : "none"}">${segHtml("bn-taptg", BN_GO,
+      ed.tap.action === "go" ? ed.tap.target : "sniper").replace('class="seg"', 'class="seg wrap"')}</div>
+    <input type="text" id="bn-tapurl" placeholder="https://t.me/..." style="margin-top:10px;display:${ed.tap.action === "url" ? "block" : "none"}"
+      value="${esc(ed.tap.action === "url" ? ed.tap.target : "")}">
+    <label>Для кого</label>${segHtml("bn-aud", BN_AUD, ed.audience).replace('class="seg"', 'class="seg wrap"')}
+    <label>Показывать с и до</label>
+    <div class="two"><input type="datetime-local" id="bn-from" value="${dtLocal(ed.when.from)}">
+      <input type="datetime-local" id="bn-to" value="${dtLocal(ed.when.to)}"></div>
+    <div class="hint">Пусто - без ограничения. Время - по часам бота.</div>
+    ${st ? `<label>Статистика</label><div class="gres"><div><span>Показы</span><b class="num">${st.views}</b></div>
+      <div><span>Нажатия</span><b class="num">${st.taps}${st.views ? ` · ${Math.round(st.taps / st.views * 100)}%` : ""}</b></div></div>
+      <div class="hint" style="margin-top:-4px">Показ - один на человека в сутки.</div>` : ""}
     <div class="group plain" style="margin-top:12px"><div class="row"><span class="t"><b>Показывать</b>
       <span>скрытый баннер видишь только здесь</span></span>
       <button class="tgl ${ed.enabled !== false ? "on" : ""}" id="bn-en"></button></div></div>
     <div class="err" id="bn-err"></div>
     <div class="two" style="margin-top:8px">${ed.id ? `<button class="btn danger" id="bn-del">${ic("trash")}Удалить</button>` : ""}
       <button class="btn blue" id="bn-ok">${ic("check")}Сохранить</button></div>`);
-  const read = () => {
-    ed.title = $("bn-t").value; ed.text = $("bn-x").value;
-    const act = ($("bn-act").querySelector("button.on") || {}).dataset.k || "none";
-    ed.button = act === "none" ? { action: "none" } : {
-      action: act, text: $("bn-bt").value,
-      target: act === "go" ? (($("bn-target").querySelector("button.on") || {}).dataset.k || "sniper") : $("bn-url").value.trim() };
-    ed.enabled = $("bn-en").classList.contains("on");
+
+  const stage = $("bned");
+  // картинка с бота: берём один раз, дальше предпросмотр рисуется без мигания
+  if(ed.bg.image && !ed._local) assetUrl("banner", ed.bg.image).then((u) => {
+    if(u && $("bned") === stage){ ed._local = u; paint(); }
+  });
+  const paint = () => {
+    keepArts(stage, () => { stage.innerHTML = bannerHtml(ed, 0); });
+    fillBannerImages(stage);
+    sizeBanners(stage);
+    after(stage);
+    markSel();
   };
-  const preview = () => {
-    read();
-    keepArts($("bnprev"), () => { $("bnprev").innerHTML = bannerHtml(ed, 0); });
-    after($("bnprev"));
+  const markSel = () => {
+    stage.querySelectorAll(".bl").forEach((el) => el.classList.toggle("sel", +el.dataset.li === ed._sel));
+    stage.classList.toggle("bgsel", ed._sel === "bg");
+    $("bn-layers").querySelectorAll("[data-ls]").forEach((b) => b.classList.toggle("on", b.dataset.ls === String(ed._sel)));
   };
-  preview();
-  ["bn-t", "bn-x", "bn-bt", "bn-url"].forEach((id) => $(id).addEventListener("input", preview));
+  const layerName = (L) => L.type === "gift" ? collName(L.coll) : (L.text || BN_LAYER_NAMES[L.type]);
+  const drawLayers = () => {
+    $("bn-layers").innerHTML = (hasImg() ? `<button data-ls="bg">${ic("chart")}Картинка фона</button>` : "") +
+      ed.layers.map((L, i) => `<button data-ls="${i}" data-notx>${ic({ text: "edit", button: "share", gift: "gift", timer: "clock" }[L.type])}${esc(String(layerName(L)).slice(0, 18))}</button>`).join("");
+    $("bn-layers").querySelectorAll("[data-ls]").forEach((b) => b.onclick = () => {
+      haptic(); ed._sel = b.dataset.ls === "bg" ? "bg" : +b.dataset.ls; markSel(); drawProps();
+    });
+    markSel();
+  };
+  const cur = () => (typeof ed._sel === "number" ? ed.layers[ed._sel] : null);
+
+  /* Панель выбранного слоя. Перерисовывается при выборе другого слоя; при
+     правке - только баннер, чтобы не сбивать фокус в поле ввода. */
+  const drawProps = () => {
+    const L = cur(), box = $("bn-props");
+    if(ed._sel === "bg" && hasImg()){ box.innerHTML = ""; drawCrop(); return; }
+    if(!L){ box.innerHTML = ""; return; }
+    const textual = L.type !== "gift";
+    box.innerHTML = `<div class="card bnprops">
+      ${L.type === "gift" ? `<div class="two"><button class="btn" id="lp-gift">${ic("gift")}${esc(collName(L.coll))}</button></div><div id="lp-models"></div>`
+        : `<input type="text" id="lp-text" maxlength="${L.type === "button" ? 24 : L.type === "timer" ? 30 : 140}"
+            placeholder="${L.type === "timer" ? "Подпись, например «До конца»" : "Текст"}" value="${esc(L.text || "")}">`}
+      ${L.type === "timer" ? `<label>Отсчёт до</label><input type="datetime-local" id="lp-to" value="${dtLocal(L.to)}">` : ""}
+      ${L.type === "button" ? `<label>Куда ведёт</label>${segHtml("lp-act", [["go", "Раздел"], ["url", "Ссылка"]], L.action || "go")}
+        <div id="lp-go" style="margin-top:10px;display:${L.action !== "url" ? "block" : "none"}">${segHtml("lp-tg", BN_GO,
+          L.action !== "url" ? L.target || "sniper" : "sniper").replace('class="seg"', 'class="seg wrap"')}</div>
+        <input type="text" id="lp-url" placeholder="https://t.me/..." style="margin-top:10px;display:${L.action === "url" ? "block" : "none"}"
+          value="${esc(L.action === "url" ? L.target || "" : "")}">` : ""}
+      ${slider("lp-size", "Размер", L.type === "gift" ? 6 : 2, L.type === "gift" ? 90 : 20, .1, L.size)}
+      ${slider("lp-rot", "Поворот", -180, 180, 1, L.r || 0, "°")}
+      ${textual ? `<label>Цвет текста</label>${swatches("lp-color", L.color || "#ffffff")}
+        <label>Начертание</label>${segHtml("lp-w", [["400", "Обычный"], ["600", "Полужирный"], ["800", "Жирный"]], String(L.weight || 600))}
+        <div class="group plain" style="margin-top:12px">
+          <div class="row"><span class="t"><b>Тень</b></span><button class="tgl ${L.shadow ? "on" : ""}" id="lp-sh"></button></div>
+          <div class="row"><span class="t"><b>Обводка</b></span><button class="tgl ${L.outline ? "on" : ""}" id="lp-ol"></button></div></div>
+        <label>${L.type === "button" ? "Цвет кнопки" : "Подложка"}</label>${swatches("lp-bg", L.bgc || "", L.type !== "button")}` : ""}
+      <div class="bnlact"><button id="lp-up">${ic("up")}Выше</button><button id="lp-dn">${ic("down")}Ниже</button>
+        <button id="lp-cp">${ic("plus")}Копия</button><button id="lp-del" class="red">${ic("trash")}Убрать</button></div></div>`;
+    const upd = () => { paint(); };
+    const range = (id, key) => {
+      $(id).oninput = () => { L[key] = Number($(id).value); $(id + "-v").textContent = Math.round(L[key] * 10) / 10 + (id === "lp-rot" ? "°" : ""); upd(); };
+    };
+    range("lp-size", "size"); range("lp-rot", "r");
+    if($("lp-text")) $("lp-text").oninput = () => { L.text = $("lp-text").value; upd(); drawLayersSoft(); };
+    if($("lp-to")) $("lp-to").onchange = () => { L.to = fromLocal($("lp-to").value); upd(); };
+    if(L.type === "button"){
+      bindSeg("lp-act", (k) => {
+        L.action = k;
+        $("lp-go").style.display = k === "go" ? "block" : "none";
+        $("lp-url").style.display = k === "url" ? "block" : "none";
+        L.target = k === "go" ? (($("lp-tg").querySelector("button.on") || {}).dataset.k || "sniper") : $("lp-url").value.trim();
+      });
+      bindSeg("lp-tg", (k) => { L.target = k; });
+      $("lp-url").oninput = () => { L.target = $("lp-url").value.trim(); };
+    }
+    if(textual){
+      bindSwatches("lp-color", (v) => { L.color = v; upd(); });
+      bindSwatches("lp-bg", (v) => { L.bgc = v; upd(); });
+      bindSeg("lp-w", (k) => { L.weight = Number(k); upd(); });
+      $("lp-sh").onclick = () => { L.shadow = !L.shadow; $("lp-sh").classList.toggle("on", L.shadow); haptic(); upd(); };
+      $("lp-ol").onclick = () => { L.outline = !L.outline; $("lp-ol").classList.toggle("on", L.outline); haptic(); upd(); };
+    }
+    if(L.type === "gift"){
+      $("lp-gift").onclick = () => pickCollection(async (slug) => { L.coll = slug; L.model = ""; editBanner(ed); }, "Подарок для баннера");
+      loadCatalog(L.coll).then((cat) => {
+        if(!$("lp-models") || cur() !== L) return;
+        const items = (cat.models || []).map((m) => ({ name: m.name, pct: m.pct }));
+        const mp = pickGrid("lp-mp", items, L.model ? [L.model] : [], "model", L.coll, true);
+        $("lp-models").innerHTML = `<div class="hint" style="margin:8px 4px 0">Модель - необязательно</div>${mp.html}`;
+        mp.draw("");
+        $("lp-mp").addEventListener("pick", () => { L.model = mp.value()[0] || ""; upd(); });
+      });
+    }
+    const reorder = (to) => {
+      const i = ed._sel;
+      if(to < 0 || to >= ed.layers.length) return;
+      const [x] = ed.layers.splice(i, 1);
+      ed.layers.splice(to, 0, x);
+      ed._sel = to; haptic(); paint(); drawLayers();
+    };
+    $("lp-up").onclick = () => reorder(ed._sel + 1);       // выше = ближе к зрителю
+    $("lp-dn").onclick = () => reorder(ed._sel - 1);
+    $("lp-cp").onclick = () => {
+      if(ed.layers.length >= 14){ toast("Не больше 14 слоёв", "help"); return; }
+      const c = JSON.parse(JSON.stringify(L));
+      c.x = Math.min(100, c.x + 5); c.y = Math.min(100, c.y + 6);
+      ed.layers.push(c); ed._sel = ed.layers.length - 1; haptic(); paint(); drawLayers(); drawProps();
+    };
+    $("lp-del").onclick = () => {
+      ed.layers.splice(ed._sel, 1);
+      ed._sel = ed.layers.length ? Math.min(ed._sel, ed.layers.length - 1) : null;
+      haptic(); paint(); drawLayers(); drawProps();
+    };
+  };
+  // имя слоя в списке меняется по мере ввода текста, без пересборки панели
+  const drawLayersSoft = () => {
+    const L = cur(), b = $("bn-layers").querySelector(`[data-ls="${ed._sel}"]`);
+    if(L && b) b.lastChild.textContent = String(layerName(L)).slice(0, 18);
+  };
+  const drawCrop = () => {
+    const box = $("bn-crop");
+    if(!box) return;
+    if(!hasImg()){ box.innerHTML = ""; return; }
+    const bg = ed.bg;
+    box.innerHTML = `<div class="hint">Выбери «Картинка фона» в слоях и двигай её пальцем, двумя - увеличивай.</div>
+      ${slider("bc-z", "Увеличение", 1, 6, .05, bg.z || 1, "x")}
+      ${slider("bc-x", "По ширине", 0, 100, 1, bg.x ?? 50, "%")}
+      ${slider("bc-y", "По высоте", 0, 100, 1, bg.y ?? 50, "%")}
+      ${slider("bc-d", "Затемнение", 0, .8, .05, bg.dim ?? .25)}`;
+    [["bc-z", "z"], ["bc-x", "x"], ["bc-y", "y"], ["bc-d", "dim"]].forEach(([id, k]) => {
+      $(id).oninput = () => { bg[k] = Number($(id).value); $(id + "-v").textContent = Math.round(bg[k] * 100) / 100; paint(); };
+    });
+  };
+  const syncSliders = () => {
+    const L = cur();
+    if(L && $("lp-size")){
+      $("lp-size").value = L.size; $("lp-size-v").textContent = Math.round(L.size * 10) / 10;
+      $("lp-rot").value = L.r || 0; $("lp-rot-v").textContent = Math.round(L.r || 0) + "°";
+    }
+    if(ed._sel === "bg" && $("bc-z")){
+      [["bc-z", "z"], ["bc-x", "x"], ["bc-y", "y"]].forEach(([id, k]) => {
+        $(id).value = ed.bg[k]; $(id + "-v").textContent = Math.round(ed.bg[k] * 100) / 100;
+      });
+    }
+  };
+
+  /* Пальцы на предпросмотре. Во время жеста двигаем только сам элемент (без
+     пересборки баннера), в данные записываем сразу, ползунки - в конце. */
+  const pts = new Map();
+  let g = null;
+  const gesture = () => {
+    const [a, b] = [...pts.values()];
+    return { d: Math.hypot(b.x - a.x, b.y - a.y) || 1, ang: Math.atan2(b.y - a.y, b.x - a.x) * 180 / Math.PI,
+      cx: (a.x + b.x) / 2, cy: (a.y + b.y) / 2 };
+  };
+  const snap = () => {
+    const L = cur();
+    return L ? { x: L.x, y: L.y, r: L.r || 0, size: L.size } : ed._sel === "bg" ? { x: ed.bg.x ?? 50, y: ed.bg.y ?? 50, z: ed.bg.z || 1 } : null;
+  };
+  const live = () => {
+    const L = cur();
+    const bnr = stage.querySelector(".bnr");
+    if(L){
+      const el = stage.querySelector(`.bl[data-li="${ed._sel}"]`);
+      if(el) el.setAttribute("style", layerCss(L, false));
+    } else if(ed._sel === "bg"){
+      const im = bnr && bnr.querySelector(".bnr-img");
+      if(im){ im.style.objectPosition = `${ed.bg.x}% ${ed.bg.y}%`; im.style.transformOrigin = `${ed.bg.x}% ${ed.bg.y}%`;
+        im.style.transform = `scale(${ed.bg.z})`; }
+    }
+  };
+  const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
+  stage.onpointerdown = (e) => {
+    stage.setPointerCapture(e.pointerId);
+    pts.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    if(pts.size === 1){
+      const hit = e.target.closest("[data-li]");
+      const was = ed._sel;
+      ed._sel = hit ? +hit.dataset.li : hasImg() ? "bg" : null;
+      if(was !== ed._sel){ markSel(); drawProps(); }
+    }
+    const r = stage.getBoundingClientRect();
+    g = { s: snap(), p: { x: e.clientX, y: e.clientY }, w: r.width, h: r.height, two: pts.size >= 2 ? gesture() : null };
+  };
+  stage.onpointermove = (e) => {
+    if(!g || !pts.has(e.pointerId) || !g.s) return;
+    pts.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    const L = cur();
+    if(pts.size >= 2 && g.two){
+      const now = gesture(), k = now.d / g.two.d, rot = now.ang - g.two.ang;
+      if(L){ L.size = Math.round(clamp(g.s.size * k, L.type === "gift" ? 6 : 2, L.type === "gift" ? 90 : 20) * 10) / 10;
+        L.r = Math.round(clamp(g.s.r + rot, -180, 180)); }
+      else ed.bg.z = Math.round(clamp(g.s.z * k, 1, 6) * 100) / 100;
+    } else if(pts.size === 1){
+      const dx = (e.clientX - g.p.x) / g.w * 100, dy = (e.clientY - g.p.y) / g.h * 100;
+      if(L){ L.x = Math.round(clamp(g.s.x + dx, -10, 110) * 10) / 10; L.y = Math.round(clamp(g.s.y + dy, -10, 110) * 10) / 10; }
+      // картинку тянем за палец: вправо - видно больше её левой части
+      else { ed.bg.x = Math.round(clamp(g.s.x - dx / g.s.z, 0, 100)); ed.bg.y = Math.round(clamp(g.s.y - dy / g.s.z, 0, 100)); }
+    }
+    live();
+  };
+  const up = (e) => {
+    pts.delete(e.pointerId);
+    if(pts.size){
+      // один палец остался - продолжаем перетаскивание от него
+      const [p] = [...pts.values()];
+      g = { ...g, s: snap(), p, two: null };
+    } else { g = null; syncSliders(); }
+  };
+  stage.onpointerup = stage.onpointercancel = up;
+
+  // ---------- кнопки добавления ----------
+  document.querySelectorAll("#panel [data-add]").forEach((b) => b.onclick = () => {
+    if(ed.layers.length >= 14){ toast("Не больше 14 слоёв", "help"); return; }
+    const kind = b.dataset.add;
+    haptic();
+    const push = (L) => { ed.layers.push(L); ed._sel = ed.layers.length - 1; };
+    if(kind === "gift"){
+      if(ed.layers.filter((x) => x.type === "gift").length >= 6){ toast("Не больше 6 подарков", "help"); return; }
+      pickCollection(async (slug) => { push({ type: "gift", coll: slug, model: "", x: 78, y: 52, r: 0, size: 30 }); editBanner(ed); },
+        "Подарок для баннера");
+      return;
+    }
+    if(kind === "text") push({ type: "text", text: "Новый текст", x: 50, y: 50, r: 0, size: 6, color: "#ffffff", weight: 800, shadow: true });
+    if(kind === "button") push({ type: "button", text: "Открыть", action: "go", target: "sniper", x: 50, y: 78, r: 0, size: 4.2,
+      color: "#000000", bgc: "#ffffff", weight: 700 });
+    if(kind === "timer") push({ type: "timer", text: "До конца", to: Math.floor(Date.now() / 1000) + 86400, x: 50, y: 25, r: 0,
+      size: 4.8, color: "#ffffff", weight: 800, shadow: true });
+    paint(); drawLayers(); drawProps();
+  });
+
+  // ---------- фон ----------
   bindSeg("bn-bg", (k) => {
-    $("bn-colors").style.display = k === "color" ? "flex" : "none";
+    $("bn-colors").style.display = k === "color" ? "block" : "none";
     $("bn-imgbox").style.display = k === "image" ? "block" : "none";
-    if(k === "color"){ ed.bg = { color: ed.bg.color || "violet" }; delete ed._local; }
-    preview();
+    if(k === "color"){
+      ed.bg = { color: (ed.bg.color && ed.bg.color !== "image") ? ed.bg.color : "violet" }; delete ed._local;
+      if(ed._sel === "bg") ed._sel = ed.layers.length ? 0 : null;
+      paint(); drawLayers(); drawProps();
+    } else if(!hasImg()) $("bn-file").click();
   });
   $("bn-colors").querySelectorAll("[data-c]").forEach((b) => b.onclick = () => {
     $("bn-colors").querySelectorAll(".on").forEach((x) => x.classList.remove("on"));
     b.classList.add("on"); haptic();
-    ed.bg = { color: b.dataset.c }; delete ed._local; preview();
+    ed.bg = { color: b.dataset.c }; delete ed._local; paint();
   });
+  $("bn-cc").oninput = (e) => {
+    $("bn-colors").querySelectorAll(".on").forEach((x) => x.classList.remove("on"));
+    const p = $("bn-cc").parentElement;
+    p.classList.add("on");
+    ed.bg = { color: e.target.value.toLowerCase() }; delete ed._local;
+    p.setAttribute("style", bnBgCss(ed.bg));
+    paint();
+  };
   $("bn-up").onclick = () => $("bn-file").click();
   $("bn-file").onchange = async () => {
     const f = $("bn-file").files[0];
     if(!f) return;
     $("bn-err").textContent = "";
+    $("bn-up").disabled = true;
     try{
-      const data = await shrinkImage(f, 1200);
-      ed._local = data; preview();
+      const data = await shrinkImage(f, 1400);
+      ed._local = data;
+      ed.bg = { image: "", x: 50, y: 50, z: 1, dim: .25 };
+      ed._sel = "bg";
+      // картинку выбрали - переключатель фона тоже на «Картинка»
+      const sb = $("bn-bg").querySelector('[data-k="image"]');
+      if(sb && !sb.classList.contains("on")) sb.click();
+      paint(); drawLayers(); drawProps();
       const r = await call("banner_image", { data });
-      ed.bg = { image: r.file };
+      ed.bg.image = r.file;
       toast("Картинка загружена");
-    }catch(e){ $("bn-err").textContent = e.message || "Картинка не загрузилась"; }
+    }catch(e){
+      delete ed._local;
+      if(!ed.bg.image) ed.bg = { color: "violet" };
+      $("bn-err").textContent = e.message || "Картинка не загрузилась";
+      paint(); drawLayers(); drawProps();
+    }finally{ if($("bn-up")) $("bn-up").disabled = false; $("bn-file").value = ""; }
   };
-  bindSeg("bn-act", (k) => {
-    $("bn-btn").style.display = k === "none" ? "none" : "block";
-    $("bn-go").style.display = k === "go" ? "block" : "none";
-    $("bn-url").style.display = k === "url" ? "block" : "none";
-    preview();
+
+  // ---------- эффекты, нажатие, аудитория, расписание ----------
+  $("bn-shine").onclick = () => { ed.fx.shine = !ed.fx.shine; $("bn-shine").classList.toggle("on", ed.fx.shine); haptic(); paint(); };
+  $("bn-spk").onclick = () => { ed.fx.sparkles = !ed.fx.sparkles; $("bn-spk").classList.toggle("on", ed.fx.sparkles); haptic(); paint(); };
+  bindSeg("bn-tap", (k) => {
+    $("bn-tapgo").style.display = k === "go" ? "block" : "none";
+    $("bn-tapurl").style.display = k === "url" ? "block" : "none";
   });
-  bindSeg("bn-target", () => preview());
-  $("bn-en").onclick = () => { $("bn-en").classList.toggle("on"); haptic(); preview(); };
-  // Подарок: выбрать коллекцию, потом модель (необязательно). Окно выбора одно на
-  // всё приложение, поэтому черновик баннера переживает его в ed и открывается снова.
-  $("bn-gift").onclick = () => { read(); pickCollection(async (slug) => { ed.art = { coll: slug, model: "" }; editBanner(ed); }, "Подарок для баннера"); };
-  if($("bn-nogift")) $("bn-nogift").onclick = () => { read(); delete ed.art; editBanner(ed); };
-  if(ed.art && ed.art.coll){
-    loadCatalog(ed.art.coll).then((cat) => {
-      if(!$("bn-models")) return;
-      const items = (cat.models || []).map((m) => ({ name: m.name, pct: m.pct }));
-      const mp = pickGrid("bn-mp", items, ed.art.model ? [ed.art.model] : [], "model", ed.art.coll, true);
-      $("bn-models").innerHTML = `<div class="hint" style="margin:8px 4px 0">Модель - необязательно</div>${mp.html}`;
-      mp.draw("");
-      $("bn-mp").addEventListener("pick", () => { ed.art.model = mp.value()[0] || ""; preview(); });
-    });
-  }
+  bindSeg("bn-taptg", () => {});
+  bindSeg("bn-aud", () => {});
+  $("bn-en").onclick = () => { $("bn-en").classList.toggle("on"); haptic(); };
+  const read = () => {
+    const act = ($("bn-tap").querySelector("button.on") || {}).dataset.k || "none";
+    ed.tap = act === "go" ? { action: "go", target: ($("bn-taptg").querySelector("button.on") || {}).dataset.k || "sniper" }
+      : act === "url" ? { action: "url", target: $("bn-tapurl").value.trim() } : { action: "none", target: "" };
+    ed.audience = ($("bn-aud").querySelector("button.on") || {}).dataset.k || "all";
+    ed.when = { from: fromLocal($("bn-from").value), to: fromLocal($("bn-to").value) };
+    ed.enabled = $("bn-en").classList.contains("on");
+  };
   $("bn-ok").onclick = async () => {
     read();
-    const banner = { id: ed.id, title: ed.title, text: ed.text, bg: ed.bg, art: ed.art, button: ed.button, enabled: ed.enabled };
+    if(ed._local && !ed.bg.image){ $("bn-err").textContent = "Картинка ещё загружается - подожди пару секунд"; return; }
+    const banner = { id: ed.id, bg: ed.bg, layers: ed.layers, fx: ed.fx, tap: ed.tap, audience: ed.audience,
+      when: ed.when, enabled: ed.enabled };
     try{
       await call("banner_save", { banner });
       hapticOk(); toast("Баннер сохранён"); adminBanners(); refreshState();
@@ -3434,21 +4060,570 @@ function editBanner(ed){
     };
     if(TG && TG.showConfirm) TG.showConfirm(tr("Удалить баннер?"), ask); else ask(true);
   };
+
+  paint(); drawLayers(); drawProps(); drawCrop();
 }
 /* Картинку сжимаем в приложении: с телефона приходят снимки по 5-10 МБ, а баннеру
-   хватает 1200 точек по ширине. JPEG 85% - около 150-250 КБ. */
+   хватает 1400 точек по ширине. JPEG 85% - около 150-300 КБ. Раньше картинка
+   открывалась через img.decode(), а он есть не во всех встроенных браузерах
+   Telegram: своя картинка не загружалась вовсе. Теперь - обычная загрузка. */
 async function shrinkImage(file, maxW){
+  if(file.size > 25e6) throw new Error("Картинка больше 25 МБ");
   const url = URL.createObjectURL(file);
   try{
-    const img = new Image();
-    img.src = url;
-    await img.decode();
+    const img = await new Promise((ok, fail) => {
+      const im = new Image();
+      im.onload = () => ok(im);
+      im.onerror = () => fail(new Error("Не получилось открыть картинку. Попробуй JPEG или PNG"));
+      im.src = url;
+    });
+    if(!img.naturalWidth) throw new Error("Не получилось открыть картинку. Попробуй JPEG или PNG");
     const k = Math.min(1, maxW / img.naturalWidth);
     const c = document.createElement("canvas");
-    c.width = Math.round(img.naturalWidth * k); c.height = Math.round(img.naturalHeight * k);
+    c.width = Math.max(1, Math.round(img.naturalWidth * k)); c.height = Math.max(1, Math.round(img.naturalHeight * k));
     c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
-    return c.toDataURL("image/jpeg", .85);
+    let q = .85, out = c.toDataURL("image/jpeg", q);
+    // бот принимает до 1.5 МБ: большие снимки дожимаем качеством
+    while(out.length > 1.9e6 && q > .4){ q -= .15; out = c.toDataURL("image/jpeg", q); }
+    return out;
   }finally{ URL.revokeObjectURL(url); }
+}
+
+/* ===================== БОНУСНЫЕ ЗВЁЗДЫ =====================
+   Внутренний баланс: тратится ТОЛЬКО на слот Flip Master и только целиком, вывести
+   его нельзя. Всё считает бот по своим часам (bonus.py): приложение сообщает только
+   «нажал», а не «когда», поэтому перевод даты в телефоне ничего не даёт. Здесь лишь
+   показ: время до бонуса берём из ответа бота и досчитываем от момента ответа. */
+const ACH = {
+  first_coll: ["Первая коллекция", "добавил коллекцию в «Улучшения»", "scope", "#4a94ff", "#1f5fd6"],
+  first_slot: ["Свой слот", "занял слот в «Листингах»", "ticket", "#ffb347", "#d9731a"],
+  portfolio: ["Коллекционер", "положил подарок в портфель", "case", "#3fd6c4", "#12897c"],
+  days_7: ["Неделя с ботом", "открывал приложение 7 дней", "clock", "#9d8cff", "#5a48d6"],
+  days_15: ["Свой человек", "открывал приложение 15 дней", "crown", "#ffe066", "#d39b00"],
+  days_30: ["Ветеран", "открывал приложение 30 дней", "shield", "#ff8a80", "#c9352b"],
+  nuke: ["Ядерная кнопка", "нажал на ядерную кнопку", "nuke", "#b6ff5c", "#3f9a12"],
+  guess_win: ["Чутьё", "угадал цену подарка", "target", "#ff7ad9", "#b32893"],
+  guess_5: ["Знаток рынка", "угадал цену 5 раз", "chart", "#63e6be", "#16936c"],
+  bonus_10: ["Постоянство", "забрал ежедневный бонус 10 раз", "star", "#ffd60a", "#c98a00"],
+};
+const LEDGER_NAMES = { daily: "Ежедневный бонус", nuke: "Ядерная кнопка", slot: "Слот Flip Master",
+  refund: "Возврат за слот", guess: "Угадай цену" };
+
+function BN(){ return (S && S.bonus) || null; }
+/* Секунд до следующего бонуса по часам бота. */
+function bonusWait(){
+  const b = BN();
+  if(!b || !b.next_claim) return 0;
+  const passed = Math.floor((Date.now() - (b._at || Date.now())) / 1000);
+  return Math.max(0, b.next_claim - b.now - passed);
+}
+function fmtWait(s){
+  const h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60);
+  return h ? `${h} ч ${m} мин` : `${Math.max(1, m)} мин`;
+}
+function nStars(n){ return `${n} ${plural(n, "звезда", "звезды", "звёзд")}`; }
+
+/* ---------- шапка главной: логотип, подсказка, ядерная кнопка, баланс ---------- */
+function brandHome(){
+  const b = BN();
+  if(!b) return `<div class="brandrow">${BRAND.svg}<b>${BRAND.name}</b></div>`;
+  const can = !bonusWait();
+  return `<div class="brandrow home">
+    <button class="lgbtn" id="lg-tap">${BRAND.svg}</button><b>${BRAND.name}</b>
+    ${can ? `<span class="taphint" id="lg-hint"><svg viewBox="0 0 34 22" class="arr"><path d="M32 5C22 1 10 4 5 15"/><path d="M2 9l3 7 7-2.6"/></svg>Нажми на меня</span>` : ""}
+    <span class="grow"></span>
+    <button class="nukebtn" id="nuke-btn">${ic("nuke")}</button>
+    <button class="starpill" id="b-pill">${ic("star")}<b class="num" id="b-num">${b.stars}</b></button>
+  </div>`;
+}
+function bindBrand(){
+  if(!$("lg-tap")) return;
+  $("lg-tap").onclick = claimBonus;
+  $("b-pill").onclick = () => { haptic(); openBonus(); };
+  $("nuke-btn").onclick = () => nukeStart();
+}
+
+/* Полёт «+N» от точки к счётчику баланса, счётчик подпрыгивает и досчитывает. */
+function flyStars(x, y, n, to){
+  const pill = $("b-pill");
+  const el = document.createElement("div");
+  el.className = "plusfly";
+  el.innerHTML = `${ic("star")}+${n}`;
+  document.body.appendChild(el);
+  el.style.left = x + "px"; el.style.top = y + "px";
+  const t = pill ? pill.getBoundingClientRect() : null;
+  const dx = t ? t.left + t.width / 2 - x : 0, dy = t ? t.top + t.height / 2 - y : -80;
+  const a = el.animate([
+    { transform: "translate(-50%,-50%) scale(.4)", opacity: 0 },
+    { transform: "translate(-50%,-180%) scale(1.5)", opacity: 1, offset: .35 },
+    { transform: `translate(calc(-50% + ${dx}px),calc(-50% + ${dy}px)) scale(.6)`, opacity: .9 }],
+    { duration: REDUCED ? 10 : 1100, easing: "cubic-bezier(.5,0,.3,1)", fill: "forwards" });
+  a.onfinish = () => {
+    el.remove();
+    const num = $("b-num");
+    if(num){
+      const from = Number(num.textContent) || 0;
+      const t0 = performance.now();
+      const step = (now) => {
+        const k = Math.min(1, (now - t0) / 500);
+        num.textContent = Math.round(from + (to - from) * k);
+        if(k < 1) requestAnimationFrame(step);
+      };
+      requestAnimationFrame(step);
+    }
+    if(pill){
+      pill.animate([{ transform: "scale(1)" }, { transform: "scale(1.35)" }, { transform: "scale(1)" }],
+        { duration: 420, easing: "cubic-bezier(.3,1.6,.5,1)" });
+      const r = pill.getBoundingClientRect();
+      FX.burst(r.left + r.width / 2, r.top + r.height / 2, { n: 26, speed: 4.5, size: 5, life: 40,
+        colors: ["#ffd60a", "#ffe68a", "#ffffff"] });
+    }
+  };
+}
+
+let claiming = false;
+async function claimBonus(){
+  const logo = $("lg-tap");
+  if(!logo || claiming) return;
+  const r = logo.getBoundingClientRect(), x = r.left + r.width / 2, y = r.top + r.height / 2;
+  const wait = bonusWait();
+  if(wait){
+    haptic("rigid");
+    logo.animate([{ transform: "rotate(0)" }, { transform: "rotate(-14deg)" }, { transform: "rotate(12deg)" },
+      { transform: "rotate(-6deg)" }, { transform: "rotate(0)" }], { duration: 480 });
+    FX.burst(x, y, { n: 12, speed: 3, size: 4, life: 28 });
+    toast(`Следующий бонус через ${fmtWait(wait)}`, "clock");
+    return;
+  }
+  claiming = true;
+  haptic("heavy");
+  if(!REDUCED){
+    logo.animate([{ transform: "scale(1) rotate(0)" }, { transform: "scale(.65) rotate(-25deg)", offset: .16 },
+      { transform: "scale(1.9) rotate(220deg)", offset: .55 }, { transform: "scale(1) rotate(360deg)" }],
+      { duration: 950, easing: "cubic-bezier(.3,1.25,.5,1)" });
+    const hint = $("lg-hint");
+    if(hint) hint.animate([{ opacity: 1 }, { opacity: 0, transform: "translateX(30px) scale(.6)" }],
+      { duration: 300, fill: "forwards" });
+  }
+  try{
+    const res = await call("bonus_claim", {});
+    hapticOk();
+    if(!REDUCED){
+      FX.flash(x, y);
+      // кольцо искр с логотипа, звёзды веером вверх и маленький салют
+      FX.burst(x, y, { n: 90, speed: 10, size: 7, life: 70, ring: 18,
+        colors: ["#ffd60a", "#ffe68a", "#ffffff", "#5a9bff", "#8fbcff"] });
+      FX.burst(x, y, { n: 40, angle: -Math.PI / 2, spread: 1.4, speed: 13, size: 6, life: 90, gravity: .25,
+        kind: "star", colors: ["#ffd60a", "#ffffff"] });
+      ringPulse(x, y, "#ffd60a");
+      setTimeout(FX.confetti, 380);
+    }
+    flyStars(x, y, res.got || 2, res.stars);
+    setTimeout(() => { render(); claiming = false; }, REDUCED ? 50 : 1700);
+  }catch(e){
+    claiming = false;
+    toast(e.message, "clock");
+  }
+}
+function ringPulse(x, y, color, big){
+  const el = document.createElement("div");
+  el.className = "ringp";
+  el.style.cssText = `left:${x}px;top:${y}px;border-color:${color}`;
+  document.body.appendChild(el);
+  const a = el.animate([{ transform: "translate(-50%,-50%) scale(.2)", opacity: 1 },
+    { transform: `translate(-50%,-50%) scale(${big || 5})`, opacity: 0 }],
+    { duration: big ? 1300 : 750, easing: "cubic-bezier(.1,.7,.3,1)", fill: "forwards" });
+  a.onfinish = () => el.remove();
+}
+
+/* Новые достижения бот присылает в state.bonus.new - показываем один раз. */
+const ACH_SHOWN = new Set();
+function bonusNews(){
+  const b = BN();
+  if(!b || !b.new || !b.new.length) return;
+  const fresh = b.new.filter((k) => !ACH_SHOWN.has(k) && ACH[k]);
+  fresh.forEach((k) => ACH_SHOWN.add(k));
+  if(!fresh.length) return;
+  const k = fresh[0], prize = (b.prizes || {})[k] || 0;
+  setTimeout(() => {
+    hapticOk();
+    toast(`Достижение: ${ACH[k][0]}${prize ? ` (+${prize})` : ""}`, "star");
+    if(fxOn("add")) FX.burst(innerWidth / 2, 60, { n: 50, speed: 7, size: 6, life: 60,
+      colors: [ACH[k][3], "#ffffff", "#ffd60a"] });
+  }, 900);
+}
+
+/* ---------- окно баланса ---------- */
+async function openBonus(){
+  const b = BN();
+  if(!b) return;
+  const days = Math.min(b.visit_days, b.need_days), pct = Math.round(days / b.need_days * 100);
+  const wait = bonusWait();
+  const why = b.visit_days < b.need_days
+    ? `Покупка откроется после ${b.need_days} дней в приложении: сейчас ${b.visit_days}`
+    : b.stars < b.price ? `Нужно ${nStars(b.price)}, у тебя ${b.stars}` : "";
+  const got = Object.keys(b.achievements || {}).length;
+  openSheet(`<div class="bcoin-wrap">${coinHtml("big")}</div>
+    <div class="bbal"><b class="num">${b.stars}</b><span>${plural(b.stars, "бонусная звезда", "бонусные звезды", "бонусных звёзд")}</span></div>
+    <p class="sub" style="text-align:center">Тратятся только на слот Flip Master. Вывести их нельзя.</p>
+    <div class="card bdays"><div class="bdt"><b>Дней в приложении</b><span>${b.visit_days} / ${b.need_days}</span></div>
+      <div class="bbar"><i style="width:${pct}%"></i></div>
+      <div class="hint" style="margin:8px 0 0">Каждый день, когда открываешь приложение, засчитывается. Так звёзды не накрутить запасными аккаунтами.</div></div>
+    <button class="btn blue" id="b-buy" ${b.can_buy ? "" : "disabled"}>${ic("ticket")}Слот за ${nStars(b.price)}</button>
+    ${why ? `<div class="hint" style="text-align:center">${esc(why)}</div>` : ""}
+    <div class="sec">Как получить</div>
+    <div class="group">
+      ${rowHtml({ tile: "blue", icon: "gift", title: "Нажми на логотип", sub: wait ? `снова через ${fmtWait(wait)}` : "можно забрать сейчас",
+        value: "+2", noChev: true, attr: 'id="b-logo"' })}
+      ${rowHtml({ tile: "green", icon: "nuke", title: "Ядерная кнопка", sub: b.nuke_done ? "награда уже получена" : "один раз за всё время",
+        value: "+4", noChev: true, attr: 'id="b-nuke"' })}
+      ${rowHtml({ tile: "pink", icon: "target", title: "Угадай цену", sub: "раз в день, 20 секунд на ответ", value: "+1", attr: 'id="b-guess"' })}
+      ${rowHtml({ tile: "yellow", icon: "medal", title: "Достижения", sub: `открыто ${got} из ${Object.keys(ACH).length}`, attr: 'id="b-ach"' })}
+    </div>
+    <div class="sec">История звёзд</div>
+    <div class="group tx" id="b-led"><div class="row"><span class="t"><span>Загружаю...</span></span></div></div>`);
+  spinCoin($("panel").querySelector(".bcoin"));
+  $("b-buy").onclick = bonusBuy;
+  $("b-logo").onclick = () => { closeSheet(); if(VIEW !== "home") go("home"); setTimeout(claimBonus, 450); };
+  $("b-nuke").onclick = () => { closeSheet(); if(VIEW !== "home") go("home"); setTimeout(nukeStart, 450); };
+  $("b-guess").onclick = () => openGuess();
+  $("b-ach").onclick = () => openAchievements();
+  try{
+    const r = await call("bonus_ledger", {});
+    const items = (r && r.items) || [];
+    const box = $("b-led");
+    if(!box) return;
+    box.innerHTML = items.length ? items.map((it) => {
+      const name = it.reason.startsWith("ach:") ? `Достижение: ${(ACH[it.reason.slice(4)] || ["?"])[0]}`
+        : (LEDGER_NAMES[it.reason] || it.reason);
+      const d = new Date(it.ts * 1000);
+      return `<div class="row"><span class="tile ${it.delta > 0 ? "yellow" : "blue"}">${ic(it.delta > 0 ? "star" : "ticket")}</span>
+        <span class="t"><b>${esc(tr(name))}</b><span>${d.toLocaleString(S.lang === "en" ? "en-GB" : "ru-RU", { day: "numeric", month: "long", hour: "2-digit", minute: "2-digit" })}</span></span>
+        <span class="amt ${it.delta > 0 ? "plus" : ""}">${it.delta > 0 ? "+" : ""}${it.delta}</span></div>`;
+    }).join("") : `<div class="row"><span class="t"><span>Пока пусто</span></span></div>`;
+  }catch(e){ const box = $("b-led"); if(box) box.innerHTML = `<div class="row"><span class="t"><span>${esc(e.message)}</span></span></div>`; }
+}
+async function bonusBuy(){
+  haptic("medium");
+  try{
+    await call("bonus_buy", {});
+    closeSheet();
+    render();
+    celebrateSlot();
+  }catch(e){ toast(e.message, "ticket"); }
+}
+
+/* ---------- 3D-монета и медали ----------
+   Объём - из стопки одинаковых дисков, сдвинутых по глубине (preserve-3d): ребро
+   получается настоящим и видно при повороте. Лицевая и обратная стороны - отдельные
+   слои с backface-visibility, поэтому на обороте своя надпись. */
+function coinHtml(cls, face, back, c1, c2){
+  let edge = "";
+  for(let i = 0; i < 9; i++) edge += `<i style="transform:translateZ(${(i - 4) * 1.1}px)"></i>`;
+  return `<div class="bcoin ${cls || ""}" style="--c1:${c1 || "#ffe066"};--c2:${c2 || "#d39b00"}"><div class="c3">
+    ${edge}<div class="cf front">${face || ic("star")}</div><div class="cf back">${back || `<b>GiftFlip</b>`}</div></div></div>`;
+}
+/* Крутить пальцем: поворот за пальцем, отпустил - докручивается по инерции и
+   медленно вращается сам. */
+function spinCoin(el){
+  if(!el) return;
+  const c3 = el.querySelector(".c3");
+  let ang = -20, tilt = 8, vel = REDUCED ? 0 : .6, drag = null, last = 0, raf = 0;
+  const paint = () => { c3.style.transform = `rotateX(${tilt}deg) rotateY(${ang}deg)`; };
+  const tick = () => {
+    if(!document.body.contains(el)){ cancelAnimationFrame(raf); return; }
+    if(!drag){
+      ang += vel;
+      vel += ((REDUCED ? 0 : .6) - vel) * .03;     // к спокойному вращению
+      tilt += (8 - tilt) * .06;
+    }
+    paint();
+    raf = requestAnimationFrame(tick);
+  };
+  el.onpointerdown = (e) => {
+    drag = { x: e.clientX, y: e.clientY }; last = e.clientX; vel = 0;
+    el.setPointerCapture(e.pointerId);
+  };
+  el.onpointermove = (e) => {
+    if(!drag) return;
+    const dx = e.clientX - last;
+    last = e.clientX;
+    ang += dx * .9; vel = dx * .9;
+    tilt = Math.max(-35, Math.min(35, 8 - (e.clientY - drag.y) * .3));
+  };
+  el.onpointerup = el.onpointercancel = () => { drag = null; };
+  paint();
+  raf = requestAnimationFrame(tick);
+}
+
+function openAchievements(){
+  const b = BN();
+  if(!b) return;
+  const have = b.achievements || {};
+  const keys = Object.keys(ACH);
+  let sel = keys.find((k) => have[k]) || keys[0];
+  const medal = (k, cls) => {
+    const [title, , icon, c1, c2] = ACH[k];
+    const prize = (b.prizes || {})[k] || 0;
+    const on = !!have[k];
+    return coinHtml(`${cls} ${on ? "" : "locked"}`, ic(icon),
+      `<b>${prize ? "+" + prize : ic("star")}</b><span>${esc(title)}</span>`, on ? c1 : "#5b5f6b", on ? c2 : "#2a2d35");
+  };
+  const paintTop = () => {
+    const [title, desc] = ACH[sel];
+    const on = have[sel];
+    const prize = (b.prizes || {})[sel] || 0;
+    $("ach-top").innerHTML = `${medal(sel, "big")}
+      <div class="achn"><b>${esc(title)}</b><span>${esc(desc)}</span>
+      <em>${on ? `открыто ${new Date(on * 1000).toLocaleDateString(S.lang === "en" ? "en-GB" : "ru-RU")}` : "ещё не открыто"}${prize ? ` · +${prize}` : ""}</em></div>`;
+    spinCoin($("ach-top").querySelector(".bcoin"));
+  };
+  openSheet(`<h2><span class="tile yellow">${ic("medal")}</span>Достижения</h2>
+    <p class="sub">Медали можно крутить пальцем. За многие - бонусные звёзды.</p>
+    <div id="ach-top" class="achtop"></div>
+    <div class="achgrid">${keys.map((k) => `<button class="achc ${k === sel ? "on" : ""}" data-k="${k}">${medal(k, "small")}
+      <span>${esc(ACH[k][0])}</span></button>`).join("")}</div>`);
+  paintTop();
+  $("panel").querySelectorAll(".achc").forEach((btn) => {
+    btn.onclick = () => {
+      haptic();
+      sel = btn.dataset.k;
+      $("panel").querySelectorAll(".achc").forEach((x) => x.classList.toggle("on", x === btn));
+      paintTop();
+    };
+  });
+}
+
+/* ---------- игра «Угадай цену» ----------
+   Раз в день: бот выбирает коллекцию со свежим флором и держит ответ у себя, пока
+   раунд не закончится. Таймер считает бот (deadline), здесь только показ; ответ
+   позже срока бот не засчитает. */
+let guessTimer = 0;
+async function openGuess(){
+  clearInterval(guessTimer);
+  let g;
+  try{ g = await call("guess_start", {}); }
+  catch(e){ toast(e.message, "target"); return; }
+  if(g.done){ guessResult(g); return; }
+  const t0 = Date.now(), total = 20, left0 = g.seconds_left;
+  openSheet(`<h2><span class="tile pink">${ic("target")}</span>Угадай цену</h2>
+    <p class="sub">Сколько сейчас стоит самый дешёвый подарок этой коллекции? Угадал с точностью 15% - звезда.</p>
+    <div class="gstage">${sparkles(8, .5)}
+      <svg class="gring" viewBox="0 0 120 120"><circle cx="60" cy="60" r="54"/><circle id="g-arc" cx="60" cy="60" r="54"/></svg>
+      ${art(g.slug, g.model, "gart", true)}
+      <div class="gsec num" id="g-sec">${left0}</div></div>
+    <div class="gname">${esc(collName(g.slug))}${g.model ? ` · ${esc(g.model)}` : ""}</div>
+    <div class="gin"><input type="number" inputmode="decimal" id="g-val" placeholder="цена в TON"><span>TON</span></div>
+    <button class="btn blue" id="g-go">${ic("check")}Ответить</button>`);
+  const arc = $("g-arc"), len = 2 * Math.PI * 54;
+  arc.style.strokeDasharray = len;
+  let sent = false;
+  const send = async () => {
+    if(sent) return;
+    sent = true;
+    clearInterval(guessTimer);
+    try{ guessResult(await call("guess_answer", { value: Number(String($("g-val").value).replace(",", ".")) || 0 })); }
+    catch(e){ toast(e.message, "target"); }
+  };
+  const tick = () => {
+    const left = Math.max(0, left0 - (Date.now() - t0) / 1000);
+    if(!$("g-sec")){ clearInterval(guessTimer); return; }
+    $("g-sec").textContent = Math.ceil(left);
+    arc.style.strokeDashoffset = len * (1 - left / total);
+    $("g-sec").classList.toggle("hot", left <= 5);
+    if(left <= 0) send();
+  };
+  tick();
+  guessTimer = setInterval(tick, 100);
+  $("g-go").onclick = () => { haptic("medium"); send(); };
+  $("g-val").onkeydown = (e) => { if(e.key === "Enter") send(); };
+}
+function guessResult(g){
+  clearInterval(guessTimer);
+  const off = g.guess ? Math.round(Math.abs(g.guess - g.answer) / g.answer * 100) : null;
+  openSheet(`<h2><span class="tile pink">${ic("target")}</span>Угадай цену</h2>
+    <div class="gstage done">${sparkles(8, .5)}${art(g.slug, g.model, "gart", true)}</div>
+    <div class="gname">${esc(collName(g.slug))}${g.model ? ` · ${esc(g.model)}` : ""}</div>
+    <div class="gres ${g.won ? "win" : ""}">
+      <div><span>Цена</span><b class="num">${fmtTon(g.answer)} TON</b></div>
+      <div><span>Твой ответ</span><b class="num">${g.guess ? fmtTon(g.guess) + " TON" : "нет"}</b></div></div>
+    <p class="sub" style="text-align:center">${g.won ? `Угадал! +${g.prize}` : g.late ? "Время вышло" :
+      off !== null ? `Мимо на ${off}%` : "Ответа не было"}. Следующая игра - завтра.</p>`);
+  if(g.won){
+    hapticOk();
+    if(!REDUCED) setTimeout(() => { FX.confetti(); FX.burst(innerWidth / 2, innerHeight * .35, { n: 70, speed: 9, size: 7, life: 70 }); }, 200);
+  }
+}
+
+/* ===================== ЯДЕРНАЯ КНОПКА =====================
+   Бомба влетает на экран и взрывается: вспышка, ударная волна трясёт экран, белые
+   точки (радиация) и зелёные частицы. Потом интерфейс горит - огонь только
+   нарисован поверх (pointer-events:none), всё нажимается. Подарки мутируют: часть
+   подарка заменяется частью другого, и та часть играет чужую анимацию. Всё это -
+   до перезагрузки страницы. Звёзды бот даёт только за первый взрыв. */
+let NUKED = false, nuking = false;
+const BOMB_SVG = `<svg viewBox="0 0 120 220"><defs>
+  <linearGradient id="bmb" x1="0" x2="1"><stop offset="0" stop-color="#2d3a22"/><stop offset=".45" stop-color="#6f8a4e"/><stop offset="1" stop-color="#1d2616"/></linearGradient>
+  <linearGradient id="bmf" x1="0" x2="1"><stop offset="0" stop-color="#3a4a2c"/><stop offset="1" stop-color="#20291a"/></linearGradient></defs>
+  <path d="M30 20h60l-8 34H38z" fill="url(#bmf)"/><path d="M60 14v44" stroke="#151b10" stroke-width="5"/>
+  <path d="M20 22h80" stroke="#151b10" stroke-width="6" stroke-linecap="round"/>
+  <ellipse cx="60" cy="128" rx="46" ry="76" fill="url(#bmb)"/>
+  <rect x="14" y="98" width="92" height="20" fill="#ffd60a"/>
+  <path d="M14 98h92v20H14z" fill="none" stroke="#151b10" stroke-width="2"/>
+  <g fill="#151b10"><path d="M24 98l12 20h8L32 98zM48 98l12 20h8L56 98zM72 98l12 20h8L80 98z"/></g>
+  <circle cx="60" cy="160" r="20" fill="#ffd60a"/>
+  <g fill="#151b10" transform="translate(60 160)"><circle r="3.6"/>
+    <path d="M0-5L-9-15A18 18 0 0 1 9-15z"/><path d="M0-5L-9-15A18 18 0 0 1 9-15z" transform="rotate(120)"/>
+    <path d="M0-5L-9-15A18 18 0 0 1 9-15z" transform="rotate(240)"/></g>
+  <ellipse cx="42" cy="120" rx="8" ry="44" fill="#fff" opacity=".12"/></svg>`;
+
+async function nukeStart(){
+  if(nuking) return;
+  nuking = true;
+  haptic("heavy");
+  // ответ бота ждём параллельно с полётом: звёзды - только за первый взрыв
+  const req = call("bonus_nuke", {}).catch(() => null);
+  const cx = innerWidth / 2, cy = innerHeight * .46;
+  if(REDUCED){
+    NUKED = true; document.body.classList.add("nuked"); mutateArts(document);
+    nukeDone(await req, cx, cy);
+    return;
+  }
+  const bomb = document.createElement("div");
+  bomb.className = "bomb";
+  bomb.innerHTML = BOMB_SVG;
+  document.body.appendChild(bomb);
+  const fall = bomb.animate([
+    { transform: `translate(${cx - 40 + innerWidth * .3}px,-260px) rotate(-35deg) scale(.55)` },
+    { transform: `translate(${cx - 40 + innerWidth * .08}px,${cy * .4}px) rotate(-12deg) scale(.8)`, offset: .55 },
+    { transform: `translate(${cx - 40}px,${cy - 80}px) rotate(0deg) scale(1.1)` }],
+    { duration: 1250, easing: "cubic-bezier(.45,0,.9,.6)", fill: "forwards" });
+  // свист: искры за бомбой
+  const trail = setInterval(() => {
+    const r = bomb.getBoundingClientRect();
+    FX.burst(r.left + r.width / 2, r.top + 10, { n: 4, angle: -Math.PI / 2, spread: .8, speed: 2, size: 4, life: 28,
+      gravity: -.05, colors: ["#ffb347", "#ffd60a", "#ffffff"], kind: "dot" });
+  }, 40);
+  await new Promise((ok) => { fall.onfinish = ok; setTimeout(ok, 1500); });
+  clearInterval(trail);
+  bomb.remove();
+  boom(cx, cy);
+  nukeDone(await req, cx, cy);
+}
+function boom(x, y){
+  haptic("heavy");
+  setTimeout(() => haptic("heavy"), 120); setTimeout(() => haptic("rigid"), 260);
+  // белая вспышка на весь экран
+  const w = document.createElement("div");
+  w.className = "nflash";
+  document.body.appendChild(w);
+  w.animate([{ opacity: 0 }, { opacity: 1, offset: .08 }, { opacity: .85, offset: .3 }, { opacity: 0 }],
+    { duration: 1400, easing: "ease-out", fill: "forwards" }).onfinish = () => w.remove();
+  // ударные волны: белая и зелёная
+  ringPulse(x, y, "#ffffff", 14);
+  setTimeout(() => ringPulse(x, y, "#9dff5c", 11), 140);
+  setTimeout(() => ringPulse(x, y, "#ffd27a", 8), 300);
+  // тряска всего интерфейса, затухающая
+  const frames = [];
+  for(let i = 0; i <= 16; i++){
+    const k = 1 - i / 16, a = 16 * k;
+    frames.push({ transform: i === 16 ? "none" : `translate(${(Math.random() - .5) * a * 2}px,${(Math.random() - .5) * a * 2}px) rotate(${(Math.random() - .5) * k * 2.4}deg)` });
+  }
+  [document.querySelector("main"), $("nav")].forEach((el) => el && el.animate(frames, { duration: 900, easing: "linear" }));
+  // гриб
+  const m = document.createElement("div");
+  m.className = "mush";
+  m.style.left = x + "px"; m.style.top = y + "px";
+  m.innerHTML = `<i class="stem"></i><i class="cap"></i><i class="cap c2"></i><i class="ring"></i>`;
+  document.body.appendChild(m);
+  m.animate([{ transform: "translate(-50%,-30%) scale(.2)", opacity: 0 },
+    { transform: "translate(-50%,-62%) scale(1)", opacity: 1, offset: .25 },
+    { transform: "translate(-50%,-80%) scale(1.25)", opacity: .8, offset: .7 },
+    { transform: "translate(-50%,-95%) scale(1.4)", opacity: 0 }],
+    { duration: 3200, easing: "cubic-bezier(.2,.8,.3,1)", fill: "forwards" }).onfinish = () => m.remove();
+  // радиация: много белых точек, зелёные частицы, огненные искры
+  FX.burst(x, y, { n: 160, speed: 16, size: 4, life: 130, gravity: .02, drag: .95, kind: "dot",
+    colors: ["#ffffff", "#ffffff", "#eaffd8"] });
+  FX.burst(x, y, { n: 90, speed: 11, size: 6, life: 110, gravity: .04, drag: .96, kind: "px",
+    colors: ["#9dff5c", "#5cff7a", "#c8ff8a", "#3fd65a"] });
+  FX.burst(x, y, { n: 70, speed: 9, size: 7, life: 80, gravity: .15, ring: 30,
+    colors: ["#ffd27a", "#ff9f0a", "#ff5a1f", "#ffffff"] });
+  setTimeout(() => {
+    NUKED = true;
+    document.body.classList.add("nuked");
+    fireStart();
+    mutateArts(document);
+  }, 450);
+}
+function nukeDone(res, x, y){
+  nuking = false;
+  if(res && res.got){
+    setTimeout(() => {
+      hapticOk();
+      toast(`+${res.got} бонусные звезды за первый взрыв`, "star");
+      flyStars(x, y, res.got, res.stars);
+    }, 1300);
+    setTimeout(render, 3200);
+  }
+}
+
+/* Огонь: языки пламени снизу и по краям (CSS), угольки летят вверх, сверху медленно
+   оседают белые точки. Частиц немного - телефон не должен тормозить. */
+let fireLoop = 0;
+function fireStart(){
+  if(!$("fire")){
+    const f = document.createElement("div");
+    f.id = "fire";
+    let tongues = "";
+    for(let i = 0; i < 14; i++){
+      tongues += `<i style="left:${i * 7.4 - 2}%;--h:${45 + Math.random() * 55}px;--d:${(.7 + Math.random() * .7).toFixed(2)}s;--dl:${(-Math.random()).toFixed(2)}s"></i>`;
+    }
+    f.innerHTML = `<div class="tongues">${tongues}</div><div class="side l"></div><div class="side r"></div>`;
+    document.body.appendChild(f);
+  }
+  if(fireLoop || REDUCED) return;
+  fireLoop = setInterval(() => {
+    if(document.hidden || window.SHOTS_PAUSE) return;
+    FX.burst(Math.random() * innerWidth, innerHeight + 4, { n: 2, angle: -Math.PI / 2, spread: .6, speed: 3.2,
+      size: 3.5, life: 110, gravity: -.02, drag: .995, kind: "dot", colors: ["#ffb347", "#ff7a1a", "#ffd27a"] });
+    if(Math.random() < .5) FX.burst(Math.random() * innerWidth, -6, { n: 1, angle: Math.PI / 2, spread: .4, speed: 1,
+      size: 2.6, life: 170, gravity: .005, drag: 1, kind: "dot", colors: ["#ffffff"] });
+  }, 140);
+}
+
+/* Мутация подарков: поверх подарка кладётся ДРУГОЙ подарок, обрезанный по фигуре,
+   а сам подарок обрезается по дополняющей фигуре - выходит один подарок из частей
+   двух. Чужая часть играет свою анимацию (до 4 разом, остальные - картинкой) и
+   переливается цветом. */
+const MUT_SHAPES = [
+  ["polygon(0 0,100% 0,100% 48%,0 58%)", "polygon(0 58%,100% 48%,100% 100%,0 100%)"],
+  ["polygon(0 0,52% 0,44% 100%,0 100%)", "polygon(52% 0,100% 0,100% 100%,44% 100%)"],
+  ["polygon(0 0,100% 0,0 100%)", "polygon(100% 0,100% 100%,0 100%)"],
+  ["circle(30% at 50% 45%)", "polygon(0 0,100% 0,100% 100%,0 100%,0 45%,20% 45%,23% 63%,35% 72%,50% 75%,65% 72%,77% 63%,80% 45%,77% 27%,65% 18%,50% 15%,35% 18%,23% 27%,20% 45%,0 45%)"],
+];
+const MUT_POOL = ["Plush Pepe|Ninja Mike", "Loot Bag|Pepe Bag", "Swiss Watch|DeLorean", "Durov's Cap|RGB Glitch",
+  "Ion Gem|", "Jelly Bunny|", "Homemade Cake|", "Signet Ring|", "Toy Bear|", "Magic Potion|"];
+let mutLive = 0;
+function mutateArts(root){
+  if(!NUKED) return;
+  (root || document).querySelectorAll(".art[data-ac]:not([data-mut])").forEach((el, i) => {
+    if(el.closest(".gstage")) return;     // в игре подарок должен быть узнаваемым
+    el.dataset.mut = "1";
+    const own = `${el.dataset.ac}|${el.dataset.am}`;
+    const pool = MUT_POOL.filter((p) => p !== own);
+    const [coll, model] = pool[Math.floor(Math.random() * pool.length)].split("|");
+    const [mine, theirs] = MUT_SHAPES[Math.floor(Math.random() * MUT_SHAPES.length)];
+    el.style.setProperty("--mclip", theirs);
+    el.classList.add("mutant");
+    const part = document.createElement("div");
+    part.className = "mutpart";
+    part.style.clipPath = mine;
+    part.style.setProperty("--hue", Math.floor(Math.random() * 360) + "deg");
+    part.innerHTML = art(coll, model, "", mutLive < 4);
+    if(mutLive < 4) mutLive++;
+    el.appendChild(part);
+    hydrateArt(part);
+  });
 }
 
 /* ===================== АНГЛИЙСКИЙ =====================
@@ -4011,7 +5186,124 @@ const EN_DICT = {
 "выключено - на главной нет баннеров, в том числе акции и объявления": "off - no banners on the home screen, including the promo and announcement",
 "скрыт": "hidden",
 "скрытый баннер видишь только здесь": "you see a hidden banner only here",
-"улучшен": "upgraded"
+"улучшен": "upgraded",
+"картинка не найдена": "image not found",
+"сейчас нет цен для игры, загляни позже": "no prices for the game right now, come back later",
+"сначала начни игру": "start the game first",
+"бонусы недоступны": "bonuses are unavailable",
+"Бонусные звёзды": "Bonus stars",
+"Достижения": "Achievements",
+"Достижение": "Achievement",
+"Угадай цену": "Guess the price",
+"раз в день, 20 секунд на ответ": "once a day, 20 seconds to answer",
+"раз в день": "once a day",
+"только на слот": "only for a slot",
+"Ветеран": "Veteran",
+"Возврат за слот": "Slot refund",
+"Время вышло": "Time is up",
+"Дней в приложении": "Days in the app",
+"Ежедневный бонус": "Daily bonus",
+"Загружаю": "Loading",
+"Знаток рынка": "Market expert",
+"История звёзд": "Stars history",
+"Каждый день, когда открываешь приложение, засчитывается. Так звёзды не накрутить запасными аккаунтами": "Every day you open the app counts. This way stars can't be farmed with spare accounts",
+"Как получить": "How to get",
+"Коллекционер": "Collector",
+"Медали можно крутить пальцем. За многие - бонусные звёзды": "Spin the medals with your finger. Many of them give bonus stars",
+"Мимо на": "Off by",
+"Нажми на логотип": "Tap the logo",
+"Нажми на меня": "Tap me",
+"Неделя с ботом": "A week with the bot",
+"Нужно": "You need",
+"Ответа не было": "No answer",
+"Первая коллекция": "First collection",
+"Покупка откроется после": "Purchase opens after",
+"Постоянство": "Consistency",
+"Свой слот": "Own slot",
+"Свой человек": "Regular",
+"Сколько сейчас стоит самый дешёвый подарок этой коллекции? Угадал с точностью 15% - звезда": "How much is the cheapest gift of this collection right now? Within 15% wins a star",
+"Следующая игра - завтра": "Next game is tomorrow",
+"Следующий бонус через": "Next bonus in",
+"Слот за": "Slot for",
+"Слот": "Slot",
+"Твой ответ": "Your answer",
+"Тратятся только на слот Flip Master. Вывести их нельзя": "Spent only on a Flip Master slot. They can't be withdrawn",
+"Угадал!": "You got it!",
+"Цена": "Price",
+"Чутьё": "Instinct",
+"Ядерная кнопка": "Nuclear button",
+"бонусная звезда": "bonus star",
+"бонусные звезды за первый взрыв": "bonus stars for the first blast",
+"бонусные звезды": "bonus stars",
+"бонусных звёзд": "bonus stars",
+"дней в приложении: сейчас": "days in the app: now",
+"добавил коллекцию в «Улучшения»": "added a collection to «Upgrades»",
+"ещё не открыто": "not unlocked yet",
+"забрал ежедневный бонус 10 раз": "claimed the daily bonus 10 times",
+"занял слот в «Листингах»": "took a slot in «Listings»",
+"звезда": "star",
+"звезды": "stars",
+"мин": "min",
+"можно забрать сейчас": "can be claimed now",
+"награда уже получена": "reward already received",
+"нажал на ядерную кнопку": "pressed the nuclear button",
+"один раз за всё время": "once ever",
+"открывал приложение 15 дней": "opened the app on 15 days",
+"открывал приложение 30 дней": "opened the app on 30 days",
+"открывал приложение 7 дней": "opened the app on 7 days",
+"открыто": "unlocked",
+"положил подарок в портфель": "put a gift in the portfolio",
+"снова через": "again in",
+"у тебя": "you have",
+"угадал цену 5 раз": "guessed the price 5 times",
+"угадал цену подарка": "guessed a gift price",
+"цена в": "price in",
+"в слое нет текста": "the layer has no text",
+"выбери подарок": "choose a gift",
+"выбери, куда ведёт кнопка": "choose where the button leads",
+"добавь текст, подарок или картинку": "add text, a gift or an image",
+"конец показа раньше начала": "the show ends before it starts",
+"неизвестная аудитория баннера": "unknown banner audience",
+"неизвестный слой баннера": "unknown banner layer",
+"укажи, до какого времени таймер": "set the time the countdown runs to",
+"Без слотов": "Without slots",
+"Со слотами": "With slots",
+"Выбери «Картинка фона» в слоях и двигай её пальцем, двумя - увеличивай": "Pick «Background image» in the layers and drag it with a finger, zoom with two",
+"Выше": "Up",
+"Ниже": "Down",
+"До конца": "Ends in",
+"Жирный": "Bold",
+"Полужирный": "Semibold",
+"Обычный": "Regular",
+"Затемнение": "Darken",
+"Картинка больше 25 МБ": "The image is larger than 25 MB",
+"Картинка ещё загружается - подожди пару секунд": "The image is still uploading - wait a couple of seconds",
+"Копия": "Copy",
+"Короткий текст": "Short text",
+"Куда ведёт": "Leads to",
+"Нажми на слой и двигай пальцем. Двумя пальцами - размер и поворот": "Tap a layer and drag it. Two fingers - size and rotation",
+"Начертание": "Weight",
+"Не больше 14 слоёв": "No more than 14 layers",
+"Не больше 6 подарков": "No more than 6 gifts",
+"Не получилось открыть картинку. Попробуй JPEG или": "Could not open the image. Try JPEG or",
+"Новый текст": "New text",
+"Обводка": "Outline",
+"Отсчёт до": "Count down to",
+"По высоте": "Vertical",
+"По ширине": "Horizontal",
+"Поворот": "Rotation",
+"Подарок": "Gift",
+"Подложка": "Backing",
+"Подпись, например «До конца»": "Label, for example «Ends in»",
+"Размер": "Size",
+"Таймер": "Timer",
+"Тень": "Shadow",
+"Увеличение": "Zoom",
+"Цвет кнопки": "Button color",
+"Цвет текста": "Text color",
+"нажатия": "taps",
+"показы": "views",
+"д": "d"
 };
 const EN_RX = [
 [
@@ -4057,6 +5349,26 @@ const EN_RX = [
 [
 "^не\\ больше\\ (.+?)\\ баннеров$",
 "no more than $1 banners"
+],
+[
+"^нужно\\ (.+?)\\ бонусных\\ звёзд,\\ у\\ тебя\\ (.+?)$",
+"you need $1 bonus stars, you have $2"
+],
+[
+"^покупка\\ откроется\\ после\\ (.+?)\\ дней\\ в\\ приложении,\\ сейчас\\ (.+?)$",
+"purchase opens after $1 days in the app, now $2"
+],
+[
+"^следующий\\ бонус\\ через\\ (.+?)\\ ч\\ (.+?)\\ мин$",
+"next bonus in $1 h $2 min"
+],
+[
+"^не\\ больше\\ (.+?)\\ подарков\\ на\\ баннере$",
+"no more than $1 gifts on a banner"
+],
+[
+"^не\\ больше\\ (.+?)\\ слоёв$",
+"no more than $1 layers"
 ]
 ].map(([p, r]) => [new RegExp(p), r]);
 
@@ -4328,8 +5640,20 @@ function demoState(){
       quiet: { start: 1380, end: 480, mode: "silent", tz: 180 } },
     portfolio: { total: 1186.4, change_24h: 3.42, top: { slug: "PlushPepe", model: "Midas Pepe" } },
     effects: { boot: true, buy: true, add: true, open: true }, texts: {}, banners_on: true,
-    banners: [{ id: "d1", title: "Redo улучшен", text: "Торги запущены", bg: { color: "violet" },
-      art: { coll: "Plush Pepe", model: "Ninja Mike" }, button: { action: "go", text: "Вперёд!", target: "sniper" }, enabled: true }],
+    bonus: { stars: 7, next_claim: 0, now: Math.floor(Date.now() / 1000), visit_days: 9, need_days: 15, price: 50,
+      can_buy: false, nuke_done: false, new: [],
+      achievements: { first_coll: 1760000000, first_slot: 1760100000, days_7: 1760500000 },
+      prizes: { first_coll: 1, first_slot: 2, portfolio: 1, days_7: 2, days_15: 3, days_30: 5, nuke: 0, guess_win: 1, guess_5: 3, bonus_10: 2 } },
+    banners: [{ id: "d1", bg: { color: "#ff6b3d" }, enabled: true, fx: { shine: true, sparkles: true }, audience: "all",
+      when: { from: 0, to: 0 }, tap: { action: "none", target: "" },
+      layers: [
+        { type: "gift", coll: "Plush Pepe", model: "Ninja Mike", x: 80, y: 55, r: 8, size: 34 },
+        { type: "gift", coll: "Durov's Cap", model: "RGB Glitch", x: 60, y: 70, r: -14, size: 20 },
+        { type: "text", text: "Redo улучшен", x: 30, y: 30, r: -3, size: 7, color: "#ffffff", weight: 800, shadow: true },
+        { type: "timer", text: "Торги через", to: Math.floor(Date.now() / 1000) + 3 * 86400 + 5025, x: 30, y: 54, r: 0,
+          size: 4, color: "#ffd60a", weight: 800, bgc: "#000000" },
+        { type: "button", text: "Вперёд!", action: "go", target: "sniper", x: 24, y: 80, r: 0, size: 4.2,
+          color: "#000000", bgc: "#ffffff", weight: 700 }] }],
     announcements: [{ kind: "promo", title: "Акция", text: "-20% на слоты, 3 слот(а) в подарок. Осталось 13 дней" }],
     collections: [
       { cid: 1, slug: "PlushPepe", title: "Plush Pepe", enabled: true, pending: false,
@@ -4416,12 +5740,16 @@ async function demoCall(action, payload){
     return { ok: true, state: DEMO_S };
   }
   if(action === "alert_del"){ DEMO_S.alerts = (DEMO_S.alerts || []).filter((a) => a.id !== payload.id); return { ok: true, state: DEMO_S }; }
-  if(action === "banners") return { on: DEMO_S.banners_on !== false, items: DEMO_S.banners };
-  if(action === "banner_image") return { ok: true, file: "" };
+  if(action === "banners") return { on: DEMO_S.banners_on !== false, items: DEMO_S.banners,
+    stats: { d1: { views: 412, taps: 37 } } };
+  // в демо картинка остаётся в памяти страницы
+  if(action === "banner_image"){ DEMO_S._img = payload.data; return { ok: true, file: "demo.jpg" }; }
+  if(action === "banner_seen" || action === "banner_tap") return { ok: true };
   if(action === "banner_save"){
     if("on" in payload){ DEMO_S.banners_on = !!payload.on; return { ok: true, state: DEMO_S }; }
     const b = Object.assign({}, payload.banner);
     if(b.bg && !b.bg.image && !b.bg.color) b.bg = { color: "violet" };
+    if(b.bg && b.bg.image === "demo.jpg") b._local = DEMO_S._img;
     if(b.id) DEMO_S.banners = DEMO_S.banners.map((x) => (x.id === b.id ? b : x));
     else { b.id = "d" + Date.now(); DEMO_S.banners.push(b); }
     return { ok: true, banner: b, state: DEMO_S };
@@ -4439,6 +5767,36 @@ async function demoCall(action, payload){
     return { ok: true, state: DEMO_S };
   }
   if(action === "slot_invoice") return { link: "" };
+  if(action === "bonus_claim"){
+    const b = DEMO_S.bonus, now = Math.floor(Date.now() / 1000);
+    if(b.next_claim > now) throw new Error("следующий бонус через 23 ч 59 мин");
+    b.stars += 2; b.next_claim = now + 86400; b.now = now;
+    return { stars: b.stars, got: 2, state: DEMO_S };
+  }
+  if(action === "bonus_nuke"){
+    const b = DEMO_S.bonus;
+    if(b.nuke_done) return { stars: b.stars, got: 0 };
+    b.nuke_done = true; b.stars += 4; b.achievements.nuke = Math.floor(Date.now() / 1000);
+    return { stars: b.stars, got: 4 };
+  }
+  if(action === "bonus_buy") throw new Error("покупка откроется после 15 дней в приложении, сейчас 9");
+  if(action === "bonus_ledger") return { items: [
+    { ts: Math.floor(Date.now() / 1000) - 3600, delta: 2, reason: "daily" },
+    { ts: Math.floor(Date.now() / 1000) - 90000, delta: 2, reason: "ach:days_7" },
+    { ts: Math.floor(Date.now() / 1000) - 200000, delta: 2, reason: "ach:first_slot" },
+    { ts: Math.floor(Date.now() / 1000) - 300000, delta: 1, reason: "ach:first_coll" }] };
+  if(action === "guess_start"){
+    if(!DEMO_S.guess) DEMO_S.guess = { slug: "plushpepe", model: "", done: false, started: Date.now() };
+    const g = DEMO_S.guess, left = Math.max(0, 20 - Math.floor((Date.now() - g.started) / 1000));
+    return g.done ? g : { slug: g.slug, model: "", done: false, seconds_left: left };
+  }
+  if(action === "guess_answer"){
+    const g = DEMO_S.guess, v = Number(payload.value) || 0;
+    Object.assign(g, { done: true, answer: 1240, guess: v || null, prize: 1,
+      won: v > 0 && Math.abs(v - 1240) <= 186, late: Date.now() - g.started > 23000 });
+    if(g.late) g.won = false;
+    return g;
+  }
   if(action === "admin"){
     if(payload.texts_reset) DEMO_S.texts = {};
     // как на сервере: пустая замена или равная исходной - вернуть как было
@@ -4635,6 +5993,11 @@ async function boot(){
 document.querySelectorAll("nav [data-go]").forEach((b) => b.onclick = () => { haptic(); go(b.dataset.go); });
 $("veil").onclick = closeSheet;
 addEventListener("resize", moveInd);
+/* В Telegram окно приложения меняет размер без события resize (разворачивается,
+   появляется полоса), а шрифт догружается позже первой отрисовки: бегунок вкладок
+   считался по старым размерам и стоял не на своём месте, пока не понажимаешь. */
+if("ResizeObserver" in window) new ResizeObserver(() => moveInd()).observe($("nav"));
+if(document.fonts && document.fonts.ready) document.fonts.ready.then(moveInd);
 
 /* Щипок и двойное касание: iOS игнорирует meta viewport внутри WebView. */
 ["gesturestart", "gesturechange", "gestureend"].forEach((ev) =>
@@ -4646,6 +6009,7 @@ document.addEventListener("touchmove", (e) => { if(e.touches.length > 1) e.preve
 
 if(TG){
   TG.ready(); TG.expand();
+  try{ TG.onEvent && TG.onEvent("viewportChanged", moveInd); }catch(e){ /* старый клиент без события */ }
   try{ TG.disableVerticalSwipes && TG.disableVerticalSwipes(); }catch(e){}
   try{ TG.setHeaderColor("#000000"); TG.setBackgroundColor("#000000"); TG.setBottomBarColor && TG.setBottomBarColor("#000000"); }catch(e){}
   if(TG.BackButton) TG.BackButton.onClick(() => {
