@@ -805,10 +805,23 @@ input[type=datetime-local]{display:block;width:100%;min-width:0;max-width:100%;b
 .taphint .arr{width:22px;height:15px;fill:none;stroke:#ffd60a;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round;
   transform:scaleX(1);order:-1}
 @keyframes hintBob{0%,100%{transform:translateX(0)}50%{transform:translateX(-5px)}}
-.nukebtn{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;flex:0 0 32px;
-  background:radial-gradient(circle at 40% 35%,#ffe34d,#e0a800);box-shadow:0 0 0 2px #1d1d1f,0 4px 14px rgba(255,214,10,.35)}
-.nukebtn .ico{width:20px;height:20px;fill:#111;stroke:none}
-.nukebtn:active{transform:scale(.88)}
+/* ---------- красная кнопка из «чемоданчика» ---------- */
+.nukebtn{position:relative;width:34px;height:34px;flex:0 0 34px;border-radius:9px;padding:0;
+  background:repeating-linear-gradient(-45deg,#ffd60a 0 3.5px,#141414 3.5px 7px);
+  box-shadow:0 0 0 1px #000,0 4px 12px rgba(255,40,20,.35)}
+.nukebtn::before{content:"";position:absolute;inset:3px;border-radius:6px;
+  background:linear-gradient(160deg,#3b3e44,#111215);box-shadow:inset 0 1px 0 rgba(255,255,255,.16),inset 0 -1px 2px rgba(0,0,0,.6)}
+.nukebtn::after{content:"";position:absolute;inset:6px;border-radius:50%;
+  background:conic-gradient(from 210deg,#f2f5f8,#8b929c,#fbfcfd,#666c75,#e6eaef,#9097a1,#f2f5f8);box-shadow:0 1px 2px rgba(0,0,0,.7)}
+.nb-dome{position:absolute;inset:8.5px;z-index:1;border-radius:50%;
+  background:radial-gradient(circle at 36% 30%,#ffb8ad 0,#ff3b2a 24%,#c80d00 60%,#6a0000 100%);
+  box-shadow:inset 0 -2px 3px rgba(0,0,0,.5),0 1.5px 0 #3e0000,0 0 9px rgba(255,40,20,.55);
+  transition:transform .12s,box-shadow .12s;animation:nbGlow 2.2s ease-in-out infinite}
+.nb-dome::after{content:"";position:absolute;left:20%;top:11%;width:44%;height:28%;border-radius:50%;
+  background:linear-gradient(rgba(255,255,255,.85),rgba(255,255,255,0))}
+@keyframes nbGlow{50%{box-shadow:inset 0 -2px 3px rgba(0,0,0,.5),0 1.5px 0 #3e0000,0 0 15px rgba(255,50,20,.95)}}
+.nukebtn:active .nb-dome,.nukebtn.press .nb-dome{transform:translateY(1.2px) scale(.88);
+  box-shadow:inset 0 2px 4px rgba(0,0,0,.65),0 0 0 #3e0000,0 0 16px rgba(255,70,30,1)}
 .starpill{display:flex;align-items:center;gap:5px;height:32px;padding:0 11px 0 8px;border-radius:999px;
   background:linear-gradient(180deg,#3a3016,#231d0c);box-shadow:inset 0 0 0 1px rgba(255,214,10,.35);color:#ffd60a;font-size:15px}
 .starpill .ico{width:17px;height:17px;fill:#ffd60a;stroke:none}
@@ -827,23 +840,18 @@ input[type=datetime-local]{display:block;width:100%;min-width:0;max-width:100%;b
 .bbar{height:8px;border-radius:9px;background:var(--s3);margin-top:10px;overflow:hidden}
 .bbar i{display:block;height:100%;border-radius:inherit;background:linear-gradient(90deg,#ffd60a,#ff9f0a)}
 .tx .amt.plus{color:#ffd60a}
-.bcoin{--d:120px;width:var(--d);height:var(--d);perspective:600px;touch-action:none;cursor:grab}
-.bcoin.big{--d:132px}
-.bcoin.small{--d:58px;pointer-events:none}
+.bcoin{position:relative;width:var(--d);height:var(--d);flex:0 0 var(--d);perspective:700px;touch-action:none;cursor:grab}
+.bcoin.small{pointer-events:none}
 .bcoin .c3{position:relative;width:100%;height:100%;transform-style:preserve-3d}
-.bcoin .c3>i{position:absolute;inset:0;border-radius:50%;background:var(--c2)}
-.bcoin .cf{position:absolute;inset:0;border-radius:50%;display:grid;place-items:center;backface-visibility:hidden;
-  background:radial-gradient(circle at 35% 30%,#fff8 0,transparent 32%),radial-gradient(circle,var(--c1) 58%,var(--c2) 60%,var(--c1) 66%,var(--c2) 100%);
-  box-shadow:inset 0 0 0 3px rgba(255,255,255,.25),inset 0 -6px 14px rgba(0,0,0,.25)}
-.bcoin .front{transform:translateZ(5.2px)}
-.bcoin .back{transform:rotateY(180deg) translateZ(5.2px);flex-direction:column;gap:2px;text-align:center}
-.bcoin .cf .ico{width:44%;height:44%;fill:#fff;stroke:rgba(0,0,0,.25);stroke-width:.6;filter:drop-shadow(0 2px 2px rgba(0,0,0,.3))}
-.bcoin .back b{font-size:calc(var(--d) * .2);font-weight:900;color:#fff;text-shadow:0 2px 3px rgba(0,0,0,.35);display:block}
-.bcoin .back span{font-size:calc(var(--d) * .085);font-weight:700;color:#fff;max-width:70%;line-height:1.1}
-.bcoin .back .ico{width:30%;height:30%}
-.bcoin.locked .cf .ico{opacity:.45}
-.bcoin.small .c3{animation:coinSway 5s ease-in-out infinite}
-@keyframes coinSway{0%,100%{transform:rotateY(-25deg) rotateX(8deg)}50%{transform:rotateY(25deg) rotateX(-4deg)}}
+.bcoin .c3>i{position:absolute;left:50%;top:50%;display:block;backface-visibility:visible}
+.bcoin .cf{position:absolute;inset:0;border-radius:50%;backface-visibility:hidden;-webkit-backface-visibility:hidden}
+.bcoin .msvg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.bcoin .spec{position:absolute;inset:0;border-radius:50%;pointer-events:none;
+  background:radial-gradient(circle at var(--sx,34%) var(--sy,26%),rgba(255,255,255,.5),rgba(255,255,255,.12) 22%,rgba(255,255,255,0) 46%)}
+.bcoin .spec.b{background:radial-gradient(circle at var(--sx2,66%) var(--sy,26%),rgba(255,255,255,.45),rgba(255,255,255,.1) 22%,rgba(255,255,255,0) 46%)}
+.bcoin .cshadow{position:absolute;left:12%;right:12%;bottom:-14%;height:12%;border-radius:50%;
+  background:radial-gradient(ellipse,rgba(0,0,0,.55),rgba(0,0,0,0) 70%)}
+.bcoin.locked .msvg{filter:saturate(.35)}
 .achtop{display:flex;align-items:center;gap:16px;background:var(--s1);border-radius:var(--r-l);padding:16px;margin-bottom:12px}
 .achn b{display:block;font-size:19px;font-weight:800}
 .achn span{display:block;color:var(--muted);font-size:14px;margin-top:2px}
@@ -877,31 +885,32 @@ input[type=datetime-local]{display:block;width:100%;min-width:0;max-width:100%;b
 .bomb{position:fixed;left:0;top:0;z-index:252;width:80px;height:146px;pointer-events:none;
   filter:drop-shadow(0 10px 20px rgba(0,0,0,.6))}
 .bomb svg{width:100%;height:100%}
-.nflash{position:fixed;inset:0;z-index:249;pointer-events:none;
-  background:radial-gradient(circle at 50% 46%,#fff 0,#fffbe6 30%,rgba(220,255,200,.9) 60%,rgba(255,255,255,.75))}
-.mush{position:fixed;z-index:247;width:230px;height:300px;pointer-events:none;filter:blur(1.5px)}
-.mush i{position:absolute;display:block;border-radius:50%}
-.mush .stem{left:42%;width:16%;top:38%;height:62%;border-radius:40% 40% 20% 20%;
-  background:linear-gradient(180deg,#ffb347,#a35a2a 60%,rgba(80,60,50,0))}
-.mush .cap{left:6%;width:88%;top:6%;height:40%;background:radial-gradient(circle at 50% 70%,#fff3c4,#ffb347 30%,#c2512a 62%,rgba(90,70,60,.85))}
-.mush .c2{left:22%;width:56%;top:0;height:26%;background:radial-gradient(circle at 50% 80%,#ffe08a,#e07a2a 50%,rgba(110,80,70,.8))}
-.mush .ring{left:20%;width:60%;top:52%;height:12%;background:radial-gradient(ellipse,rgba(255,200,140,.7),transparent 70%)}
-/* огонь поверх всего: только картинка, нажатия проходят насквозь */
-#fire{position:fixed;inset:0;z-index:110;pointer-events:none;overflow:hidden;
-  box-shadow:inset 0 0 70px rgba(255,90,20,.45),inset 0 -40px 90px rgba(255,120,30,.35);animation:fireGlow 1.2s ease-in-out infinite alternate}
-@keyframes fireGlow{to{box-shadow:inset 0 0 90px rgba(255,110,30,.55),inset 0 -60px 120px rgba(255,140,40,.45)}}
-#fire .tongues{position:absolute;left:0;right:0;bottom:0;height:200px;mix-blend-mode:screen}
-#fire .tongues i{position:absolute;bottom:-20px;width:15%;height:var(--h);border-radius:50% 50% 20% 20% / 70% 70% 30% 30%;
-  background:radial-gradient(ellipse at 50% 85%,#fff3b0 0,#ffb347 25%,#ff5a1f 55%,rgba(255,40,0,0) 75%);
-  transform-origin:50% 100%;animation:flame var(--d) ease-in-out var(--dl) infinite alternate;filter:blur(3px);opacity:.6}
-@keyframes flame{0%{transform:scaleY(.75) scaleX(1.05) skewX(-4deg)}50%{transform:scaleY(1.1) scaleX(.9) skewX(5deg)}100%{transform:scaleY(.9) scaleX(1) skewX(-2deg)}}
-#fire .side{position:absolute;top:0;bottom:0;width:26px;background:linear-gradient(90deg,rgba(255,110,30,.35),transparent);
-  animation:fireGlow 1s ease-in-out infinite alternate}
-#fire .side.r{right:0;transform:scaleX(-1)}
-#fire .side.l{left:0}
+#nukecv{position:fixed;inset:0;z-index:249;pointer-events:none}
+/* после взрыва: интерфейс отброшен чуть назад, по бокам отдельные огоньки */
+body.nuked main{transform:scale(.93) translateY(10px);transform-origin:50% 0;transition:transform 1.2s cubic-bezier(.2,1.3,.4,1)}
+body.nuked nav{transform:scale(.95);transform-origin:50% 100%;transition:transform 1.2s cubic-bezier(.2,1.3,.4,1)}
+#fire{position:fixed;inset:0;z-index:110;pointer-events:none;overflow:hidden}
+#fire .heat{position:absolute;top:0;bottom:0;width:30px;animation:heat 1.3s ease-in-out infinite alternate}
+#fire .heat.l{left:0;background:linear-gradient(90deg,rgba(255,100,20,.32),transparent)}
+#fire .heat.r{right:0;background:linear-gradient(270deg,rgba(255,100,20,.32),transparent)}
+@keyframes heat{to{opacity:.55}}
+.flame{position:absolute;width:var(--s);height:calc(var(--s) * 1.7);margin-top:calc(var(--s) * -.85);
+  animation:flSway calc(var(--d) * 3) ease-in-out var(--dl) infinite alternate;transform-origin:50% 100%}
+.flame.l{left:calc(var(--s) * -.12)}
+.flame.r{right:calc(var(--s) * -.12)}
+.flame i{position:absolute;left:50%;bottom:0;border-radius:50% 0 50% 50%;transform-origin:50% 50%;
+  animation:flLick var(--d) ease-in-out var(--dl) infinite alternate}
+.flame i:nth-child(1){width:calc(var(--s) * .95);height:calc(var(--s) * .95);margin-left:calc(var(--s) * -.475);
+  background:radial-gradient(circle at 70% 30%,#ff7a1a,#e63000 70%);box-shadow:0 0 calc(var(--s) * .9) rgba(255,90,10,.75);filter:blur(.6px)}
+.flame i:nth-child(2){width:calc(var(--s) * .62);height:calc(var(--s) * .62);margin-left:calc(var(--s) * -.31);bottom:calc(var(--s) * .04);
+  background:radial-gradient(circle at 70% 30%,#ffd06b,#ff8a1a 75%);animation-duration:calc(var(--d) * .8)}
+.flame i:nth-child(3){width:calc(var(--s) * .32);height:calc(var(--s) * .32);margin-left:calc(var(--s) * -.16);bottom:calc(var(--s) * .07);
+  background:#fff6c8;box-shadow:0 0 6px #fff3b0;animation-duration:calc(var(--d) * .6)}
+@keyframes flLick{0%{transform:rotate(-45deg) scale(1,1)}50%{transform:rotate(-41deg) scale(.92,1.12) translate(1px,-1px)}
+  100%{transform:rotate(-49deg) scale(1.06,.94)}}
+@keyframes flSway{0%{transform:skewX(-6deg) scaleY(.95)}100%{transform:skewX(6deg) scaleY(1.08)}}
 body.nuked .hero,body.nuked .gcard,body.nuked .group,body.nuked .card,body.nuked .track{
-  box-shadow:inset 0 0 0 1px rgba(255,120,40,.35),inset 0 -18px 30px -12px rgba(255,90,20,.35);animation:scorch 1.6s ease-in-out infinite alternate}
-@keyframes scorch{to{box-shadow:inset 0 0 0 1px rgba(255,160,60,.55),inset 0 -24px 36px -12px rgba(255,120,30,.5)}}
+  box-shadow:inset 0 0 0 1px rgba(255,120,40,.3),inset 0 -14px 26px -14px rgba(255,90,20,.35)}
 body.nuked .brandrow b{color:#ffb347;text-shadow:0 0 12px rgba(255,90,20,.7)}
 /* мутанты: своя часть подарка и чужая, переливается цветом и подрагивает */
 .art.mutant>img,.art.mutant>.lot,.art.mutant>.mono{clip-path:var(--mclip)}
@@ -910,7 +919,7 @@ body.nuked .brandrow b{color:#ffb347;text-shadow:0 0 12px rgba(255,90,20,.7)}
 .art .mutpart>.art{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;
   margin:0!important;top:0!important;right:0!important;bottom:0!important;left:0!important;filter:none!important;animation:none!important}
 @keyframes mutJit{0%,86%,100%{transform:none}88%{transform:translate(2px,-1px) skewX(6deg)}91%{transform:translate(-3px,1px)}94%{transform:translate(1px,2px) skewX(-5deg)}}
-@media (prefers-reduced-motion:reduce){.taphint,#fire,#fire .tongues i,.art .mutpart,.bcoin.small .c3{animation:none!important}}
+@media (prefers-reduced-motion:reduce){.taphint,#fire .heat,.flame,.flame i,.art .mutpart,.nb-dome{animation:none!important}}
 </style>
 </head>
 <body>
@@ -4132,7 +4141,7 @@ function brandHome(){
     <button class="lgbtn" id="lg-tap">${BRAND.svg}</button><b>${BRAND.name}</b>
     ${can ? `<span class="taphint" id="lg-hint"><svg viewBox="0 0 34 22" class="arr"><path d="M32 5C22 1 10 4 5 15"/><path d="M2 9l3 7 7-2.6"/></svg>Нажми на меня</span>` : ""}
     <span class="grow"></span>
-    <button class="nukebtn" id="nuke-btn">${ic("nuke")}</button>
+    <button class="nukebtn" id="nuke-btn"><i class="nb-dome"></i></button>
     <button class="starpill" id="b-pill">${ic("star")}<b class="num" id="b-num">${b.stars}</b></button>
   </div>`;
 }
@@ -4263,7 +4272,8 @@ async function openBonus(){
     ? `Покупка откроется после ${b.need_days} дней в приложении: сейчас ${b.visit_days}`
     : b.stars < b.price ? `Нужно ${nStars(b.price)}, у тебя ${b.stars}` : "";
   const got = Object.keys(b.achievements || {}).length;
-  openSheet(`<div class="bcoin-wrap">${coinHtml("big")}</div>
+  openSheet(`<div class="bcoin-wrap">${coinHtml({ cls: "big", d: 132, icon: "star", title: "Бонусные звёзды", prize: 0,
+      metal: "gold", c1: "#ffe066", c2: "#c98a00" })}</div>
     <div class="bbal"><b class="num">${b.stars}</b><span>${plural(b.stars, "бонусная звезда", "бонусные звезды", "бонусных звёзд")}</span></div>
     <p class="sub" style="text-align:center">Тратятся только на слот Flip Master. Вывести их нельзя.</p>
     <div class="card bdays"><div class="bdt"><b>Дней в приложении</b><span>${b.visit_days} / ${b.need_days}</span></div>
@@ -4313,47 +4323,145 @@ async function bonusBuy(){
   }catch(e){ toast(e.message, "ticket"); }
 }
 
-/* ---------- 3D-монета и медали ----------
-   Объём - из стопки одинаковых дисков, сдвинутых по глубине (preserve-3d): ребро
-   получается настоящим и видно при повороте. Лицевая и обратная стороны - отдельные
-   слои с backface-visibility, поэтому на обороте своя надпись. */
-function coinHtml(cls, face, back, c1, c2){
-  let edge = "";
-  for(let i = 0; i < 9; i++) edge += `<i style="transform:translateZ(${(i - 4) * 1.1}px)"></i>`;
-  return `<div class="bcoin ${cls || ""}" style="--c1:${c1 || "#ffe066"};--c2:${c2 || "#d39b00"}"><div class="c3">
-    ${edge}<div class="cf front">${face || ic("star")}</div><div class="cf back">${back || `<b>GiftFlip</b>`}</div></div></div>`;
-}
-/* Крутить пальцем: поворот за пальцем, отпустил - докручивается по инерции и
-   медленно вращается сам. */
-function spinCoin(el){
-  if(!el) return;
-  const c3 = el.querySelector(".c3");
-  let ang = -20, tilt = 8, vel = REDUCED ? 0 : .6, drag = null, last = 0, raf = 0;
-  const paint = () => { c3.style.transform = `rotateX(${tilt}deg) rotateY(${ang}deg)`; };
-  const tick = () => {
-    if(!document.body.contains(el)){ cancelAnimationFrame(raf); return; }
-    if(!drag){
-      ang += vel;
-      vel += ((REDUCED ? 0 : .6) - vel) * .03;     // к спокойному вращению
-      tilt += (8 - tilt) * .06;
+/* ---------- 3D-медали ----------
+   Лицо и оборот - SVG (чёткие на любом размере): металлический обод с насечкой,
+   скошенный край, эмаль цвета достижения с лучами-гильошем, лавровая ветвь и
+   выпуклый значок. Ребро - настоящий цилиндр из узких полосок по окружности
+   (preserve-3d), с насечкой и светотенью. Блик на лице бежит при повороте: свет
+   стоит на месте, а медаль крутится. */
+const METALS = {
+  gold: ["#fff7c9", "#f3cd55", "#a7700b", "#ffe28c", "#7d5000"],
+  steel: ["#f5f7fa", "#bcc3cd", "#5c636f", "#e1e5ea", "#454b55"],
+};
+let MEDAL_N = 0;
+function medalSvg(o){
+  const u = "md" + (++MEDAL_N), m = METALS[o.metal] || METALS.gold;
+  const stops = (rev) => (rev ? [...m].reverse() : m).map((c, i) => `<stop offset="${[0, .28, .52, .74, 1][i]}" stop-color="${c}"/>`).join("");
+  let rays = "";
+  for(let i = 0; i < 48; i++){
+    const a = i * Math.PI / 24;
+    rays += `M${(100 + Math.cos(a) * 12).toFixed(1)} ${(100 + Math.sin(a) * 12).toFixed(1)}L${(100 + Math.cos(a) * 80).toFixed(1)} ${(100 + Math.sin(a) * 80).toFixed(1)}`;
+  }
+  const field = `<circle cx="100" cy="100" r="99" fill="url(#${u}m)"/>
+    <circle cx="100" cy="100" r="98.4" fill="none" stroke="#000" stroke-opacity=".35" stroke-width="1.2"/>
+    <circle cx="100" cy="100" r="94.5" fill="none" stroke="${m[4]}" stroke-opacity=".6" stroke-width="5" stroke-dasharray="1.3 1.7"/>
+    <circle cx="100" cy="100" r="90" fill="url(#${u}r)"/>
+    <circle cx="100" cy="100" r="82" fill="url(#${u}e)"/>
+    <path d="${rays}" stroke="#fff" stroke-opacity=".09" stroke-width="1.4"/>
+    <circle cx="100" cy="100" r="81" fill="none" stroke="#000" stroke-opacity=".3" stroke-width="3"/>
+    <circle cx="100" cy="100" r="82.5" fill="none" stroke="url(#${u}m)" stroke-width="2.6"/>`;
+  const defs = `<defs>
+    <linearGradient id="${u}m" x1="0" y1="0" x2="1" y2="1">${stops(false)}</linearGradient>
+    <linearGradient id="${u}r" x1="0" y1="0" x2="1" y2="1">${stops(true)}</linearGradient>
+    <radialGradient id="${u}e" cx=".42" cy=".36" r=".72"><stop offset="0" stop-color="${o.c1}"/><stop offset="1" stop-color="${o.c2}"/></radialGradient>
+    <linearGradient id="${u}g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".6"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>
+    <path id="${u}t" d="M36 100A64 64 0 0 1 164 100"/><path id="${u}b" d="M43 104A57 57 0 0 0 157 104"/></defs>`;
+  const gloss = `<path d="M30 92A70 70 0 0 1 170 92C150 70 50 70 30 92z" fill="url(#${u}g)" opacity=".55"/>`;
+  if(o.back){
+    const big = o.prize ? `<text x="100" y="124" text-anchor="middle" font-size="62" font-weight="900" fill="#000" fill-opacity=".35">+${o.prize}</text>
+        <text x="100" y="121" text-anchor="middle" font-size="62" font-weight="900" fill="url(#${u}m)">+${o.prize}</text>`
+      : `<g transform="translate(64 62) scale(3)"><use href="#i-star" width="24" height="24" fill="none" stroke="url(#${u}m)" stroke-width="2.2" stroke-linejoin="round"/></g>`;
+    return `<svg viewBox="0 0 200 200" class="msvg">${defs}${field}
+      <text font-size="14.5" font-weight="800" letter-spacing=".6" fill="url(#${u}m)"><textPath href="#${u}t" startOffset="50%" text-anchor="middle">${esc(o.title || "")}</textPath></text>
+      ${big}
+      <text font-size="11" font-weight="800" letter-spacing="2" fill="url(#${u}m)" opacity=".85"><textPath href="#${u}b" startOffset="50%" text-anchor="middle" data-notx>GIFTFLIP</textPath></text>
+      ${gloss}</svg>`;
+  }
+  // лавровая ветвь по нижней дуге
+  let leaves = "";
+  for(const side of [-1, 1]){
+    for(let i = 0; i < 7; i++){
+      const deg = 90 + side * (24 + i * 15), a = deg * Math.PI / 180;
+      const x = 100 + Math.cos(a) * 68, y = 100 + Math.sin(a) * 68;
+      leaves += `<ellipse cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" rx="7.4" ry="3" transform="rotate(${(deg + 90 + side * 28).toFixed(0)} ${x.toFixed(1)} ${y.toFixed(1)})"/>`;
     }
-    paint();
-    raf = requestAnimationFrame(tick);
-  };
-  el.onpointerdown = (e) => {
-    drag = { x: e.clientX, y: e.clientY }; last = e.clientX; vel = 0;
-    el.setPointerCapture(e.pointerId);
-  };
-  el.onpointermove = (e) => {
-    if(!drag) return;
-    const dx = e.clientX - last;
-    last = e.clientX;
-    ang += dx * .9; vel = dx * .9;
-    tilt = Math.max(-35, Math.min(35, 8 - (e.clientY - drag.y) * .3));
-  };
-  el.onpointerup = el.onpointercancel = () => { drag = null; };
-  paint();
-  raf = requestAnimationFrame(tick);
+  }
+  let stars = "";
+  [-20, 0, 20].forEach((d, i) => {
+    const a = (-90 + d) * Math.PI / 180;
+    stars += `<path d="${starPath(100 + Math.cos(a) * 68, 100 + Math.sin(a) * 68, i === 1 ? 6 : 4.2)}"/>`;
+  });
+  const icon = (stroke, w, dy, op) => `<use href="#i-${o.icon}" width="24" height="24" fill="none" stroke="${stroke}" stroke-width="${w}"
+      stroke-linecap="round" stroke-linejoin="round" transform="translate(0 ${dy})" ${op ? `stroke-opacity="${op}"` : ""}/>`;
+  const lock = o.locked ? `<g transform="translate(124 124)"><circle r="17" fill="#1c1f25" stroke="url(#${u}m)" stroke-width="2"/>
+      <path d="M-6-2v-4a6 6 0 0 1 12 0v4" fill="none" stroke="url(#${u}m)" stroke-width="2.6"/>
+      <rect x="-8.5" y="-2" width="17" height="12" rx="2.5" fill="url(#${u}m)"/></g>` : "";
+  return `<svg viewBox="0 0 200 200" class="msvg">${defs}${field}
+    <g fill="url(#${u}m)" stroke="#000" stroke-opacity=".3" stroke-width=".6">${leaves}${stars}</g>
+    <g transform="translate(57 55) scale(3.58)">${icon("#000", 2.9, .55, ".45")}${icon(`url(#${u}m)`, 2.3, 0)}${icon("#fff", .7, -.3, ".45")}</g>
+    ${gloss}${lock}</svg>`;
+}
+/* Монета целиком: лицо, оборот, ребро и тень под ней. d - диаметр в точках. */
+function coinHtml(o){
+  const d = o.d, t = Math.max(3, Math.round(d * .085)), r = d / 2;
+  const n = d > 90 ? 44 : 26, w = Math.PI * d / n + .7;
+  const m = METALS[o.metal] || METALS.gold;
+  let edge = "";
+  for(let i = 0; i < n; i++){
+    const a = i * 360 / n;
+    // светотень ребра: светлее сверху слева, темнее снизу
+    const dark = (.42 - .38 * Math.cos((a - 315) * Math.PI / 180)).toFixed(2);
+    edge += `<i style="width:${w.toFixed(2)}px;height:${t}px;margin:${-t / 2}px 0 0 ${(-w / 2).toFixed(2)}px;
+      transform:rotateZ(${a.toFixed(1)}deg) translateY(${(-r + .4).toFixed(1)}px) rotateX(90deg);
+      background:linear-gradient(rgba(0,0,0,${dark}),rgba(0,0,0,${dark})),repeating-linear-gradient(90deg,${m[1]} 0 1.2px,${m[2]} 1.2px 2.2px)"></i>`;
+  }
+  return `<div class="bcoin ${o.cls || ""}" style="--d:${d}px"><div class="cshadow"></div><div class="c3">${edge}
+    <div class="cf front" style="transform:translateZ(${t / 2}px)">${medalSvg(o)}<i class="spec"></i></div>
+    <div class="cf back" style="transform:rotateY(180deg) translateZ(${t / 2}px)">${medalSvg(Object.assign({}, o, { back: true }))}<i class="spec b"></i></div>
+    </div></div>`;
+}
+/* Все монеты на экране крутит один общий цикл. Большая - пальцем, с инерцией;
+   маленькие покачиваются сами. */
+const COINS = new Set();
+let coinRaf = 0;
+function coinTick(t){
+  for(const el of COINS){
+    if(!document.body.contains(el)){ COINS.delete(el); continue; }
+    const s = el._st;
+    if(s.sway){
+      if(!REDUCED){ s.ang = Math.sin(t / 1000 * .9 + s.ph) * 38; s.tilt = 6 + Math.sin(t / 1300 + s.ph) * 6; }
+    } else if(!s.drag){
+      s.ang += s.vel;
+      s.vel += ((REDUCED ? 0 : .6) - s.vel) * .03;     // к спокойному вращению
+      s.tilt += (8 - s.tilt) * .06;
+    }
+    paintCoin(el);
+  }
+  coinRaf = COINS.size ? requestAnimationFrame(coinTick) : 0;
+}
+function paintCoin(el){
+  const s = el._st, rad = s.ang * Math.PI / 180;
+  el._c3.style.transform = `rotateX(${s.tilt.toFixed(1)}deg) rotateY(${s.ang.toFixed(1)}deg)`;
+  const sx = 34 + Math.sin(rad) * 62;
+  el.style.setProperty("--sx", sx.toFixed(1) + "%");
+  el.style.setProperty("--sx2", (100 - sx).toFixed(1) + "%");
+  el.style.setProperty("--sy", (26 - s.tilt * 1.3).toFixed(1) + "%");
+  el._sh.style.transform = `scaleX(${(.5 + .5 * Math.abs(Math.cos(rad))).toFixed(2)})`;
+}
+function spinCoin(el, sway){
+  if(!el) return;
+  el._c3 = el.querySelector(".c3");
+  el._sh = el.querySelector(".cshadow");
+  el._st = { ang: sway ? 0 : -20, tilt: 8, vel: REDUCED ? 0 : .6, drag: null, sway: !!sway, ph: Math.random() * 6 };
+  if(!sway){
+    let last = 0;
+    el.onpointerdown = (e) => {
+      el._st.drag = { y: e.clientY }; last = e.clientX; el._st.vel = 0;
+      el.setPointerCapture(e.pointerId);
+    };
+    el.onpointermove = (e) => {
+      const s = el._st;
+      if(!s.drag) return;
+      const dx = e.clientX - last;
+      last = e.clientX;
+      s.ang += dx * .9; s.vel = dx * .9;
+      s.tilt = Math.max(-35, Math.min(35, 8 - (e.clientY - s.drag.y) * .3));
+    };
+    el.onpointerup = el.onpointercancel = () => { el._st.drag = null; };
+  }
+  paintCoin(el);
+  COINS.add(el);
+  if(!coinRaf) coinRaf = requestAnimationFrame(coinTick);
 }
 
 function openAchievements(){
@@ -4362,18 +4470,17 @@ function openAchievements(){
   const have = b.achievements || {};
   const keys = Object.keys(ACH);
   let sel = keys.find((k) => have[k]) || keys[0];
-  const medal = (k, cls) => {
+  const medal = (k, cls, d) => {
     const [title, , icon, c1, c2] = ACH[k];
-    const prize = (b.prizes || {})[k] || 0;
     const on = !!have[k];
-    return coinHtml(`${cls} ${on ? "" : "locked"}`, ic(icon),
-      `<b>${prize ? "+" + prize : ic("star")}</b><span>${esc(title)}</span>`, on ? c1 : "#5b5f6b", on ? c2 : "#2a2d35");
+    return coinHtml({ cls: `${cls} ${on ? "" : "locked"}`, d, icon, title, prize: (b.prizes || {})[k] || 0,
+      metal: on ? "gold" : "steel", c1: on ? c1 : "#6b7180", c2: on ? c2 : "#262a32", locked: !on });
   };
   const paintTop = () => {
     const [title, desc] = ACH[sel];
     const on = have[sel];
     const prize = (b.prizes || {})[sel] || 0;
-    $("ach-top").innerHTML = `${medal(sel, "big")}
+    $("ach-top").innerHTML = `${medal(sel, "big", 132)}
       <div class="achn"><b>${esc(title)}</b><span>${esc(desc)}</span>
       <em>${on ? `открыто ${new Date(on * 1000).toLocaleDateString(S.lang === "en" ? "en-GB" : "ru-RU")}` : "ещё не открыто"}${prize ? ` · +${prize}` : ""}</em></div>`;
     spinCoin($("ach-top").querySelector(".bcoin"));
@@ -4381,9 +4488,10 @@ function openAchievements(){
   openSheet(`<h2><span class="tile yellow">${ic("medal")}</span>Достижения</h2>
     <p class="sub">Медали можно крутить пальцем. За многие - бонусные звёзды.</p>
     <div id="ach-top" class="achtop"></div>
-    <div class="achgrid">${keys.map((k) => `<button class="achc ${k === sel ? "on" : ""}" data-k="${k}">${medal(k, "small")}
+    <div class="achgrid">${keys.map((k) => `<button class="achc ${k === sel ? "on" : ""}" data-k="${k}">${medal(k, "small", 62)}
       <span>${esc(ACH[k][0])}</span></button>`).join("")}</div>`);
   paintTop();
+  $("panel").querySelectorAll(".achgrid .bcoin").forEach((c) => spinCoin(c, true));
   $("panel").querySelectorAll(".achc").forEach((btn) => {
     btn.onclick = () => {
       haptic();
@@ -4456,11 +4564,15 @@ function guessResult(g){
 }
 
 /* ===================== ЯДЕРНАЯ КНОПКА =====================
-   Бомба влетает на экран и взрывается: вспышка, ударная волна трясёт экран, белые
-   точки (радиация) и зелёные частицы. Потом интерфейс горит - огонь только
-   нарисован поверх (pointer-events:none), всё нажимается. Подарки мутируют: часть
-   подарка заменяется частью другого, и та часть играет чужую анимацию. Всё это -
-   до перезагрузки страницы. Звёзды бот даёт только за первый взрыв. */
+   Красная кнопка, как в «ядерном чемоданчике». Бомба падает на землю внизу экрана,
+   и 5 секунд идёт взрыв: вспышка, огненный шар, гриб со стволом, кольцо
+   конденсации, пылевая волна у земли, ударная волна трясёт экран. Облако собрано из
+   сотен непрозрачных «клубов» (шары со светотенью, от бело-жёлтого до тёмного дыма),
+   поэтому оно плотное, а не прозрачное, и закрывает большую часть экрана.
+   Белые точки радиации - как засветка на фото: 10 секунд, потом плавно гаснут.
+   Зелёные частицы радиации остаются. Интерфейс отбрасывает чуть назад, по бокам
+   горят отдельные огоньки; нарисовано поверх и нажатия не перехватывает. Подарки
+   мутируют. Всё - до перезагрузки страницы. Звёзды бот даёт только за первый взрыв. */
 let NUKED = false, nuking = false;
 const BOMB_SVG = `<svg viewBox="0 0 120 220"><defs>
   <linearGradient id="bmb" x1="0" x2="1"><stop offset="0" stop-color="#2d3a22"/><stop offset=".45" stop-color="#6f8a4e"/><stop offset="1" stop-color="#1d2616"/></linearGradient>
@@ -4477,26 +4589,308 @@ const BOMB_SVG = `<svg viewBox="0 0 120 220"><defs>
     <path d="M0-5L-9-15A18 18 0 0 1 9-15z" transform="rotate(240)"/></g>
   <ellipse cx="42" cy="120" rx="8" ry="44" fill="#fff" opacity=".12"/></svg>`;
 
+// цвета клубов по остыванию: от раскалённого белого к тёмному дыму
+const NK_HEAT = ["#ffffff", "#fff8d6", "#ffeaa3", "#ffd06b", "#ffb03f", "#ff8a26", "#f2621a", "#d54414", "#a8330f",
+  "#7c2a12", "#5c2716", "#46271c", "#3a2a22", "#352c27", "#3b3430", "#45403b"];
+const NK = { cv: null, ctx: null, W: 0, H: 0, dpr: 1, t0: 0, last: 0, raf: 0, spr: null, cool: null, glow: null,
+  cap: [], stem: [], dust: [], ring: [], green: [], grain: [], grainAt: 0, phase: "off", T: 0 };
+const nkR = (a, b) => a + Math.random() * (b - a);
+const nkS = (a, b, x) => { const k = Math.max(0, Math.min(1, (x - a) / (b - a))); return k * k * (3 - 2 * k); };
+function hexA(hex, a){
+  const n = parseInt(String(hex).slice(1), 16);
+  return `rgba(${n >> 16},${(n >> 8) & 255},${n & 255},${a})`;
+}
+/* Клуб дыма: плотная середина, мягкий рваный край, свет сверху и тень снизу, внутри -
+   «цветная капуста» из мелких клубочков. Без резкого края и блика, иначе облако
+   выглядит как гора шариков. */
+function nkBall(c, hot){
+  const s = document.createElement("canvas");
+  s.width = s.height = 128;
+  const g = s.getContext("2d");
+  // форма: несколько мягких пятен, вместе - неровный клуб
+  for(let i = 0; i < 9; i++){
+    const a = Math.random() * Math.PI * 2, d = i ? nkR(10, 26) : 0;
+    const x = 64 + Math.cos(a) * d, y = 64 + Math.sin(a) * d, r = i ? nkR(26, 38) : 46;
+    const gr = g.createRadialGradient(x, y, 0, x, y, r);
+    gr.addColorStop(0, "rgba(0,0,0,1)"); gr.addColorStop(.6, "rgba(0,0,0,.95)"); gr.addColorStop(1, "rgba(0,0,0,0)");
+    g.fillStyle = gr; g.fillRect(0, 0, 128, 128);
+  }
+  // цвет поверх формы: светлее сверху, темнее снизу
+  g.globalCompositeOperation = "source-in";
+  const lg = g.createLinearGradient(0, 18, 0, 118);
+  lg.addColorStop(0, hot ? shade(c, 1.12) : shade(c, 1.22));
+  lg.addColorStop(.5, c);
+  lg.addColorStop(1, shade(c, hot ? .86 : .55));
+  g.fillStyle = lg; g.fillRect(0, 0, 128, 128);
+  // фактура: мелкие светлые и тёмные клубочки
+  g.globalCompositeOperation = "source-atop";
+  for(let i = 0; i < 46; i++){
+    const x = nkR(14, 114), y = nkR(14, 114), r = nkR(5, 15), up = y < 60;
+    const gr = g.createRadialGradient(x, y - r * .3, 0, x, y, r);
+    gr.addColorStop(0, hexA(shade(c, up ? 1.3 : 1.08), hot ? .22 : .28));
+    gr.addColorStop(.7, hexA(shade(c, .7), hot ? .08 : .18));
+    gr.addColorStop(1, hexA(c, 0));
+    g.fillStyle = gr; g.fillRect(0, 0, 128, 128);
+  }
+  return s;
+}
+function nkGlow(c){
+  const s = document.createElement("canvas");
+  s.width = s.height = 64;
+  const g = s.getContext("2d");
+  const gr = g.createRadialGradient(32, 32, 0, 32, 32, 32);
+  gr.addColorStop(0, hexA(c, 1)); gr.addColorStop(.25, hexA(c, .55)); gr.addColorStop(1, hexA(c, 0));
+  g.fillStyle = gr;
+  g.fillRect(0, 0, 64, 64);
+  return s;
+}
+function nkSize(){
+  if(!NK.cv) return;
+  NK.dpr = Math.min(2, window.devicePixelRatio || 1);
+  NK.W = innerWidth; NK.H = innerHeight;
+  NK.cv.width = Math.round(NK.W * NK.dpr); NK.cv.height = Math.round(NK.H * NK.dpr);
+  NK.cv.style.width = NK.W + "px"; NK.cv.style.height = NK.H + "px";
+}
+function nkSetup(){
+  if(!NK.cv){
+    NK.cv = document.createElement("canvas");
+    NK.cv.id = "nukecv";
+    document.body.appendChild(NK.cv);
+    NK.ctx = NK.cv.getContext("2d");
+    // по три клуба на цвет с разной фактурой - чтобы не повторялись
+    NK.spr = NK_HEAT.map((c, i) => [0, 1, 2].map(() => nkBall(c, i < 6)));
+    NK.cool = [nkBall("#dfe5ea", false)];
+    NK.glow = nkGlow("#8dff4f");
+    addEventListener("resize", nkSize);
+  }
+  nkSize();
+}
+/* Клубы раскладываются один раз; дальше их положение - функция времени. */
+function nkSpawn(){
+  NK.cap = [];
+  for(let i = 0; i < 230; i++){
+    const a = nkR(0, Math.PI * 2), d = Math.sqrt(Math.random());
+    NK.cap.push({ s: i % 2 ? 1 : -1, q: nkR(.1, .55), a0: nkR(0, Math.PI * 2), ux: Math.cos(a) * d, uy: Math.sin(a) * d,
+      size: nkR(.17, .3), dome: i < 70, dx: nkR(-.78, .78), dy: nkR(-.6, .15), hj: nkR(-1, 1), v: i % 3, rot: nkR(0, 6) });
+  }
+  NK.stem = [];
+  for(let i = 0; i < 70; i++) NK.stem.push({ v0: i / 70, ph: nkR(0, 6), sz: nkR(.8, 1.25), jx: nkR(-.3, .3), v: i % 3, rot: nkR(0, 6) });
+  NK.dust = [];
+  for(let i = 0; i < 70; i++) NK.dust.push({ side: i % 2 ? 1 : -1, d0: nkR(0, .25), k: nkR(.3, 1.1), sz: nkR(.7, 1.3),
+    jy: nkR(-.5, .5), sh: Math.random(), v: i % 3, rot: nkR(0, 6) });
+  NK.ring = [];
+  for(let i = 0; i < 44; i++) NK.ring.push({ a: i / 44 * Math.PI * 2, sz: nkR(.8, 1.25), v: i % 3, rot: nkR(0, 6) });
+  NK.grain = []; NK.grainAt = 0;
+}
+function nkGeo(T){
+  const W = NK.W, H = NK.H, ground = H * .86;
+  // шар почти во всю ширину экрана, шапка гриба потом ещё шире
+  const Rmax = Math.min(W * .47, H * .27);
+  const R = Rmax * (1 - Math.exp(-T * 3.4));
+  const capR = R * (1 + .45 * nkS(1, 5, T));
+  return { ground, R, capR, cx: W / 2 + Math.sin(T * .7) * 3, cy: ground - R * .92 - H * .3 * nkS(.35, 5, T) };
+}
+function nkPuff(c, set, x, y, r, p){
+  if(r <= .5) return;
+  const img = set[p ? p.v : 0] || set[0];
+  if(!p){ c.drawImage(img, x - r, y - r, r * 2, r * 2); return; }
+  // каждый клуб чуть повёрнут и медленно клубится
+  c.save(); c.translate(x, y); c.rotate(p.rot + NK.T * .25 * (p.v - 1));
+  c.drawImage(img, -r, -r, r * 2, r * 2);
+  c.restore();
+}
+function nkBlast(c, T){
+  const W = NK.W, H = NK.H, { ground, R, capR, cx, cy } = nkGeo(T);
+  const fade = 1 - nkS(4.1, 5, T);              // облако рассеивается к концу пятой секунды
+  // небо темнеет, всё вокруг подсвечено огнём
+  c.globalAlpha = .78 * fade * nkS(0, .3, T);
+  c.fillStyle = "#140600"; c.fillRect(0, 0, W, H);
+  c.globalAlpha = fade;
+  c.globalCompositeOperation = "lighter";
+  const lg = c.createRadialGradient(cx, cy, 0, cx, cy, Math.max(W, H));
+  lg.addColorStop(0, hexA("#ff9a3c", .5 * (1 - nkS(.5, 3.5, T)))); lg.addColorStop(1, hexA("#ff5a00", 0));
+  c.fillStyle = lg; c.fillRect(0, 0, W, H);
+  c.globalCompositeOperation = "source-over";
+  // пылевая волна у земли
+  if(T > .25){
+    const spread = W * .85 * (1 - Math.exp(-(T - .25) * .95));
+    for(const p of NK.dust){
+      const x = cx + p.side * (p.d0 * W * .2 + spread * p.k), y = ground + 14 + p.jy * 22 - nkS(.25, 3, T) * 18;
+      const idx = Math.min(15, Math.round((T < 1 ? 7 : 9 + T * 1.2) + p.sh * 3));
+      nkPuff(c, NK.spr[Math.min(15, idx)], x, y, (30 + 52 * nkS(.25, 3, T)) * p.sz, p);
+    }
+  }
+  // кольцо конденсации: задняя половина за стволом
+  const ringA = nkS(.9, 1.4, T) * (1 - nkS(2.4, 3.3, T)) * fade;
+  const ry = ground - (ground - cy) * .55, rx = capR * .9 * (.8 + .4 * nkS(.9, 3.3, T));
+  const ringPart = (front) => {
+    if(ringA <= .01) return;
+    c.globalAlpha = ringA * .7;
+    for(const p of NK.ring){
+      const sy = Math.sin(p.a);
+      // клубы кольца вытянуты вдоль него - выходит сплошная полоса, а не бусы
+      const r = 26 * p.sz;
+      if((sy > 0) === front) c.drawImage(NK.cool[0], cx + Math.cos(p.a) * rx - r * 1.5, ry + sy * rx * .2 - r * .6, r * 3, r * 1.2);
+    }
+    c.globalAlpha = fade;
+  };
+  ringPart(false);
+  // ствол: клубы поднимаются от земли к шапке
+  const stemW = W * .17 * nkS(.5, 2.4, T);
+  if(stemW > 1){
+    const top = cy + capR * .45;
+    for(const p of NK.stem){
+      const v = (p.v0 + T * .2) % 1;
+      const y = ground - v * (ground - top);
+      const x = cx + Math.sin(v * 8 + p.ph + T) * stemW * .22 + p.jx * stemW * .3;
+      // ствол - бурый дым, у земли и под шапкой подсвечен огнём
+      const idx = Math.max(6, Math.min(14, Math.round(5 + T * 2.6 + v * 2 - (v > .85 ? 3 : 0))));
+      nkPuff(c, NK.spr[idx], x, y, stemW * .62 * p.sz * (1 - v * .25), p);
+    }
+  }
+  ringPart(true);
+  // шапка: сначала шар, потом вихревое кольцо (верх клубится наружу, низ внутрь)
+  const k = nkS(.35, 1.7, T);
+  const list = [];
+  for(const p of NK.cap){
+    const sx = cx + p.ux * R * .95, sy = cy + p.uy * R * .95;
+    let vx, vy;
+    if(p.dome){ vx = cx + p.dx * capR; vy = cy + p.dy * capR * .8; }
+    else{
+      const a = p.a0 + p.s * .75 * T;
+      vx = cx + p.s * .5 * capR + p.q * capR * Math.cos(a);
+      vy = cy + .06 * capR + p.q * capR * .72 * Math.sin(a);
+    }
+    const x = sx + (vx - sx) * k, y = sy + (vy - sy) * k;
+    // снаружи и сверху остывает быстрее, внутри вихря светится дольше
+    const inner = p.dome ? .55 : 1 - p.q * 1.4;
+    // за 2 секунды наружный слой становится тёмно-красным дымом, к 3.5 - серым
+    const cool = T * 4.1 - inner * 2.6 + p.hj * .7 + (y < cy ? 1 : -.5);
+    list.push({ x, y, r: capR * p.size * (.75 + .25 * k), i: Math.max(0, Math.min(15, Math.round(cool))), p });
+  }
+  // раскалённая середина рисуется первой, остывший дым ложится сверху: снаружи тёмная
+  // шапка, огонь виден в складках и снизу (плюс свет изнутри ниже)
+  list.sort((a, b) => a.i - b.i);
+  for(const q of list) nkPuff(c, NK.spr[q.i], q.x, q.y, q.r, q.p);
+  // свет изнутри, сквозь клубы
+  c.globalCompositeOperation = "lighter";
+  const ig = c.createRadialGradient(cx, cy + capR * .3, 0, cx, cy + capR * .3, capR * 1.05);
+  ig.addColorStop(0, hexA("#ff8a2c", .55 * (1 - nkS(2.5, 4.9, T)))); ig.addColorStop(.6, hexA("#ff5a00", .18 * (1 - nkS(2.5, 4.9, T))));
+  ig.addColorStop(1, hexA("#ff5a00", 0));
+  c.fillStyle = ig; c.fillRect(0, 0, W, H);
+  c.globalCompositeOperation = "source-over";
+  // ударная волна по земле и по воздуху
+  if(T > .12 && T < 1.8){
+    const q = (T - .12) / 1.68, rad = q * Math.hypot(W, H) * 1.1;
+    c.globalAlpha = (1 - q) * .9;
+    c.strokeStyle = "#ffffff";
+    c.lineWidth = 3 + 10 * (1 - q);
+    c.beginPath(); c.ellipse(cx, ground, rad, rad * .42, 0, 0, Math.PI * 2); c.stroke();
+    c.globalAlpha = (1 - q) * .45;
+    c.lineWidth = 2 + 5 * (1 - q);
+    c.beginPath(); c.arc(cx, cy, rad * .8, 0, Math.PI * 2); c.stroke();
+  }
+  // вспышка: первые доли секунды экран белый целиком
+  const fl = T < .12 ? 1 : Math.exp(-(T - .12) * 3.6);
+  if(fl > .01){ c.globalAlpha = fl; c.fillStyle = "#fffdf5"; c.fillRect(0, 0, W, H); }
+  c.globalAlpha = 1;
+}
+/* Зелёная радиация: яркие светящиеся частицы. Сначала - облако из взрыва, потом
+   они остаются и медленно плывут по экрану. */
+function nkGreen(c, T, dt){
+  const W = NK.W, H = NK.H;
+  const rate = NK.phase === "blast" ? (T < .5 ? 0 : 34) : 7;
+  let n = rate * dt + Math.random();
+  const g = nkGeo(Math.min(T, 5));
+  while(n-- >= 1){
+    const blast = NK.phase === "blast";
+    const a = nkR(0, Math.PI * 2), sp = blast ? nkR(20, 90) : nkR(6, 22);
+    NK.green.push({ x: blast ? g.cx + Math.cos(a) * g.capR * nkR(.3, 1.1) : nkR(0, W),
+      y: blast ? g.cy + Math.sin(a) * g.capR * nkR(.3, .9) : nkR(0, H),
+      vx: Math.cos(a) * sp, vy: Math.sin(a) * sp - nkR(4, 14), r: nkR(1.6, 3.6), life: nkR(2.5, 5), age: 0, ph: nkR(0, 6) });
+  }
+  c.globalCompositeOperation = "lighter";
+  NK.green = NK.green.filter((p) => (p.age += dt) < p.life);
+  for(const p of NK.green){
+    p.x += p.vx * dt; p.y += p.vy * dt; p.vx *= .985; p.vy *= .985;
+    const k = Math.min(1, p.age * 3) * (1 - p.age / p.life);
+    const fl = .65 + .35 * Math.sin(p.age * 9 + p.ph);
+    c.globalAlpha = k * fl;
+    const s = p.r * 7;
+    c.drawImage(NK.glow, p.x - s / 2, p.y - s / 2, s, s);
+    c.fillStyle = "#e6ffd0";
+    c.beginPath(); c.arc(p.x, p.y, p.r * .45, 0, Math.PI * 2); c.fill();
+  }
+  c.globalCompositeOperation = "source-over";
+  c.globalAlpha = 1;
+}
+/* Белые точки, как засветка на фото: часть держится по 0.35 секунды, часть новая
+   в каждом кадре. 10 секунд, потом за 2 секунды гаснут. */
+function nkGrain(c, T, now){
+  if(T > 12) return;
+  const W = NK.W, H = NK.H, dens = T < 10 ? 1 : 1 - (T - 10) / 2;
+  const total = Math.round(W * H / 1200);
+  if(now - NK.grainAt > 350 || !NK.grain.length){
+    NK.grainAt = now;
+    NK.grain = [];
+    for(let i = 0; i < total * .4; i++) NK.grain.push([nkR(0, W), nkR(0, H), nkR(.5, 1), Math.random() < .12]);
+  }
+  const dot = (x, y, a, big) => {
+    c.globalAlpha = a * dens;
+    const s = big ? 1.8 : 1.1;
+    c.fillRect(x, y, s, s);
+  };
+  c.fillStyle = "#ffffff";
+  for(const g of NK.grain) dot(g[0], g[1], g[2], g[3]);
+  for(let i = 0; i < total * .6; i++) dot(nkR(0, W), nkR(0, H), nkR(.35, 1), Math.random() < .08);
+  // редкие точки с оттенком - как на матрице камеры
+  c.fillStyle = "#d9ffd0";
+  for(let i = 0; i < total * .06; i++) dot(nkR(0, W), nkR(0, H), nkR(.5, 1), false);
+  c.globalAlpha = 1;
+}
+function nkFrame(now){
+  NK.raf = requestAnimationFrame(nkFrame);
+  if(window.SHOTS_PAUSE) return;
+  const dt = Math.min(.05, (now - (NK.last || now)) / 1000);
+  NK.last = now;
+  // для снимков экрана время можно поставить вручную: window.NK_FREEZE = секунды
+  const T = window.NK_FREEZE != null ? window.NK_FREEZE : (now - NK.t0) / 1000;
+  NK.T = T;
+  const c = NK.ctx;
+  c.setTransform(NK.dpr, 0, 0, NK.dpr, 0, 0);
+  c.clearRect(0, 0, NK.W, NK.H);
+  if(NK.phase === "blast" && T < 5) nkBlast(c, T);
+  nkGreen(c, T, dt);
+  nkGrain(c, T, now);
+  if(NK.phase === "blast" && T >= 5){
+    NK.phase = "after";
+    NK.cv.style.zIndex = "111";      // дальше радиация - под окнами и уведомлениями
+  }
+}
+
 async function nukeStart(){
   if(nuking) return;
   nuking = true;
   haptic("heavy");
+  const btn = $("nuke-btn");
+  if(btn){ btn.classList.add("press"); setTimeout(() => btn.classList.remove("press"), 220); }
   // ответ бота ждём параллельно с полётом: звёзды - только за первый взрыв
   const req = call("bonus_nuke", {}).catch(() => null);
-  const cx = innerWidth / 2, cy = innerHeight * .46;
   if(REDUCED){
-    NUKED = true; document.body.classList.add("nuked"); mutateArts(document);
-    nukeDone(await req, cx, cy);
+    NUKED = true; document.body.classList.add("nuked"); fireStart(); mutateArts(document);
+    nukeDone(await req, innerWidth / 2, innerHeight / 2, 300);
     return;
   }
+  await sleep(200);
+  const ground = innerHeight * .86, cx = innerWidth / 2;
   const bomb = document.createElement("div");
   bomb.className = "bomb";
   bomb.innerHTML = BOMB_SVG;
   document.body.appendChild(bomb);
   const fall = bomb.animate([
     { transform: `translate(${cx - 40 + innerWidth * .3}px,-260px) rotate(-35deg) scale(.55)` },
-    { transform: `translate(${cx - 40 + innerWidth * .08}px,${cy * .4}px) rotate(-12deg) scale(.8)`, offset: .55 },
-    { transform: `translate(${cx - 40}px,${cy - 80}px) rotate(0deg) scale(1.1)` }],
+    { transform: `translate(${cx - 40 + innerWidth * .08}px,${ground * .35}px) rotate(-12deg) scale(.8)`, offset: .55 },
+    { transform: `translate(${cx - 40}px,${ground - 140}px) rotate(0deg) scale(1)` }],
     { duration: 1250, easing: "cubic-bezier(.45,0,.9,.6)", fill: "forwards" });
   // свист: искры за бомбой
   const trail = setInterval(() => {
@@ -4507,88 +4901,76 @@ async function nukeStart(){
   await new Promise((ok) => { fall.onfinish = ok; setTimeout(ok, 1500); });
   clearInterval(trail);
   bomb.remove();
-  boom(cx, cy);
-  nukeDone(await req, cx, cy);
+  boom();
+  nukeDone(await req, cx, innerHeight * .4, 5200);
 }
-function boom(x, y){
-  haptic("heavy");
-  setTimeout(() => haptic("heavy"), 120); setTimeout(() => haptic("rigid"), 260);
-  // белая вспышка на весь экран
-  const w = document.createElement("div");
-  w.className = "nflash";
-  document.body.appendChild(w);
-  w.animate([{ opacity: 0 }, { opacity: 1, offset: .08 }, { opacity: .85, offset: .3 }, { opacity: 0 }],
-    { duration: 1400, easing: "ease-out", fill: "forwards" }).onfinish = () => w.remove();
-  // ударные волны: белая и зелёная
-  ringPulse(x, y, "#ffffff", 14);
-  setTimeout(() => ringPulse(x, y, "#9dff5c", 11), 140);
-  setTimeout(() => ringPulse(x, y, "#ffd27a", 8), 300);
-  // тряска всего интерфейса, затухающая
-  const frames = [];
-  for(let i = 0; i <= 16; i++){
-    const k = 1 - i / 16, a = 16 * k;
-    frames.push({ transform: i === 16 ? "none" : `translate(${(Math.random() - .5) * a * 2}px,${(Math.random() - .5) * a * 2}px) rotate(${(Math.random() - .5) * k * 2.4}deg)` });
-  }
-  [document.querySelector("main"), $("nav")].forEach((el) => el && el.animate(frames, { duration: 900, easing: "linear" }));
-  // гриб
-  const m = document.createElement("div");
-  m.className = "mush";
-  m.style.left = x + "px"; m.style.top = y + "px";
-  m.innerHTML = `<i class="stem"></i><i class="cap"></i><i class="cap c2"></i><i class="ring"></i>`;
-  document.body.appendChild(m);
-  m.animate([{ transform: "translate(-50%,-30%) scale(.2)", opacity: 0 },
-    { transform: "translate(-50%,-62%) scale(1)", opacity: 1, offset: .25 },
-    { transform: "translate(-50%,-80%) scale(1.25)", opacity: .8, offset: .7 },
-    { transform: "translate(-50%,-95%) scale(1.4)", opacity: 0 }],
-    { duration: 3200, easing: "cubic-bezier(.2,.8,.3,1)", fill: "forwards" }).onfinish = () => m.remove();
-  // радиация: много белых точек, зелёные частицы, огненные искры
-  FX.burst(x, y, { n: 160, speed: 16, size: 4, life: 130, gravity: .02, drag: .95, kind: "dot",
-    colors: ["#ffffff", "#ffffff", "#eaffd8"] });
-  FX.burst(x, y, { n: 90, speed: 11, size: 6, life: 110, gravity: .04, drag: .96, kind: "px",
-    colors: ["#9dff5c", "#5cff7a", "#c8ff8a", "#3fd65a"] });
-  FX.burst(x, y, { n: 70, speed: 9, size: 7, life: 80, gravity: .15, ring: 30,
-    colors: ["#ffd27a", "#ff9f0a", "#ff5a1f", "#ffffff"] });
+function boom(){
+  nkSetup();
+  nkSpawn();
+  NK.t0 = performance.now(); NK.last = 0;
+  NK.phase = "blast";
+  NK.cv.style.zIndex = "249";
+  if(!NK.raf) NK.raf = requestAnimationFrame(nkFrame);
+  // гул: серия толчков
+  [0, 90, 200, 340, 520, 760, 1050].forEach((t, i) => setTimeout(() => haptic(i < 3 ? "heavy" : "medium"), t));
+  // ударная волна трясёт интерфейс полторы секунды, затухая
   setTimeout(() => {
-    NUKED = true;
-    document.body.classList.add("nuked");
-    fireStart();
-    mutateArts(document);
-  }, 450);
+    const frames = [];
+    for(let i = 0; i <= 30; i++){
+      const k = Math.pow(1 - i / 30, 1.6), a = 18 * k;
+      frames.push({ transform: i === 30 ? "none" : `translate(${(Math.random() - .5) * a * 2}px,${(Math.random() - .5) * a * 2}px) rotate(${(Math.random() - .5) * k * 3}deg)` });
+    }
+    [$("nav"), $("fab")].forEach((el) => el && el.animate(frames, { duration: 1500, easing: "linear" }));
+    const box = document.querySelector("main");
+    if(box) box.animate(frames.map((f) => ({ transform: f.transform === "none" ? "translate(0px,0px)" : f.transform })),
+      { duration: 1500, easing: "linear", composite: "add" });
+  }, 120);
+  // волна отбрасывает интерфейс назад
+  setTimeout(() => { NUKED = true; document.body.classList.add("nuked"); }, 300);
+  // облако рассеялось - видно огоньки и мутантов
+  setTimeout(() => { fireStart(); mutateArts(document); }, 4300);
 }
-function nukeDone(res, x, y){
-  nuking = false;
-  if(res && res.got){
-    setTimeout(() => {
+function nukeDone(res, x, y, wait){
+  setTimeout(() => {
+    nuking = false;
+    if(res && res.got){
       hapticOk();
       toast(`+${res.got} бонусные звезды за первый взрыв`, "star");
       flyStars(x, y, res.got, res.stars);
-    }, 1300);
-    setTimeout(render, 3200);
-  }
+      setTimeout(render, 1800);
+    }
+  }, wait);
 }
 
-/* Огонь: языки пламени снизу и по краям (CSS), угольки летят вверх, сверху медленно
-   оседают белые точки. Частиц немного - телефон не должен тормозить. */
+/* Огонь после взрыва: отдельные огоньки по бокам (каждый - три слоя пламени и своё
+   мерцание), лёгкий жар по краям и угольки от огоньков вверх. */
 let fireLoop = 0;
 function fireStart(){
   if(!$("fire")){
     const f = document.createElement("div");
     f.id = "fire";
-    let tongues = "";
-    for(let i = 0; i < 14; i++){
-      tongues += `<i style="left:${i * 7.4 - 2}%;--h:${45 + Math.random() * 55}px;--d:${(.7 + Math.random() * .7).toFixed(2)}s;--dl:${(-Math.random()).toFixed(2)}s"></i>`;
-    }
-    f.innerHTML = `<div class="tongues">${tongues}</div><div class="side l"></div><div class="side r"></div>`;
+    let h = "";
+    ["l", "r"].forEach((side) => {
+      [7, 21, 36, 50, 63, 77, 90].forEach((y) => {
+        if(Math.random() < .3) return;           // не в каждом месте - выглядит живее
+        const s = Math.round(nkR(14, 26));
+        h += `<span class="flame ${side}" style="top:${(y + nkR(-4, 4)).toFixed(1)}%;--s:${s}px;--d:${nkR(.45, .8).toFixed(2)}s;--dl:${(-Math.random()).toFixed(2)}s">
+          <i></i><i></i><i></i></span>`;
+      });
+    });
+    f.innerHTML = `<div class="heat l"></div><div class="heat r"></div>${h}`;
     document.body.appendChild(f);
+    f.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 700, fill: "forwards" });
   }
   if(fireLoop || REDUCED) return;
   fireLoop = setInterval(() => {
     if(document.hidden || window.SHOTS_PAUSE) return;
-    FX.burst(Math.random() * innerWidth, innerHeight + 4, { n: 2, angle: -Math.PI / 2, spread: .6, speed: 3.2,
-      size: 3.5, life: 110, gravity: -.02, drag: .995, kind: "dot", colors: ["#ffb347", "#ff7a1a", "#ffd27a"] });
-    if(Math.random() < .5) FX.burst(Math.random() * innerWidth, -6, { n: 1, angle: Math.PI / 2, spread: .4, speed: 1,
-      size: 2.6, life: 170, gravity: .005, drag: 1, kind: "dot", colors: ["#ffffff"] });
-  }, 140);
+    const fl = document.querySelectorAll("#fire .flame");
+    if(!fl.length) return;
+    const r = fl[Math.floor(Math.random() * fl.length)].getBoundingClientRect();
+    FX.burst(r.left + r.width / 2, r.top + r.height * .2, { n: 1, angle: -Math.PI / 2, spread: .9, speed: 1.6,
+      size: 3, life: 70, gravity: -.025, drag: .99, kind: "dot", colors: ["#ffb347", "#ff7a1a", "#ffd27a"] });
+  }, 160);
 }
 
 /* Мутация подарков: поверх подарка кладётся ДРУГОЙ подарок, обрезанный по фигуре,
@@ -4607,7 +4989,8 @@ let mutLive = 0;
 function mutateArts(root){
   if(!NUKED) return;
   (root || document).querySelectorAll(".art[data-ac]:not([data-mut])").forEach((el, i) => {
-    if(el.closest(".gstage")) return;     // в игре подарок должен быть узнаваемым
+    // в игре подарок должен быть узнаваемым; чужой кусок мутанта сам не мутирует
+    if(el.closest(".gstage") || el.closest(".mutpart")) return;
     el.dataset.mut = "1";
     const own = `${el.dataset.ac}|${el.dataset.am}`;
     const pool = MUT_POOL.filter((p) => p !== own);
