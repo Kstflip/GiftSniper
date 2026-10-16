@@ -36,6 +36,7 @@ html,body{margin:0;padding:0;background:var(--bg);color:var(--text);
      ещё touch-action и обработчики в коде. */
   touch-action:pan-y;-webkit-text-size-adjust:100%;text-size-adjust:100%}
 body{padding-bottom:calc(var(--tab-h) + var(--tab-gap) * 2 + max(env(safe-area-inset-bottom), var(--tg-safe-area-inset-bottom,0px)))}
+body.has-fab{padding-bottom:calc(var(--tab-h) + var(--tab-gap) * 2 + 74px + max(env(safe-area-inset-bottom), var(--tg-safe-area-inset-bottom,0px)))}
 .num{font-variant-numeric:tabular-nums}
 svg{display:block}
 .ico{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.9;
@@ -376,7 +377,7 @@ nav .ind{position:absolute;top:5px;bottom:5px;left:5px;border-radius:28px;
 .cross .vline{position:absolute;top:0;bottom:0;border-left:1px dashed rgba(139,184,255,.7)}
 .cross .dot{position:absolute;width:13px;height:13px;border-radius:50%;background:#fff;
   border:3px solid var(--blue);transform:translate(-50%,-50%);box-shadow:0 0 0 6px rgba(47,124,246,.25)}
-.cross .tip{position:absolute;transform:translate(-50%,-125%);background:rgba(44,44,48,.92);
+.cross .tip{position:absolute;left:0;top:0;background:rgba(44,44,48,.92);
   -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);border-radius:14px;padding:7px 12px;white-space:nowrap}
 .cross .tip small{display:block;font-size:11.5px;color:var(--muted)}
 .cross .tip b{font-size:16px;font-weight:800;display:flex;align-items:center;gap:5px}
@@ -919,6 +920,11 @@ body.nuked .brandrow b{color:#ffb347;text-shadow:0 0 12px rgba(255,90,20,.7)}
 .art .mutpart>.art{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;
   margin:0!important;top:0!important;right:0!important;bottom:0!important;left:0!important;filter:none!important;animation:none!important}
 .art .mutpart.on{opacity:1}
+/* мутант светится зелёным: мягкое пятно за подарком, пульсирует (только прозрачность) */
+.art.mutant::before{content:"";position:absolute;inset:-6%;border-radius:50%;pointer-events:none;
+  background:radial-gradient(circle,rgba(120,255,80,.55) 0,rgba(120,255,80,.22) 42%,rgba(120,255,80,0) 70%);
+  animation:mutGlow 1.8s ease-in-out infinite alternate}
+@keyframes mutGlow{from{opacity:.55}to{opacity:1}}
 @keyframes mutJit{0%,86%,100%{transform:none}88%{transform:translate(2px,-1px) skewX(6deg)}91%{transform:translate(-3px,1px)}94%{transform:translate(1px,2px) skewX(-5deg)}}
 @media (prefers-reduced-motion:reduce){.taphint,#fire .heat,.flame,.flame i,.art .mutpart,.nb-dome{animation:none!important}}
 </style>
@@ -1407,7 +1413,9 @@ function artUrls(coll, model, size){
 function setupArt(el){
   if(el.dataset.ah) return;
   el.dataset.ah = "1";
-  const size = artSize(el);
+  // чужая часть мутанта - сразу оригинал с CDN: уменьшитель api.changes.tg отвечает
+  // по 1-3 секунды на картинку, а мутанты должны появиться все разом
+  const size = el.closest(".mutpart") ? 512 : artSize(el);
   const urls = artUrls(el.dataset.ac, el.dataset.am, size);
   const mono = () => { el.classList.remove("wait"); el.innerHTML = `<div class="mono">${esc(initials(el.dataset.am || collName(el.dataset.ac)))}</div>`; };
   if(!urls.length){ mono(); return; }
@@ -1599,6 +1607,8 @@ function go(view){
 }
 function fab(text, fn){
   const f = $("fab");
+  // есть кнопка - снизу экрана запас под неё, иначе она закрывает последние карточки
+  document.body.classList.toggle("has-fab", !!text);
   if(!text){ f.classList.add("hide"); f.onclick = null; return; }
   $("fab-t").textContent = text;
   f.classList.remove("hide");
@@ -1999,9 +2009,10 @@ function celebrateSlot(){
    Стоимость считает бот раз в час, в начале часа и одинаково для всех. Добавление
    подарка не рисует ступеньку: портфель не подорожал, в него положили ещё один
    подарок. «За 24 часа» - от того же часа вчера. */
+const CH_W = 340, CH_H = 150, CH_PAD = 8;     // размеры графика; перекрестие считает по ним же
 function chartSvg(points, marks){
   if(!points || points.length < 2) return "";
-  const W = 340, H = 150, pad = 8;
+  const W = CH_W, H = CH_H, pad = CH_PAD;
   const xs = points.map((p) => p.t), ys = points.map((p) => p.v);
   const minX = Math.min(...xs), maxX = Math.max(...xs);
   const minY = Math.min(...ys), maxY = Math.max(...ys);
@@ -2045,21 +2056,28 @@ function bindCrosshair(box, points){
   const minX = points[0].t, maxX = points[points.length - 1].t;
   const ys = points.map((p) => p.v);
   const lo = Math.min(...ys), hi = Math.max(...ys), padY = ((hi - lo) || 1) * .18;
+  /* Точка и подсказка считаются по тем же отступам, что и линия (CH_PAD): раньше
+     отступы не учитывались, и точка стояла мимо линии, а подсказка у края графика
+     уезжала за экран. Подсказка - над точкой, у верхнего края - под ней, и никогда
+     не выходит за края графика. */
   const show = (clientX) => {
     const r = svg.getBoundingClientRect();
-    const x = Math.min(Math.max(clientX - r.left, 0), r.width);
-    const t = minX + (x / (r.width || 1)) * ((maxX - minX) || 1);
+    const padX = CH_PAD / CH_W * r.width, padYpx = CH_PAD / CH_H * r.height;
+    const iw = r.width - padX * 2, ih = r.height - padYpx * 2;
+    const x = Math.min(Math.max(clientX - r.left - padX, 0), iw);
+    const t = minX + (x / (iw || 1)) * ((maxX - minX) || 1);
     const p = points.reduce((a, b) => Math.abs(b.t - t) < Math.abs(a.t - t) ? b : a);
-    const px = ((p.t - minX) / ((maxX - minX) || 1)) * r.width;
-    const py = r.height - ((p.v - (lo - padY)) / (((hi + padY) - (lo - padY)) || 1)) * r.height;
+    const px = padX + ((p.t - minX) / ((maxX - minX) || 1)) * iw;
+    const py = padYpx + ih - ((p.v - (lo - padY)) / (((hi + padY) - (lo - padY)) || 1)) * ih;
     cross.querySelector(".vline").style.left = px + "px";
     const dot = cross.querySelector(".dot");
     dot.style.left = px + "px"; dot.style.top = py + "px";
     const tip = cross.querySelector(".tip");
     tip.innerHTML = `<small>${esc(new Date(p.t).toLocaleString(LANG === "en" ? "en-US" : "ru-RU",
       { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }))}</small><b>${ic("ton")}${fmtTon(p.v)}</b>`;
-    tip.style.left = Math.min(Math.max(px, 60), r.width - 60) + "px";
-    tip.style.top = Math.max(py, 44) + "px";
+    const tw = tip.offsetWidth, th = tip.offsetHeight;
+    tip.style.left = Math.min(Math.max(px - tw / 2, 0), r.width - tw) + "px";
+    tip.style.top = (py - th - 14 >= -6 ? py - th - 14 : py + 16) + "px";
     if(!cross.classList.contains("on")) haptic();
     cross.classList.add("on");
   };
@@ -4872,6 +4890,75 @@ function nkFrame(now){
   }
 }
 
+/* Звук взрыва - синтез Web Audio, без файлов: свист падающей бомбы, удар (шум через
+   закрывающийся фильтр), низкий гул, скользящий вниз, и раскатистый грохот на всё
+   время взрыва. Через компрессор: громко, но без хрипа. */
+let NK_AC = null;
+function nkAudio(){
+  try{
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if(!AC) return null;
+    if(!NK_AC) NK_AC = new AC();
+    if(NK_AC.state === "suspended") NK_AC.resume();
+    return NK_AC;
+  }catch(e){ return null; }       // нет звука в этом браузере - взрыв просто беззвучный
+}
+function nkNoise(ac, sec, brown){
+  const b = ac.createBuffer(1, Math.round(ac.sampleRate * sec), ac.sampleRate);
+  const d = b.getChannelData(0);
+  let last = 0;
+  for(let i = 0; i < d.length; i++){
+    const w = Math.random() * 2 - 1;
+    if(brown){ last = (last + .02 * w) / 1.02; d[i] = last * 3.5; } else d[i] = w;
+  }
+  const s = ac.createBufferSource();
+  s.buffer = b;
+  return s;
+}
+function nkWhistle(ac, dur){
+  const t = ac.currentTime;
+  const o = ac.createOscillator(), g = ac.createGain();
+  o.type = "sine";
+  o.frequency.setValueAtTime(1500, t);
+  o.frequency.exponentialRampToValueAtTime(360, t + dur);
+  g.gain.setValueAtTime(.0001, t);
+  g.gain.exponentialRampToValueAtTime(.08, t + .3);
+  g.gain.setValueAtTime(.08, t + dur - .06);
+  g.gain.exponentialRampToValueAtTime(.0001, t + dur);
+  o.connect(g).connect(ac.destination);
+  o.start(t); o.stop(t + dur + .05);
+}
+function nkBoomSound(ac){
+  const t = ac.currentTime;
+  const comp = ac.createDynamicsCompressor();
+  comp.threshold.value = -20; comp.ratio.value = 8; comp.attack.value = .003; comp.release.value = .4;
+  comp.connect(ac.destination);
+  // удар
+  const hit = nkNoise(ac, 1.6, false), hf = ac.createBiquadFilter(), hg = ac.createGain();
+  hf.type = "lowpass";
+  hf.frequency.setValueAtTime(4000, t); hf.frequency.exponentialRampToValueAtTime(180, t + 1.4);
+  hg.gain.setValueAtTime(1, t); hg.gain.exponentialRampToValueAtTime(.001, t + 1.6);
+  hit.connect(hf).connect(hg).connect(comp);
+  hit.start(t);
+  // низкий гул, скользящий вниз
+  const sub = ac.createOscillator(), sg = ac.createGain();
+  sub.type = "sine";
+  sub.frequency.setValueAtTime(75, t); sub.frequency.exponentialRampToValueAtTime(26, t + 2.6);
+  sg.gain.setValueAtTime(.0001, t); sg.gain.exponentialRampToValueAtTime(1, t + .04);
+  sg.gain.exponentialRampToValueAtTime(.001, t + 3.2);
+  sub.connect(sg).connect(comp);
+  sub.start(t); sub.stop(t + 3.3);
+  // раскаты: бурый шум, то громче, то тише
+  const rum = nkNoise(ac, 5.6, true), rf = ac.createBiquadFilter(), rg = ac.createGain();
+  rf.type = "lowpass"; rf.frequency.value = 420;
+  rg.gain.setValueAtTime(.0001, t);
+  rg.gain.exponentialRampToValueAtTime(.9, t + .25);
+  [.7, 1.3, 1.9, 2.6, 3.3, 4.1].forEach((s, i) => rg.gain.exponentialRampToValueAtTime(i % 2 ? .75 : .45, t + s));
+  rg.gain.exponentialRampToValueAtTime(.001, t + 5.5);
+  rum.connect(rf).connect(rg).connect(comp);
+  rum.start(t);
+}
+
 async function nukeStart(){
   if(nuking) return;
   nuking = true;
@@ -4881,13 +4968,19 @@ async function nukeStart(){
   // ответ бота ждём параллельно с полётом: звёзды - только за первый взрыв
   const req = call("bonus_nuke", {}).catch(() => null);
   if(REDUCED){
+    const ac = nkAudio();
+    if(ac) nkBoomSound(ac);
     NUKED = true; document.body.classList.add("nuked"); fireStart(); mutateArts(document);
     nukeDone(await req, innerWidth / 2, innerHeight / 2, 300);
     return;
   }
   // мутации готовятся, пока падает бомба; покажутся, когда рассеется облако
   mutShowAt = Date.now() + 200 + 1250 + 4300;
+  mutPrefetch();
   mutateArts(document, true);
+  // звук: создаём в момент нажатия, иначе телефон его не пропустит
+  const ac = nkAudio();
+  if(ac) setTimeout(() => nkWhistle(ac, 1.25), 200);
   await sleep(200);
   const ground = innerHeight * .86, cx = innerWidth / 2;
   const bomb = document.createElement("div");
@@ -4912,6 +5005,8 @@ async function nukeStart(){
   nukeDone(await req, cx, innerHeight * .4, 5200);
 }
 function boom(){
+  const ac = nkAudio();
+  if(ac) nkBoomSound(ac);
   nkSetup();
   nkSpawn();
   NK.t0 = performance.now(); NK.last = 0;
@@ -5038,6 +5133,47 @@ function mutReveal(el, part){
   };
   check();
 }
+/* Список моделей для мутации берём прямо из открытого каталога (api.changes.tg): он
+   отвечает быстро, а запрос к боту идёт через туннель и мог занимать секунды. Нет
+   ответа - запасной путь через loadCatalog. Выбор модели для каждого подарка
+   запоминается: после перерисовки экрана тот же мутант, а его картинка уже в кэше. */
+const MUT_MODELS = new Map(), MUT_PICK = new Map();
+function mutModels(coll){
+  const k = norm(coll);
+  if(MUT_MODELS.has(k)) return MUT_MODELS.get(k);
+  const p = artIndex().then(() => fetch(`${API_ART}/models/${encodeURIComponent(collName(coll))}`))
+    .then((r) => (r.ok ? r.json() : []))
+    .then((list) => (list || []).map((m) => m.name).filter(Boolean))
+    .catch(() => [])
+    .then((names) => names.length ? names
+      : loadCatalog(coll).then((cat) => ((cat && cat.models) || []).map((m) => m.name)).catch(() => []));
+  MUT_MODELS.set(k, p);
+  return p;
+}
+function mutPick(coll, own){
+  const k = norm(coll) + "|" + own;
+  if(!MUT_PICK.has(k)) MUT_PICK.set(k, mutModels(coll).then((names) => {
+    const list = names.filter((n) => n !== own);
+    if(!list.length) return null;
+    const model = list[Math.floor(Math.random() * list.length)];
+    // картинку чужой модели (оригинал с CDN, его же возьмёт мутант) качаем сразу, пока падает бомба
+    const u = artUrls(coll, model, 512)[0];
+    if(u){ const im = new Image(); im.src = u.png; }
+    return { model, shapes: mutShapes() };
+  }));
+  return MUT_PICK.get(k);
+}
+/* Заранее - все подарки приложения, а не только видимые: вкладки, которые откроют
+   потом, тоже мутируют сразу. */
+function mutPrefetch(){
+  const pairs = [];
+  document.querySelectorAll(".art[data-ac]").forEach((a) => { if(!a.closest(".mutpart")) pairs.push([a.dataset.ac, a.dataset.am || ""]); });
+  // на вкладках рядом с главной моделью стоят ещё две - их тоже
+  ((S && S.collections) || []).forEach((c) => (c.models.length ? c.models.slice(0, 3) : [""]).forEach((m) => pairs.push([c.title || c.slug, m])));
+  ((S && S.flip && S.flip.items) || []).forEach((f) => (f.models.length ? f.models.slice(0, 3) : [""]).forEach((m) => pairs.push([f.slug, m])));
+  ((PF && PF.items) || []).forEach((h) => pairs.push([h.slug, h.model || ""]));
+  pairs.forEach(([c, m]) => { if(c) mutPick(c, m); });
+}
 function mutateArts(root, force){
   if(!NUKED && !force) return;
   (root || document).querySelectorAll(".art[data-ac]:not([data-mut])").forEach((el, i) => {
@@ -5045,12 +5181,10 @@ function mutateArts(root, force){
     if(el.closest(".gstage") || el.closest(".mutpart")) return;
     el.dataset.mut = "1";
     const coll = el.dataset.ac, own = el.dataset.am || "";
-    // список моделей коллекции - тот же, что в выборе моделей (кэшируется)
-    loadCatalog(coll).then((cat) => {
-      const models = ((cat && cat.models) || []).map((m) => m.name).filter((n) => n && n !== own);
-      if(!models.length || !document.body.contains(el) || el.querySelector(".mutpart")) return;
-      const model = models[Math.floor(Math.random() * models.length)];
-      const [mine, theirs] = mutShapes();
+    mutPick(coll, own).then((pick) => {
+      if(!pick || !document.body.contains(el) || el.querySelector(".mutpart")) return;
+      const model = pick.model;
+      const [mine, theirs] = pick.shapes;
       el.style.setProperty("--mclip", theirs);
       const part = document.createElement("div");
       part.className = "mutpart";
