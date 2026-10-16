@@ -796,6 +796,26 @@ input[type=datetime-local]{display:block;width:100%;min-width:0;max-width:100%;b
   padding:0 12px;border-radius:15px;border:none;background:var(--s1);color:var(--text);font-size:15px;
   color-scheme:dark;-webkit-appearance:none;appearance:none}
 .bnprops input[type=datetime-local],.bnprops input[type=text]{background:var(--s2)}
+/* ---------- прибыль, оценка подарка, слежка ---------- */
+.pnl{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:center;gap:4px 8px;margin:-6px 0 14px;font-size:15px}
+.pnl b{font-size:17px}
+.pnl.up b,.pnl.up span{color:var(--green)}
+.pnl.down b,.pnl.down span{color:var(--red)}
+.pnl i{flex-basis:100%;text-align:center;font-style:normal;color:var(--muted);font-size:12.5px}
+.gcard .pr.dlrow{gap:6px;flex-wrap:wrap}
+.gcard .pr .dl.pup,.kv .v.pup{color:#6bf08f}
+.gcard .pr .dl.pdn,.kv .v.pdn{color:#ff8a80}
+.gcard .pr .dl.pup,.gcard .pr .dl.pdn{font-size:13px;font-weight:700}
+.kv .row{position:relative}
+.rp{color:var(--muted);font-weight:600;margin-left:4px}
+.rbar{position:absolute;left:16px;right:16px;bottom:4px;height:3px;border-radius:2px;background:rgba(255,255,255,.07);overflow:hidden}
+.rbar b{display:block;height:100%;border-radius:inherit;background:linear-gradient(90deg,#5e5ce6,#bf5af2,#ffd60a)}
+.gtags{display:flex;flex-wrap:wrap;gap:8px;margin:12px 2px 0}
+.gtags .chip .ico{width:14px;height:14px}
+.gest{text-align:center}
+.gev{display:flex;align-items:center;justify-content:center;gap:8px;font-size:30px;font-weight:850}
+.gev .ico{width:28px;height:28px}
+.wrow .t span{white-space:normal}
 /* ---------- бонусные звёзды: шапка главной ---------- */
 .brandrow.home{position:relative}
 .brandrow .grow{flex:1}
@@ -2121,6 +2141,9 @@ function paintPortfolio(p){
       <div class="val">${ic("ton")}<span class="num" id="pf-total">${fmtTon(portShown ?? p.total)}</span></div>
       <div class="pills"><span>${deltaHtml(p.change_24h)} <i>за сутки</i></span>
         <span>${ic("clock")}<i>${esc(p.updated || "--:--")}</i></span></div>
+      ${p.pnl != null ? `<div class="pnl ${p.pnl >= 0 ? "up" : "down"}">Прибыль <b class="num">${p.pnl >= 0 ? "+" : ""}${fmtTon(p.pnl)} TON</b>
+        ${p.pnl_pct != null ? `<span>${p.pnl >= 0 ? "+" : ""}${Number(p.pnl_pct).toFixed(1)}%</span>` : ""}
+        <i>${p.pnl_items < items.length ? `по ${p.pnl_items} из ${items.length} позиций с ценой покупки` : "от цены покупки"}</i></div>` : ""}
       <div class="chart">${chartSvg(pts, p.marks) || `<div class="hint">График появится, когда наберётся история</div>`}
         <div class="cross"><div class="vline"></div><div class="dot"></div><div class="tip"></div></div></div>
       <div class="chart-legend"><span>${esc(pts.length ? new Date(pts[0].t).toLocaleDateString(LANG === "en" ? "en-US" : "ru-RU",
@@ -2129,8 +2152,9 @@ function paintPortfolio(p){
       ${all.length > 1 && !enough ? `<div class="hint">Данных за этот срок ещё мало - показываю всё, что накопилось.</div>` : ""}
       <div class="minmax"><div class="lo"><span>минимум</span><b class="num">${fmtTon(lo)}</b></div>
         <div class="hi"><span>максимум</span><b class="num">${fmtTon(hi)}</b></div></div>
-      <button class="btn" style="margin-top:12px" id="pf-ntf">${ic("bell")}Уведомления ${
+      <div class="two" style="margin-top:12px"><button class="btn" id="pf-ntf">${ic("bell")}Уведомления ${
         (p.notify && p.notify.on) ? `<span class="chip on" style="height:24px">вкл</span>` : `<span class="chip off" style="height:24px">выкл</span>`}</button>
+        ${items.length ? `<button class="btn" id="pf-share">${ic("share")}Поделиться</button>` : ""}</div>
     </div>
     ${items.length ? `<div class="sec big">Мои подарки<span class="muted" style="font-size:15px;font-weight:500">${items.length}</span></div>
       <div class="ggrid">${items.map((h) => `
@@ -2139,15 +2163,19 @@ function paintPortfolio(p){
           <div class="nm">${esc(h.title || h.slug)}</div>
           <div class="sb">${esc(h.model || "любая модель")} · ${h.qty} шт.</div>
           <div class="pr"><span>${ic("ton")}${fmtTon(h.value)}</span></div>
-          <div class="pr dlrow"><span class="dl">${deltaHtml(h.change_24h)}</span></div>
+          <div class="pr dlrow"><span class="dl">${deltaHtml(h.change_24h)}</span>${h.pnl != null
+            ? `<span class="dl ${h.pnl >= 0 ? "pup" : "pdn"}">${h.pnl >= 0 ? "+" : ""}${fmtTon(h.pnl)}</span>` : ""}</div>
         </button>`).join("")}</div>`
       : `<div class="empty" style="margin-top:12px"><div class="art">${BRAND.svg}</div><b>Портфель пуст</b>
-         Добавь подарки - посчитаю общую стоимость и изменение за сутки.</div>`}`;
+         Добавь подарки - посчитаю общую стоимость и изменение за сутки.</div>`}
+    ${watchesBlockHtml()}`;
   countTo($("pf-total"), p.total, portShown);
   portShown = p.total;
   $("v-portfolio").querySelectorAll("[data-hold]").forEach((el) => el.onclick = () =>
     editHolding(items.find((x) => String(x.id) === el.dataset.hold), el.querySelector(".art")));
   $("pf-ntf").onclick = () => portfolioNotify(p.notify || {});
+  if($("pf-share")) $("pf-share").onclick = () => shareCard("portfolio");
+  bindWatches();
   bindSeg("rng", (k) => {
     portRange = k;
     const box = $("v-portfolio").querySelector(".chart");
@@ -2215,8 +2243,17 @@ function renderSettings(){
     <div class="top"><button class="round" data-go="profile">${ic("chev", "flipx")}</button><h1>Настройки</h1></div>
     <div class="sec">Язык</div>
     ${segHtml("lang", [["ru", "Русский"], ["en", "English"]], S.lang)}
-    ${quietHtml((S.settings || {}).quiet)}`;
+    ${quietHtml((S.settings || {}).quiet)}
+    <div class="sec">Отчёт</div>
+    <div class="group plain"><div class="row"><span class="t"><b>Еженедельный отчёт</b>
+      <span>в воскресенье в 19:00: портфель за неделю, находки бота, движения рынка</span></span>
+      <button class="tgl ${(S.settings || {}).digest !== false ? "on" : ""}" id="st-digest"></button></div></div>`;
   bindGo($("v-settings"));
+  $("st-digest").onclick = async () => {
+    const on = !$("st-digest").classList.contains("on");
+    $("st-digest").classList.toggle("on", on); haptic();
+    await save("settings", { digest: on }, on ? "Отчёт включён" : "Отчёт выключен");
+  };
   bindSeg("lang", (k) => save("settings", { lang: k }, "Язык изменён"));
   bindQuiet();
   fab(null);
@@ -2813,6 +2850,8 @@ function editHolding(h){
       <div class="row"><span class="k">За сутки</span><span class="v">${deltaHtml(h.change_24h)}</span></div>
       <div class="row"><span class="k">Рыночная цена</span><span class="v">${h.market_price ? fmtTon(h.market_price) + " TON" : "-"}</span></div>
       <div class="row"><span class="k">Фон</span><span class="v">${esc(h.backdrop || "любой")}</span></div>
+      ${h.pnl != null ? `<div class="row"><span class="k">Прибыль</span><span class="v ${h.pnl >= 0 ? "pup" : "pdn"}">${h.pnl >= 0 ? "+" : ""}${fmtTon(h.pnl)} TON${
+        h.pnl_pct != null ? ` (${h.pnl >= 0 ? "+" : ""}${Number(h.pnl_pct).toFixed(1)}%)` : ""}</span></div>` : ""}
     </div>
     <label>Количество</label>
     <input type="number" id="hq" class="num" min="1" max="9999" value="${h.qty}">
@@ -2820,13 +2859,16 @@ function editHolding(h){
     <input type="number" id="hp" class="num" step="0.01" min="0"
       placeholder="${h.market_price ? "рыночная " + fmtTon(h.market_price) : "рыночная"}" value="${h.own_price ?? ""}">
     <div class="hint">Пусто - по рыночной. Своя цена не меняется при почасовом обновлении.</div>
+    <label>Цена покупки за штуку, TON</label>
+    <input type="number" id="hb" class="num" step="0.01" min="0" placeholder="за сколько купил" value="${h.buy_price ?? ""}">
+    <div class="hint">По ней считается прибыль или убыток. Пусто - позиция в прибыль не входит.</div>
     <div class="err" id="err"></div>
     <button class="btn danger" style="margin-top:14px" id="del">${ic("trash")}Убрать</button>
     <div class="hint center">Изменения сохраняются сами, когда закрываешь карточку.</div>`);
   popHero();
   $("x").onclick = () => closeSheet();
   // как карточка коллекции: сохраняем при закрытии и только если что-то поменялось
-  const read = () => ({ id: h.id, qty: Number($("hq").value || 1), own_price: $("hp").value });
+  const read = () => ({ id: h.id, qty: Number($("hq").value || 1), own_price: $("hp").value, buy_price: $("hb").value });
   const was = JSON.stringify(read());
   SHEET_GUARD = async () => {
     const p = read();
@@ -2860,15 +2902,12 @@ function portfolioNotify(n){
       <div id="n-at" style="display:${st.summary_every === "off" ? "none" : "block"}"><label>Во сколько</label>
         <div class="seg wrap" id="nat">${["09:00", "12:00", "15:00", "18:00", "20:00", "23:00"].map((h) =>
           `<button data-k="${h}" class="${st.summary_at === h ? "on" : ""}">${h}</button>`).join("")}</div></div>
-      <div class="group plain" style="margin-top:14px"><div class="row"><span class="t"><b>Итог недели</b>
-        <span>прибыль или убыток, лучшие и худшие подарки</span></span>
-        <button class="tgl ${st.weekly ? "on" : ""}" id="n-week"></button></div></div>
+      <div class="hint" style="margin-top:14px">Итог недели по портфелю приходит в еженедельном отчёте - его включают в настройках.</div>
     </div>
     <button class="btn blue" style="margin-top:16px" id="ok">${ic("check")}Сохранить</button>`);
   const tg = (id, key, after) => { $(id).onclick = () => { st[key] = !st[key]; $(id).classList.toggle("on", st[key]); haptic(); if(after) after(); }; };
   tg("n-on", "on", () => { $("n-body").style.display = st.on ? "block" : "none"; bindAll(); });
   tg("n-moves", "moves", () => { $("n-th").style.display = st.moves ? "block" : "none"; bindAll(); });
-  tg("n-week", "weekly");
   const bindAll = () => {
     bindSeg("nth", (k) => { st.threshold = Number(k); });
     bindSeg("nev", (k) => { st.summary_every = k; $("n-at").style.display = k === "off" ? "none" : "block"; });
@@ -3216,6 +3255,7 @@ function homeExtraHtml(){
     out += `<div class="sec big">Рынок моих коллекций</div>
       <div class="hint">Цены появятся, когда к боту подключён ключ Gift Satellite.</div>`;
   }
+  out += trendsHomeHtml(h.trends);
   out += `<div class="sec big">Последние находки</div>`;
   out += (h.finds && h.finds.length) ? `<div class="group">${h.finds.map((f, i) => `
       <button class="row" data-find="${i}">${art(collName(f.slug), f.model, "mini")}
@@ -3254,6 +3294,7 @@ function statusHtml(st){
   </div>`;
 }
 function bindHomeExtra(box){
+  bindTrendRows(box);
   box.querySelectorAll("[data-mk]").forEach((b) => b.onclick = () => openHistory(b.dataset.mk, []));
   box.querySelectorAll("[data-find]").forEach((b) => b.onclick = () => {
     const f = (HOME.finds || [])[+b.dataset.find];
@@ -5198,6 +5239,199 @@ function mutateArts(root, force){
   });
 }
 
+/* ===================== ТРЕНДЫ, ОЦЕНКА, СЛЕЖКА, «ПОДЕЛИТЬСЯ» =====================
+   Тренды - по флорам, которые бот собирает раз в час (market.db): рост и падение за
+   сутки или неделю. Коллекции без точки той давности в список не попадают.
+   Оценка подарка - по ссылке t.me/nft/...: редкость признаков от Telegram, номер и
+   примерная цена только по настоящим продажам и лотам. Слежка - бот раз в 20 минут
+   ищет подарок по номеру на маркетах и пишет в чат. «Поделиться» - картинку рисует
+   бот и присылает в чат, а Telegram предлагает переслать её друзьям. */
+
+function trendRow(x){
+  const name = collName(x.key);
+  return `<button class="row mrow" data-tr="${esc(x.key)}">${art(name, "", "mini")}
+    <span class="t"><b>${esc(name)}</b><span>флор ${fmtTon(x.floor)} TON</span></span>
+    <span class="v w">${deltaHtml(x.pct)}</span></button>`;
+}
+function trendsHomeHtml(tr){
+  if(!tr || !((tr.up || []).length || (tr.down || []).length)) return "";
+  return `<div class="sec big">Тренды рынка<button data-trends>За сутки ${ic("chev")}</button></div>
+    <div class="group">${(tr.up || []).map(trendRow).join("")}${(tr.down || []).map(trendRow).join("")}</div>`;
+}
+function bindTrendRows(box){
+  box.querySelectorAll("[data-tr]").forEach((b) => b.onclick = () => openHistory(collName(b.dataset.tr), []));
+  box.querySelectorAll("[data-trends]").forEach((b) => b.onclick = () => openTrends());
+}
+let trendPeriod = "24h";
+async function openTrends(){
+  openSheet(`<h2><span class="tile orange">${ic("chart")}</span>Тренды рынка</h2>
+    <p class="sub">Самый большой рост и падение флора коллекций. Флоры бот собирает раз в час.</p>
+    ${segHtml("trp", [["24h", "За сутки"], ["7d", "За неделю"]], trendPeriod)}
+    <div id="tr-body"><div class="skel" style="margin-top:12px"></div></div>`);
+  const load = async () => {
+    let d = null;
+    try{ d = await call("trends", { period: trendPeriod }); }catch(e){ d = null; }
+    const box = $("tr-body");
+    if(!box) return;
+    if(!d || !d.total){
+      box.innerHTML = `<div class="hint" style="margin-top:12px">${d ? (trendPeriod === "7d"
+        ? "Неделя истории ещё не накопилась - бот собирает флоры раз в час." : "История флоров ещё копится - загляни позже.")
+        : "Не загрузилось, попробуй ещё раз."}</div>`;
+      return;
+    }
+    box.innerHTML = `${d.up.length ? `<div class="sec">Растут</div><div class="group">${d.up.map(trendRow).join("")}</div>` : ""}
+      ${d.down.length ? `<div class="sec">Падают</div><div class="group">${d.down.map(trendRow).join("")}</div>` : ""}
+      <div class="hint">Сравнивается флор сейчас и ${trendPeriod === "7d" ? "неделю" : "сутки"} назад. Всего коллекций с данными: ${d.total}.</div>`;
+    bindTrendRows(box);
+    after(box);
+  };
+  bindSeg("trp", (k) => { trendPeriod = k; $("tr-body").innerHTML = `<div class="skel" style="margin-top:12px"></div>`; load(); });
+  load();
+}
+
+/* ---------- оценка подарка ---------- */
+const NUM_TAGS = { short: "короткий номер", mirror: "зеркальный номер", repeat: "повтор цифр",
+  sequence: "цифры подряд", round: "круглый номер" };
+const ATTR_NAMES = { model: "Модель", backdrop: "Фон", pattern: "Узор" };
+function openGiftEval(link){
+  openSheet(`<h2><span class="tile indigo">${ic("search")}</span>Оценка подарка</h2>
+    <p class="sub">Вставь ссылку на подарок: покажу редкость модели, фона и узора и примерную цену по продажам.</p>
+    <input type="text" id="ge-link" placeholder="t.me/nft/PlushPepe-123" value="${esc(link || "")}">
+    <div class="err" id="ge-err"></div>
+    <button class="btn blue" style="margin-top:6px" id="ge-go">${ic("search")}Оценить</button>`);
+  const go = async () => {
+    const v = $("ge-link").value.trim();
+    if(!v){ $("ge-err").textContent = "Вставь ссылку на подарок"; return; }
+    $("ge-go").disabled = true;
+    $("ge-go").innerHTML = `${ic("clock")}Считаю...`;
+    try{ showGiftEval(await call("gift_info", { link: v })); }
+    catch(e){ if($("ge-err")){ $("ge-err").textContent = e.message; $("ge-go").disabled = false; $("ge-go").innerHTML = `${ic("search")}Оценить`; } }
+  };
+  $("ge-go").onclick = go;
+  $("ge-link").onkeydown = (e) => { if(e.key === "Enter") go(); };
+  if(link) go();
+}
+function showGiftEval(r){
+  const est = r.estimate || {};
+  const basis = est.basis === "sales" ? `по ${est.sales} ${plural(est.sales, "продаже", "продажам", "продажам")} такой же модели и фона за 30 дней${est.full ? "" : " - продаж мало, оценка неполная"}`
+    : est.basis === "listing" ? "по самому дешёвому такому же лоту: продаж за месяц почти не было"
+    : est.basis === "model" ? "только по флору модели: такой же модели с таким фоном сейчас нет"
+    : "мало данных: продаж и лотов такой модели и фона нет";
+  const bar = (pm) => pm ? `<i class="rbar"><b style="width:${Math.max(4, Math.min(100, 100 - Math.log10(pm) * 33))}%"></b></i>` : "";
+  openSheet(sheroHtml(r.title, r.model, r.backdrop, `${r.title} #${r.num}`,
+    r.total ? `выпущено ${r.issued || r.total} из ${r.total}` : "") + `
+    <div class="sec">Редкость</div>
+    <div class="group kv">${(r.attrs || []).map((a) => `
+      <div class="row"><span class="k">${ATTR_NAMES[a.kind] || a.kind}</span>
+        <span class="v"><b data-notx>${esc(a.name)}</b>${a.permille ? ` <span class="rp">${(a.permille / 10).toFixed(1)}%</span>` : ""}</span>${bar(a.permille)}</div>`).join("")}
+      ${r.combo ? `<div class="row"><span class="k">Сочетание</span><span class="v"><b>1 из ${Number(r.combo.one_in).toLocaleString("ru-RU")}</b></span></div>` : ""}
+    </div>
+    ${(r.num_tags || []).length ? `<div class="gtags">${r.num_tags.map((t) => `<span class="chip">${ic("hash")}${NUM_TAGS[t] || t}</span>`).join("")}</div>
+      <div class="hint">Насколько красивый номер поднимает цену, по данным сказать нельзя - в оценку он не входит.</div>` : ""}
+    <div class="sec">Цена</div>
+    <div class="card gest"><div class="gev">${est.value ? `${ic("ton")}<b class="num">~${fmtTon(est.value)}</b>` : `<b>нет оценки</b>`}</div>
+      ${est.value && est.low != null && est.high != null && est.high > est.low ? `<div class="hint" style="margin:4px 0 0">от ${fmtTon(est.low)} до ${fmtTon(est.high)} TON</div>` : ""}
+      <div class="hint" style="margin:6px 0 0">${basis}</div></div>
+    <div class="group kv">
+      <div class="row"><span class="k">Дешевле всего такой же</span><span class="v">${r.floor_mb ? fmtTon(r.floor_mb) + " TON" : "-"}</span></div>
+      <div class="row"><span class="k">Флор модели</span><span class="v">${r.floor_model ? fmtTon(r.floor_model) + " TON" : "-"}</span></div>
+    </div>
+    <div class="two" style="margin-top:12px">
+      <button class="btn ${r.watched ? "" : "blue"}" id="ge-watch" ${r.watched ? "disabled" : ""}>${ic("bell")}${r.watched ? "Уже следишь" : "Следить"}</button>
+      <button class="btn" id="ge-share">${ic("share")}Поделиться</button></div>
+    <button class="btn ghost" id="ge-open">${ic("gift")}Открыть в Telegram</button>`);
+  popHero();
+  $("x").onclick = () => closeSheet();
+  $("ge-open").onclick = () => openUrl(r.link);
+  $("ge-share").onclick = () => shareCard("gift", r.link);
+  $("ge-watch").onclick = async () => {
+    try{
+      await call("watch_add", { link: r.link });
+      hapticOk(); toast("Слежу: напишу, когда выставят или поменяют цену", "bell");
+      $("ge-watch").disabled = true; $("ge-watch").innerHTML = `${ic("bell")}Уже следишь`;
+      if(VIEW === "portfolio") loadWatches();
+    }catch(e){ toast(e.message, "help"); }
+  };
+}
+
+/* ---------- слежка за подарками (на экране портфеля) ---------- */
+function watchesBlockHtml(){
+  return `<div class="sec big">Слежка за подарками<button id="w-add">${ic("plus")}Следить</button></div>
+    <div id="pf-watch"><div class="skel" style="height:64px"></div></div>
+    <button class="btn" style="margin-top:10px" id="g-eval">${ic("search")}Оценить подарок по ссылке</button>`;
+}
+async function loadWatches(){
+  const box = $("pf-watch");
+  if(!box) return;
+  let d = null;
+  try{ d = await call("watch_list", {}); }catch(e){ d = null; }
+  if(!$("pf-watch")) return;
+  const items = (d && d.items) || [];
+  if(!items.length){
+    box.innerHTML = `<div class="hint">Добавь ссылку на подарок - напишу в чат, когда его выставят на продажу, поменяют цену или снимут.</div>`;
+    return;
+  }
+  box.innerHTML = `<div class="group">${items.map((w) => {
+    const mk = w.markets ? Object.entries(w.markets).sort((a, b) => a[1].price - b[1].price) : null;
+    const status = mk === null ? "проверяю..." : mk.length
+      ? `на продаже: ${mk.map(([m, v]) => `${marketName(m)} ${fmtTon(v.price)} TON`).join(", ")}` : "не продаётся";
+    return `<div class="row wrow" data-w="${w.id}">${art(w.title || w.slug, w.model, "mini")}
+      <span class="t"><b data-notx>${esc(w.title || w.slug)} #${w.num}</b><span>${status}</span></span>
+      <button class="round sm" data-wdel="${w.id}">${ic("cross")}</button></div>`;
+  }).join("")}</div>`;
+  after(box);
+  box.querySelectorAll("[data-w]").forEach((r) => r.onclick = (e) => {
+    if(e.target.closest("[data-wdel]")) return;
+    const w = items.find((x) => String(x.id) === r.dataset.w);
+    if(w) openGiftEval(`https://t.me/nft/${w.slug}-${w.num}`);
+  });
+  box.querySelectorAll("[data-wdel]").forEach((b) => b.onclick = async () => {
+    try{ await call("watch_del", { id: Number(b.dataset.wdel) }); haptic(); loadWatches(); toast("Больше не слежу"); }
+    catch(e){ toast(e.message, "help"); }
+  });
+}
+function marketName(m){
+  const f = ((S && S.markets) || []).find((x) => x.key === m || x.label.toLowerCase() === String(m).toLowerCase());
+  return f ? f.label : String(m);
+}
+function bindWatches(){
+  if($("w-add")) $("w-add").onclick = () => openWatchAdd();
+  if($("g-eval")) $("g-eval").onclick = () => openGiftEval("");
+  loadWatches();
+}
+function openWatchAdd(){
+  openSheet(`<h2><span class="tile blue">${ic("bell")}</span>Следить за подарком</h2>
+    <p class="sub">Вставь ссылку на подарок. Раз в 20 минут проверяю маркеты и пишу в чат, если его выставили, поменяли цену или он пропал с продажи.</p>
+    <input type="text" id="wa-link" placeholder="t.me/nft/PlushPepe-123">
+    <div class="err" id="wa-err"></div>
+    <button class="btn blue" style="margin-top:6px" id="wa-go">${ic("plus")}Следить</button>`);
+  $("wa-go").onclick = async () => {
+    const v = $("wa-link").value.trim();
+    if(!v){ $("wa-err").textContent = "Вставь ссылку на подарок"; return; }
+    $("wa-go").disabled = true;
+    try{
+      await call("watch_add", { link: v });
+      hapticOk(); closeSheet(); toast("Слежу за подарком", "bell"); loadWatches();
+    }catch(e){ $("wa-err").textContent = e.message; $("wa-go").disabled = false; }
+  };
+}
+
+/* ---------- «поделиться» ---------- */
+let sharing = false;
+async function shareCard(kind, link){
+  if(sharing) return;
+  sharing = true;
+  toast("Рисую картинку...", "share");
+  try{
+    const r = await call("share_card", { kind, link });
+    hapticOk();
+    if(r && r.prepared && TG && TG.shareMessage){
+      TG.shareMessage(r.prepared, (ok) => { if(ok) toast("Отправлено", "share"); });
+    } else toast("Картинка в чате с ботом - перешли её друзьям", "share");
+  }catch(e){ toast(e.message, "help"); }
+  finally{ sharing = false; }
+}
+
 /* ===================== АНГЛИЙСКИЙ =====================
    Перевод интерфейса: русская фраза -> английская. Применяется подстановкой внутри
    надписей (site/3d_texts.js), поэтому переводятся и надписи с числами: «4 коллекции»
@@ -5875,7 +6109,85 @@ const EN_DICT = {
 "Цвет текста": "Text color",
 "нажатия": "taps",
 "показы": "views",
-"д": "d"
+"д": "d",
+"за этим подарком уже следишь": "you already watch this gift",
+"нужна ссылка на подарок": "a gift link is needed",
+"в портфеле пока пусто": "the portfolio is empty for now",
+"данные подарков сейчас недоступны": "gift data is unavailable right now",
+"нужна ссылка вида t.me/nft/Коллекция-номер": "a link like t.me/nft/Collection-number is needed",
+"поделиться сейчас нельзя": "sharing is unavailable right now",
+"слежка не найдена": "watch not found",
+"слежка недоступна": "watching is unavailable",
+"такого подарка нет": "there is no such gift",
+"Еженедельный отчёт": "Weekly report",
+"Отчёт": "Report",
+"Отчёт включён": "Report is on",
+"Отчёт выключен": "Report is off",
+"Поделиться": "Share",
+"Прибыль": "Profit",
+"в воскресенье в 19:00: портфель за неделю, находки бота, движения рынка": "on Sunday at 19:00: your portfolio for the week, bot finds, market moves",
+"от цены покупки": "from the purchase price",
+"по": "by",
+"позиций с ценой покупки": "items with a purchase price",
+"Больше не слежу": "No longer watching",
+"Вставь ссылку на подарок": "Paste a gift link",
+"Вставь ссылку на подарок. Раз в 20 минут проверяю маркеты и пишу в чат, если его выставили, поменяли цену или он пропал с продажи": "Paste a gift link. Every 20 minutes I check the marketplaces and message you if it gets listed, its price changes or it disappears from sale",
+"Вставь ссылку на подарок: покажу редкость модели, фона и узора и примерную цену по продажам": "Paste a gift link: I will show how rare the model, backdrop and symbol are and an estimated price from sales",
+"Дешевле всего такой же": "Cheapest identical",
+"Добавь ссылку на подарок - напишу в чат, когда его выставят на продажу, поменяют цену или снимут": "Add a gift link - I will message you when it gets listed, its price changes or it is delisted",
+"За неделю": "This week",
+"История флоров ещё копится - загляни позже": "Floor history is still building up - check back later",
+"Картинка в чате с ботом - перешли её друзьям": "The picture is in the bot chat - forward it to friends",
+"Модель": "Model",
+"Насколько красивый номер поднимает цену, по данным сказать нельзя - в оценку он не входит": "The data can't tell how much a nice number adds to the price, so it is not part of the estimate",
+"Не загрузилось, попробуй ещё раз": "Didn't load, try again",
+"Неделя истории ещё не накопилась - бот собирает флоры раз в час": "A week of history hasn't built up yet - the bot collects floors every hour",
+"Открыть в": "Open in",
+"Отправлено": "Sent",
+"Оценить": "Rate",
+"Оценить подарок по ссылке": "Rate a gift by link",
+"Оценка подарка": "Gift rating",
+"Падают": "Falling",
+"Растут": "Rising",
+"Редкость": "Rarity",
+"Рисую картинку": "Drawing the picture",
+"Самый большой рост и падение флора коллекций. Флоры бот собирает раз в час": "The biggest rises and falls of collection floors. The bot collects floors every hour",
+"Следить": "Watch",
+"Следить за подарком": "Watch a gift",
+"Слежка за подарками": "Watched gifts",
+"Слежу за подарком": "Watching the gift",
+"Слежу: напишу, когда выставят или поменяют цену": "Watching: I will message you when it gets listed or its price changes",
+"Сочетание": "Combination",
+"Сравнивается флор сейчас и": "The floor now is compared with",
+"Считаю": "Calculating",
+"Тренды рынка": "Market trends",
+"Уже следишь": "Already watching",
+"Узор": "Symbol",
+"Флор модели": "Model floor",
+"выпущено": "issued",
+"зеркальный номер": "mirror number",
+"короткий номер": "short number",
+"круглый номер": "round number",
+"мало данных: продаж и лотов такой модели и фона нет": "not enough data: no sales or listings of this model and backdrop",
+"на продаже": "for sale",
+"назад. Всего коллекций с данными": "ago. Collections with data",
+"не продаётся": "not for sale",
+"неделю": "a week",
+"нет оценки": "no estimate",
+"от": "from",
+"по самому дешёвому такому же лоту: продаж за месяц почти не было": "by the cheapest identical listing: there were almost no sales this month",
+"повтор цифр": "repeated digits",
+"проверяю": "checking",
+"продаж мало, оценка неполная": "few sales, the estimate is incomplete",
+"продажам": "sales",
+"продаже": "sale",
+"такой же модели и фона за 30 дней": "of the same model and backdrop in 30 days",
+"только по флору модели: такой же модели с таким фоном сейчас нет": "by the model floor only: there is no such model with this backdrop right now",
+"цифры подряд": "sequential digits",
+"Итог недели по портфелю приходит в еженедельном отчёте - его включают в настройках": "The weekly portfolio summary comes in the weekly report - turn it on in the settings",
+"По ней считается прибыль или убыток. Пусто - позиция в прибыль не входит": "Profit or loss is calculated from it. Empty - the item is not counted in profit",
+"Цена покупки за штуку": "Purchase price per item",
+"за сколько купил": "what you paid"
 };
 const EN_RX = [
 [
@@ -5941,6 +6253,14 @@ const EN_RX = [
 [
 "^не\\ больше\\ (.+?)\\ слоёв$",
 "no more than $1 layers"
+],
+[
+"^не\\ больше\\ (.+?)\\ подарков\\ в\\ слежке$",
+"no more than $1 watched gifts"
+],
+[
+"^Telegram\\ просит\\ подождать\\ (.+?)\\ с$",
+"Telegram asks to wait $1 s"
 ]
 ].map(([p, r]) => [new RegExp(p), r]);
 
@@ -6208,7 +6528,7 @@ function adminTexts(){
 function demoState(){
   return {
     uid: 1204450614, name: "Konstantin", photo: "", is_owner: true, lang: "ru",
-    settings: { sales_days: 7, sales_show: 3, premium_emoji: true,
+    settings: { sales_days: 7, sales_show: 3, premium_emoji: true, digest: true,
       quiet: { start: 1380, end: 480, mode: "silent", tz: 180 } },
     portfolio: { total: 1186.4, change_24h: 3.42, top: { slug: "PlushPepe", model: "Midas Pepe" } },
     effects: { boot: true, buy: true, add: true, open: true }, texts: {}, banners_on: true,
@@ -6279,6 +6599,8 @@ async function demoCall(action, payload){
     finds: [{ kind: "listing", slug: "LootBag", model: "Pepe Bag", num: 4512, price: 24.5, ts: now - 600, link: "" },
       { kind: "upgrade", slug: "PlushPepe", model: "Steel Frog", num: 1802, price: null, ts: now - 3000, link: "" },
       { kind: "listing", slug: "SwissWatch", model: "Iced Out", num: 77, price: 38, ts: now - 9000, link: "" }],
+    trends: { total: 42, up: [{ key: "plushpepe", floor: 1240, pct: 6.2 }, { key: "durovscap", floor: 512, pct: 3.4 }],
+      down: [{ key: "iongem", floor: 88, pct: -4.1 }] },
     status: { uptime: 52 * 3600, sniper: { collections: 4, last_pass: now - 40 },
       flip: { enabled: true, tracked: 2, subscribed: 2, notify_chat: true },
       gsb: { keys: 2, dead: 0 }, floors_at: now - 1500, users: 184 } };
@@ -6339,6 +6661,28 @@ async function demoCall(action, payload){
     return { ok: true, state: DEMO_S };
   }
   if(action === "slot_invoice") return { link: "" };
+  if(action === "trends"){
+    const w = payload.period === "7d";
+    return { total: 42, up: [{ key: "plushpepe", floor: 1240, pct: w ? 18.4 : 6.2 }, { key: "durovscap", floor: 512, pct: w ? 9.1 : 3.4 },
+      { key: "swisswatch", floor: 41.5, pct: w ? 4.2 : 1.9 }],
+      down: [{ key: "iongem", floor: 88, pct: w ? -12.5 : -4.1 }, { key: "lootbag", floor: 31, pct: w ? -6 : -2.2 }] };
+  }
+  if(action === "gift_info") return { slug: "PlushPepe", num: 777, title: "Plush Pepe", link: "https://t.me/nft/PlushPepe-777",
+    model: "Midas Pepe", backdrop: "Pure Gold", pattern: "Crown", issued: 5000, total: 6000,
+    attrs: [{ kind: "model", name: "Midas Pepe", permille: 5 }, { kind: "backdrop", name: "Pure Gold", permille: 12 },
+      { kind: "pattern", name: "Crown", permille: 4 }], combo: { one_in: 4166667, approx: .001 }, num_tags: ["short", "mirror", "repeat"],
+    estimate: { value: 608.5, low: 598, high: 640, basis: "sales", full: true, sales: 3 }, floor_mb: 605, floor_model: 400,
+    watched: (DEMO_S.watches || []).some((w) => w.num === 777) };
+  if(action === "watch_list") return { items: DEMO_S.watches || (DEMO_S.watches = [
+    { id: 1, slug: "SwissWatch", num: 4021, title: "Swiss Watch", model: "DeLorean", backdrop: "", markets: { portals: { price: 46.5 } } },
+    { id: 2, slug: "IonGem", num: 118, title: "Ion Gem", model: "", backdrop: "", markets: {} }]) };
+  if(action === "watch_add"){
+    DEMO_S.watches = DEMO_S.watches || [];
+    DEMO_S.watches.push({ id: Date.now(), slug: "PlushPepe", num: 777, title: "Plush Pepe", model: "Midas Pepe", backdrop: "", markets: {} });
+    return { ok: true, items: DEMO_S.watches };
+  }
+  if(action === "watch_del"){ DEMO_S.watches = (DEMO_S.watches || []).filter((w) => w.id !== payload.id); return { ok: true, items: DEMO_S.watches }; }
+  if(action === "share_card") return { ok: true, prepared: null };
   if(action === "bonus_claim"){
     const b = DEMO_S.bonus, now = Math.floor(Date.now() / 1000);
     if(b.next_claim > now) throw new Error("следующий бонус через 23 ч 59 мин");
@@ -6388,9 +6732,9 @@ async function demoCall(action, payload){
     }
     const items = [
       { id: 1, slug: "PlushPepe", title: "Plush Pepe", model: "Midas Pepe", backdrop: "Pure Gold", qty: 1,
-        value: 612.5, change_24h: 4.1, market_price: 612.5, own_price: null },
+        value: 612.5, change_24h: 4.1, market_price: 612.5, own_price: null, buy_price: 520, pnl: 92.5, pnl_pct: 17.8 },
       { id: 2, slug: "DurovsCap", title: "Durov's Cap", model: "Cotton Candy", backdrop: "Mexican Pink", qty: 2,
-        value: 318.4, change_24h: -1.2, market_price: 159.2, own_price: null },
+        value: 318.4, change_24h: -1.2, market_price: 159.2, own_price: null, buy_price: 170, pnl: -21.6, pnl_pct: -6.4 },
       { id: 3, slug: "IonGem", title: "Ion Gem", model: "Kryptonite", backdrop: "Emerald", qty: 1,
         value: 171.9, change_24h: 2.6, market_price: 171.9, own_price: null },
       { id: 4, slug: "LootBag", title: "Loot Bag", model: "Pepe Bag", backdrop: "Black", qty: 3,
@@ -6402,7 +6746,8 @@ async function demoCall(action, payload){
     return { total, change_24h: Math.round(((total - dayAgo.v) / dayAgo.v) * 1e4) / 100,
       updated: new Date(now).toLocaleTimeString("ru-RU", { hour: "2-digit", minute: "2-digit" }),
       chart: pts, marks: [{ t: now - 19 * hour, title: "добавлен Ion Gem" }],
-      notify: { on: true, moves: true, threshold: 10, summary_at: "20:00", summary_every: "day", weekly: true }, items };
+      notify: { on: true, moves: true, threshold: 10, summary_at: "20:00", summary_every: "day", weekly: true }, items,
+      pnl: 70.9, pnl_pct: 6.6, invested: 860, pnl_items: 2 };
   }
   if(action === "texts") return { help: "Помощь: как пользоваться ботом.", terms: "Условия пользования.",
     support: "Опиши вопрос одним сообщением.", open_tickets: 0 };
