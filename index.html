@@ -842,16 +842,15 @@ input[type=datetime-local]{display:block;width:100%;min-width:0;max-width:100%;b
 .tx .amt.plus{color:#ffd60a}
 .bcoin{position:relative;width:var(--d);height:var(--d);flex:0 0 var(--d);perspective:700px;touch-action:none;cursor:grab}
 .bcoin.small{pointer-events:none}
-.bcoin .c3{position:relative;width:100%;height:100%;transform-style:preserve-3d}
+.bcoin .c3{position:relative;width:100%;height:100%;transform-style:preserve-3d;will-change:transform}
 .bcoin .c3>i{position:absolute;left:50%;top:50%;display:block;backface-visibility:visible}
 .bcoin .cf{position:absolute;inset:0;border-radius:50%;backface-visibility:hidden;-webkit-backface-visibility:hidden}
 .bcoin .msvg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
-.bcoin .spec{position:absolute;inset:0;border-radius:50%;pointer-events:none;
-  background:radial-gradient(circle at var(--sx,34%) var(--sy,26%),rgba(255,255,255,.5),rgba(255,255,255,.12) 22%,rgba(255,255,255,0) 46%)}
-.bcoin .spec.b{background:radial-gradient(circle at var(--sx2,66%) var(--sy,26%),rgba(255,255,255,.45),rgba(255,255,255,.1) 22%,rgba(255,255,255,0) 46%)}
+.bcoin .spec{position:absolute;inset:0;border-radius:50%;pointer-events:none;overflow:hidden}
+.bcoin .spec b{position:absolute;left:-100%;top:-50%;width:300%;height:200%;display:block;will-change:transform;
+  background:radial-gradient(circle at 50% 38%,rgba(255,255,255,.5),rgba(255,255,255,.12) 8%,rgba(255,255,255,0) 16%)}
 .bcoin .cshadow{position:absolute;left:12%;right:12%;bottom:-14%;height:12%;border-radius:50%;
   background:radial-gradient(ellipse,rgba(0,0,0,.55),rgba(0,0,0,0) 70%)}
-.bcoin.locked .msvg{filter:saturate(.35)}
 .achtop{display:flex;align-items:center;gap:16px;background:var(--s1);border-radius:var(--r-l);padding:16px;margin-bottom:12px}
 .achn b{display:block;font-size:19px;font-weight:800}
 .achn span{display:block;color:var(--muted);font-size:14px;margin-top:2px}
@@ -914,10 +913,12 @@ body.nuked .hero,body.nuked .gcard,body.nuked .group,body.nuked .card,body.nuked
 body.nuked .brandrow b{color:#ffb347;text-shadow:0 0 12px rgba(255,90,20,.7)}
 /* мутанты: своя часть подарка и чужая, переливается цветом и подрагивает */
 .art.mutant>img,.art.mutant>.lot{clip-path:var(--mclip)}
-.art .mutpart{position:absolute;inset:0;z-index:2;pointer-events:none;
+.art .mutpart{position:absolute;inset:0;z-index:2;pointer-events:none;opacity:0;
+  transition:opacity .25s;
   filter:drop-shadow(0 0 5px rgba(157,255,92,.55));animation:mutJit 2.6s steps(1) infinite}
 .art .mutpart>.art{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;
   margin:0!important;top:0!important;right:0!important;bottom:0!important;left:0!important;filter:none!important;animation:none!important}
+.art .mutpart.on{opacity:1}
 @keyframes mutJit{0%,86%,100%{transform:none}88%{transform:translate(2px,-1px) skewX(6deg)}91%{transform:translate(-3px,1px)}94%{transform:translate(1px,2px) skewX(-5deg)}}
 @media (prefers-reduced-motion:reduce){.taphint,#fire .heat,.flame,.flame i,.art .mutpart,.nb-dome{animation:none!important}}
 </style>
@@ -4394,7 +4395,7 @@ function medalSvg(o){
 /* Монета целиком: лицо, оборот, ребро и тень под ней. d - диаметр в точках. */
 function coinHtml(o){
   const d = o.d, t = Math.max(3, Math.round(d * .085)), r = d / 2;
-  const n = d > 90 ? 44 : 26, w = Math.PI * d / n + .7;
+  const n = d > 90 ? 36 : 18, w = Math.PI * d / n + .7;
   const m = METALS[o.metal] || METALS.gold;
   let edge = "";
   for(let i = 0; i < n; i++){
@@ -4406,21 +4407,21 @@ function coinHtml(o){
       background:linear-gradient(rgba(0,0,0,${dark}),rgba(0,0,0,${dark})),repeating-linear-gradient(90deg,${m[1]} 0 1.2px,${m[2]} 1.2px 2.2px)"></i>`;
   }
   return `<div class="bcoin ${o.cls || ""}" style="--d:${d}px"><div class="cshadow"></div><div class="c3">${edge}
-    <div class="cf front" style="transform:translateZ(${t / 2}px)">${medalSvg(o)}<i class="spec"></i></div>
-    <div class="cf back" style="transform:rotateY(180deg) translateZ(${t / 2}px)">${medalSvg(Object.assign({}, o, { back: true }))}<i class="spec b"></i></div>
+    <div class="cf front" style="transform:translateZ(${t / 2}px)">${medalSvg(o)}<i class="spec"><b></b></i></div>
+    <div class="cf back" style="transform:rotateY(180deg) translateZ(${t / 2}px)">${medalSvg(Object.assign({}, o, { back: true }))}<i class="spec"><b></b></i></div>
     </div></div>`;
 }
-/* Все монеты на экране крутит один общий цикл. Большая - пальцем, с инерцией;
-   маленькие покачиваются сами. */
+/* Большую монету крутит цикл: пальцем, с инерцией. Маленькие в сетке стоят под
+   постоянным углом и в каждом кадре не перерисовываются: десяток монет, которые
+   качались все сразу, сильно тормозили телефон. Блик двигается сдвигом
+   (transform), а не перерисовкой градиента - это видеокарта делает почти даром. */
 const COINS = new Set();
 let coinRaf = 0;
 function coinTick(t){
   for(const el of COINS){
     if(!document.body.contains(el)){ COINS.delete(el); continue; }
     const s = el._st;
-    if(s.sway){
-      if(!REDUCED){ s.ang = Math.sin(t / 1000 * .9 + s.ph) * 38; s.tilt = 6 + Math.sin(t / 1300 + s.ph) * 6; }
-    } else if(!s.drag){
+    if(!s.drag){
       s.ang += s.vel;
       s.vel += ((REDUCED ? 0 : .6) - s.vel) * .03;     // к спокойному вращению
       s.tilt += (8 - s.tilt) * .06;
@@ -4432,17 +4433,20 @@ function coinTick(t){
 function paintCoin(el){
   const s = el._st, rad = s.ang * Math.PI / 180;
   el._c3.style.transform = `rotateX(${s.tilt.toFixed(1)}deg) rotateY(${s.ang.toFixed(1)}deg)`;
-  const sx = 34 + Math.sin(rad) * 62;
-  el.style.setProperty("--sx", sx.toFixed(1) + "%");
-  el.style.setProperty("--sx2", (100 - sx).toFixed(1) + "%");
-  el.style.setProperty("--sy", (26 - s.tilt * 1.3).toFixed(1) + "%");
+  // блик: пятно в 3 раза шире монеты, сдвигаем его так, чтобы центр шёл по лицу
+  const sx = 34 + Math.sin(rad) * 62, sy = 26 - s.tilt * 1.3;
+  const dy = ((sy - 26) / 2).toFixed(1);
+  if(el._sp[0]) el._sp[0].style.transform = `translate(${((sx - 50) / 3).toFixed(1)}%,${dy}%)`;
+  if(el._sp[1]) el._sp[1].style.transform = `translate(${((50 - sx) / 3).toFixed(1)}%,${dy}%)`;
   el._sh.style.transform = `scaleX(${(.5 + .5 * Math.abs(Math.cos(rad))).toFixed(2)})`;
 }
 function spinCoin(el, sway){
   if(!el) return;
   el._c3 = el.querySelector(".c3");
   el._sh = el.querySelector(".cshadow");
-  el._st = { ang: sway ? 0 : -20, tilt: 8, vel: REDUCED ? 0 : .6, drag: null, sway: !!sway, ph: Math.random() * 6 };
+  el._sp = [...el.querySelectorAll(".spec b")];
+  el._st = { ang: sway ? nkR(-30, -16) : -20, tilt: sway ? 9 : 8, vel: REDUCED ? 0 : .6, drag: null };
+  if(sway){ paintCoin(el); return; }      // маленькая: один раз под углом, без цикла
   if(!sway){
     let last = 0;
     el.onpointerdown = (e) => {
@@ -4881,6 +4885,9 @@ async function nukeStart(){
     nukeDone(await req, innerWidth / 2, innerHeight / 2, 300);
     return;
   }
+  // мутации готовятся, пока падает бомба; покажутся, когда рассеется облако
+  mutShowAt = Date.now() + 200 + 1250 + 4300;
+  mutateArts(document, true);
   await sleep(200);
   const ground = innerHeight * .86, cx = innerWidth / 2;
   const bomb = document.createElement("div");
@@ -4928,7 +4935,7 @@ function boom(){
   // волна отбрасывает интерфейс назад
   setTimeout(() => { NUKED = true; document.body.classList.add("nuked"); }, 300);
   // облако рассеялось - видно огоньки и мутантов
-  setTimeout(() => { fireStart(); mutateArts(document); }, 4300);
+  setTimeout(() => { fireStart(); mutateArts(document, true); }, 4300);
 }
 function nukeDone(res, x, y, wait){
   setTimeout(() => {
@@ -4977,15 +4984,62 @@ function fireStart(){
    обрезанная по фигуре, а сам подарок обрезается по дополняющей фигуре - выходит один
    подарок из частей двух моделей (так попросил владелец: не чужие коллекции, а модели
    этой). Чужая часть играет свою анимацию (до 4 разом, остальные - картинкой). */
-const MUT_SHAPES = [
-  ["polygon(0 0,100% 0,100% 48%,0 58%)", "polygon(0 58%,100% 48%,100% 100%,0 100%)"],
-  ["polygon(0 0,52% 0,44% 100%,0 100%)", "polygon(52% 0,100% 0,100% 100%,44% 100%)"],
-  ["polygon(0 0,100% 0,0 100%)", "polygon(100% 0,100% 100%,0 100%)"],
-  ["circle(30% at 50% 45%)", "polygon(0 0,100% 0,100% 100%,0 100%,0 45%,20% 45%,23% 63%,35% 72%,50% 75%,65% 72%,77% 63%,80% 45%,77% 27%,65% 18%,50% 15%,35% 18%,23% 27%,20% 45%,0 45%)"],
-];
-let mutLive = 0;
-function mutateArts(root){
-  if(!NUKED) return;
+/* Стык двух моделей - волной. Обе фигуры строятся по ОДНИМ И ТЕМ ЖЕ точкам волны,
+   поэтому части сходятся без щели и без нахлёста. */
+function mutShapes(){
+  const f = (v) => v.toFixed(1) + "%";
+  const amp = nkR(5, 8), freq = nkR(2.2, 3.4) * Math.PI, ph = nkR(0, 6);
+  const wave = [];
+  for(let i = 0; i <= 24; i++){
+    const t = i / 24;
+    wave.push([t * 100, Math.sin(t * freq + ph) * amp]);
+  }
+  const kind = Math.floor(Math.random() * 4);
+  const pts = (list) => "polygon(" + list.map(([x, y]) => `${f(x)} ${f(y)}`).join(",") + ")";
+  if(kind === 0 || kind === 1){
+    // волна поперёк (0) или вдоль (1)
+    const at = nkR(42, 58);
+    const line = wave.map(([t, w]) => (kind === 0 ? [t, at + w] : [at + w, t]));
+    const a = kind === 0 ? [[0, 0], [100, 0], ...line.slice().reverse()] : [[0, 0], ...line, [0, 100]];
+    const b = kind === 0 ? [...line, [100, 100], [0, 100]] : [[100, 0], [100, 100], ...line.slice().reverse()];
+    return [pts(a), pts(b)];
+  }
+  if(kind === 2){
+    // волна по диагонали
+    const line = wave.map(([t, w]) => [t + w * .7, 100 - t + w * .7]);
+    return [pts([[0, 0], ...line]), pts([...line, [100, 100]])];
+  }
+  // волнистое пятно в середине: внутри одна модель, вокруг другая
+  const blob = [];
+  for(let i = 0; i <= 36; i++){
+    const a = i / 36 * Math.PI * 2, r = 30 + Math.sin(a * 6 + ph) * 4;
+    blob.push([50 + Math.cos(a) * r, 46 + Math.sin(a) * r]);
+  }
+  const outer = [[0, 46], [0, 0], [100, 0], [100, 100], [0, 100], [0, 46]];
+  return [pts(blob), pts(outer.concat(blob.slice().reverse()))];
+}
+let mutLive = 0, mutShowAt = 0;
+/* Готовим мутации заранее, ещё пока падает бомба: список моделей и картинки чужих
+   частей грузятся в это время. Часть показывается, только когда её картинка
+   загрузилась и подошло время (облако рассеялось) - раньше модели появлялись
+   с задержкой, через несколько секунд после взрыва. */
+function mutReveal(el, part){
+  let tries = 0;
+  const check = () => {
+    if(!document.body.contains(el)) return;
+    const a = part.querySelector(".art");
+    const ready = a && a.dataset.ah && !a.classList.contains("wait") && a.querySelector("img, .mono");
+    if((ready || ++tries > 80) && Date.now() >= mutShowAt){
+      el.classList.add("mutant");
+      part.classList.add("on");
+      return;
+    }
+    setTimeout(check, ready ? Math.max(30, mutShowAt - Date.now()) : 100);
+  };
+  check();
+}
+function mutateArts(root, force){
+  if(!NUKED && !force) return;
   (root || document).querySelectorAll(".art[data-ac]:not([data-mut])").forEach((el, i) => {
     // в игре подарок должен быть узнаваемым; чужой кусок мутанта сам не мутирует
     if(el.closest(".gstage") || el.closest(".mutpart")) return;
@@ -4996,9 +5050,8 @@ function mutateArts(root){
       const models = ((cat && cat.models) || []).map((m) => m.name).filter((n) => n && n !== own);
       if(!models.length || !document.body.contains(el) || el.querySelector(".mutpart")) return;
       const model = models[Math.floor(Math.random() * models.length)];
-      const [mine, theirs] = MUT_SHAPES[Math.floor(Math.random() * MUT_SHAPES.length)];
+      const [mine, theirs] = mutShapes();
       el.style.setProperty("--mclip", theirs);
-      el.classList.add("mutant");
       const part = document.createElement("div");
       part.className = "mutpart";
       part.style.clipPath = mine;
@@ -5006,6 +5059,7 @@ function mutateArts(root){
       if(mutLive < 4) mutLive++;
       el.appendChild(part);
       hydrateArt(part);
+      mutReveal(el, part);
     }).catch(() => { /* список моделей не загрузился - подарок остаётся как был */ });
   });
 }
