@@ -35,7 +35,7 @@ html,body{margin:0;padding:0;background:var(--bg);color:var(--text);
   /* Щипок и двойное касание не должны менять масштаб: iOS игнорирует meta, поэтому
      ещё touch-action и обработчики в коде. */
   touch-action:pan-y;-webkit-text-size-adjust:100%;text-size-adjust:100%}
-body{padding-bottom:calc(var(--tab-h) + var(--tab-gap) * 2 + env(safe-area-inset-bottom))}
+body{padding-bottom:calc(var(--tab-h) + var(--tab-gap) * 2 + max(env(safe-area-inset-bottom), var(--tg-safe-area-inset-bottom,0px)))}
 .num{font-variant-numeric:tabular-nums}
 svg{display:block}
 .ico{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.9;
@@ -63,13 +63,13 @@ img{display:block}
   background:radial-gradient(circle,rgba(47,124,246,.55),rgba(47,124,246,.12) 45%,transparent 70%)}
 #boot .logo-wrap{position:relative;width:132px;height:132px;margin-top:-6vh;will-change:transform}
 #boot .logo-wrap svg{width:100%;height:100%;overflow:visible}
-#boot .load{position:absolute;bottom:calc(64px + env(safe-area-inset-bottom));left:50%;
+#boot .load{position:absolute;bottom:calc(64px + max(env(safe-area-inset-bottom), var(--tg-safe-area-inset-bottom,0px)));left:50%;
   width:120px;height:4px;border-radius:2px;background:var(--s2);overflow:hidden;
   transform:translateX(-50%);opacity:0;transition:opacity .3s}
 #boot .load i{display:block;height:100%;width:38%;border-radius:2px;
   background:linear-gradient(90deg,transparent,var(--blue-2),#fff,var(--blue-2),transparent);
   animation:slide 1.1s ease-in-out infinite}
-#boot .msg{position:absolute;bottom:calc(30px + env(safe-area-inset-bottom));left:0;right:0;
+#boot .msg{position:absolute;bottom:calc(30px + max(env(safe-area-inset-bottom), var(--tg-safe-area-inset-bottom,0px)));left:0;right:0;
   text-align:center;font-size:13px;color:var(--muted)}
 /* Полёт логотипа задаёт JS (bootFly): из-за нижнего края, с разворотом, как тотем
    бессмертия. CSS - только то, что появляется после прилёта. */
@@ -118,7 +118,7 @@ img{display:block}
   50%{opacity:var(--o,.55);transform:scale(1) rotate(45deg)}}
 
 /* ---------- раскладка ---------- */
-main{position:relative;z-index:1;padding:calc(10px + var(--tg-content-safe-area-inset-top,0px)) 16px 22px}
+main{position:relative;z-index:1;padding:calc(10px + var(--tg-safe-area-inset-top,0px) + var(--tg-content-safe-area-inset-top,0px)) 16px 22px}
 .view{display:none}
 .view.on{display:block;animation:viewIn .38s var(--ease)}
 .view.on.back{animation:viewBack .38s var(--ease)}
@@ -192,7 +192,7 @@ button.row:active,.row.tap:active{background:var(--s2)}
 .two>*{flex:1}
 
 /* плавающая кнопка-пилюля над панелью вкладок */
-.fab{position:fixed;left:50%;bottom:calc(var(--tab-h) + var(--tab-gap) + 14px + env(safe-area-inset-bottom));
+.fab{position:fixed;left:50%;bottom:calc(var(--tab-h) + var(--tab-gap) + 14px + max(env(safe-area-inset-bottom), var(--tg-safe-area-inset-bottom,0px)));
   z-index:40;height:52px;padding:0 24px;border-radius:999px;background:var(--pill);color:#000;
   display:flex;align-items:center;gap:9px;font-size:17px;font-weight:600;white-space:nowrap;
   box-shadow:0 10px 30px rgba(0,0,0,.55);transform:translateX(-50%);
@@ -203,7 +203,7 @@ button.row:active,.row.tap:active{background:var(--s2)}
 
 /* ---------- стеклянная панель вкладок ---------- */
 nav{position:fixed;left:var(--tab-gap);right:var(--tab-gap);
-  bottom:calc(var(--tab-gap) + env(safe-area-inset-bottom));z-index:50;height:var(--tab-h);
+  bottom:calc(var(--tab-gap) + max(env(safe-area-inset-bottom), var(--tg-safe-area-inset-bottom,0px)));z-index:50;height:var(--tab-h);
   border-radius:33px;display:grid;grid-template-columns:repeat(5,1fr);align-items:center;padding:0 5px;
   background:rgba(44,44,48,.68);-webkit-backdrop-filter:blur(22px) saturate(180%);
   backdrop-filter:blur(22px) saturate(180%);border:1px solid rgba(255,255,255,.08);
@@ -408,7 +408,7 @@ nav .ind{position:absolute;top:5px;bottom:5px;left:5px;border-radius:28px;
   backdrop-filter:blur(3px);animation:fade .3s}
 @keyframes fade{from{opacity:0}}
 .panel{position:absolute;left:0;right:0;bottom:0;max-height:94vh;overflow-y:auto;overflow-x:hidden;
-  background:#111113;border-radius:30px 30px 0 0;padding:8px 16px calc(28px + env(safe-area-inset-bottom));
+  background:#111113;border-radius:30px 30px 0 0;padding:8px 16px calc(28px + max(env(safe-area-inset-bottom), var(--tg-safe-area-inset-bottom,0px)));
   animation:sheetUp .45s var(--spring);overscroll-behavior:contain}
 @keyframes sheetUp{from{transform:translateY(100%)}to{transform:none}}
 .sheet.closing .panel{animation:sheetDown .28s cubic-bezier(.4,0,.8,.4) forwards}
@@ -566,7 +566,7 @@ input[type=range]::-moz-range-thumb{width:26px;height:26px;border-radius:50%;bor
 .promo span{font-size:13.5px;color:rgba(255,255,255,.8)}
 
 /* сообщение */
-.toast{position:fixed;left:50%;top:calc(14px + var(--tg-content-safe-area-inset-top,0px));z-index:120;
+.toast{position:fixed;left:50%;top:calc(14px + var(--tg-safe-area-inset-top,0px) + var(--tg-content-safe-area-inset-top,0px));z-index:120;
   max-width:calc(100% - 32px);background:rgba(44,44,48,.9);-webkit-backdrop-filter:blur(20px);
   backdrop-filter:blur(20px);border-radius:22px;padding:12px 18px;font-size:15px;font-weight:600;
   display:flex;align-items:center;gap:10px;opacity:0;transform:translate(-50%,-20px) scale(.95);
@@ -706,7 +706,7 @@ nav{grid-template-columns:repeat(5,minmax(0,1fr))}
 .seg.chips button{flex:0 0 auto}
 .credit{display:block;margin:-2px auto 8px;padding:6px 10px;font-size:12px;color:var(--muted-2);background:none}
 /* Правка надписей: полоса сверху, пока режим включён, и окно правки поверх всего. */
-#txbar{position:fixed;left:12px;right:12px;top:calc(10px + var(--tg-content-safe-area-inset-top,0px));z-index:130;
+#txbar{position:fixed;left:12px;right:12px;top:calc(10px + var(--tg-safe-area-inset-top,0px) + var(--tg-content-safe-area-inset-top,0px));z-index:130;
   display:none;align-items:center;gap:10px;padding:8px 8px 8px 14px;border-radius:18px;
   background:rgba(28,28,30,.92);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);
   box-shadow:0 0 0 1px rgba(64,200,224,.45),0 10px 30px rgba(0,0,0,.5);font-size:14px;font-weight:600}
@@ -715,11 +715,11 @@ nav{grid-template-columns:repeat(5,minmax(0,1fr))}
 #txbar span{flex:1;min-width:0;line-height:1.25}
 #txbar button{height:34px;padding:0 14px;border:none;border-radius:12px;background:var(--teal);color:#000;
   font-weight:700;font-size:14px}
-body.txedit main{padding-top:calc(66px + var(--tg-content-safe-area-inset-top,0px))}
-body.txedit .toast{top:calc(68px + var(--tg-content-safe-area-inset-top,0px))}
+body.txedit main{padding-top:calc(66px + var(--tg-safe-area-inset-top,0px) + var(--tg-content-safe-area-inset-top,0px))}
+body.txedit .toast{top:calc(68px + var(--tg-safe-area-inset-top,0px) + var(--tg-content-safe-area-inset-top,0px))}
 body.txedit,body.txedit *{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 #txed{position:fixed;inset:0;z-index:300;display:none;align-items:flex-start;justify-content:center;
-  padding:calc(11vh + var(--tg-content-safe-area-inset-top,0px)) 16px 16px;background:rgba(0,0,0,.55);
+  padding:calc(11vh + var(--tg-safe-area-inset-top,0px) + var(--tg-content-safe-area-inset-top,0px)) 16px 16px;background:rgba(0,0,0,.55);
   -webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
 #txed.on{display:flex}
 #txed *{-webkit-user-select:auto;user-select:auto}
@@ -913,9 +913,9 @@ body.nuked .hero,body.nuked .gcard,body.nuked .group,body.nuked .card,body.nuked
   box-shadow:inset 0 0 0 1px rgba(255,120,40,.3),inset 0 -14px 26px -14px rgba(255,90,20,.35)}
 body.nuked .brandrow b{color:#ffb347;text-shadow:0 0 12px rgba(255,90,20,.7)}
 /* мутанты: своя часть подарка и чужая, переливается цветом и подрагивает */
-.art.mutant>img,.art.mutant>.lot,.art.mutant>.mono{clip-path:var(--mclip)}
+.art.mutant>img,.art.mutant>.lot{clip-path:var(--mclip)}
 .art .mutpart{position:absolute;inset:0;z-index:2;pointer-events:none;
-  filter:hue-rotate(var(--hue)) saturate(1.4) drop-shadow(0 0 6px rgba(157,255,92,.6));animation:mutJit 2.6s steps(1) infinite}
+  filter:drop-shadow(0 0 5px rgba(157,255,92,.55));animation:mutJit 2.6s steps(1) infinite}
 .art .mutpart>.art{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;
   margin:0!important;top:0!important;right:0!important;bottom:0!important;left:0!important;filter:none!important;animation:none!important}
 @keyframes mutJit{0%,86%,100%{transform:none}88%{transform:translate(2px,-1px) skewX(6deg)}91%{transform:translate(-3px,1px)}94%{transform:translate(1px,2px) skewX(-5deg)}}
@@ -4973,18 +4973,16 @@ function fireStart(){
   }, 160);
 }
 
-/* Мутация подарков: поверх подарка кладётся ДРУГОЙ подарок, обрезанный по фигуре,
-   а сам подарок обрезается по дополняющей фигуре - выходит один подарок из частей
-   двух. Чужая часть играет свою анимацию (до 4 разом, остальные - картинкой) и
-   переливается цветом. */
+/* Мутация подарков: поверх подарка кладётся ДРУГАЯ МОДЕЛЬ той же коллекции,
+   обрезанная по фигуре, а сам подарок обрезается по дополняющей фигуре - выходит один
+   подарок из частей двух моделей (так попросил владелец: не чужие коллекции, а модели
+   этой). Чужая часть играет свою анимацию (до 4 разом, остальные - картинкой). */
 const MUT_SHAPES = [
   ["polygon(0 0,100% 0,100% 48%,0 58%)", "polygon(0 58%,100% 48%,100% 100%,0 100%)"],
   ["polygon(0 0,52% 0,44% 100%,0 100%)", "polygon(52% 0,100% 0,100% 100%,44% 100%)"],
   ["polygon(0 0,100% 0,0 100%)", "polygon(100% 0,100% 100%,0 100%)"],
   ["circle(30% at 50% 45%)", "polygon(0 0,100% 0,100% 100%,0 100%,0 45%,20% 45%,23% 63%,35% 72%,50% 75%,65% 72%,77% 63%,80% 45%,77% 27%,65% 18%,50% 15%,35% 18%,23% 27%,20% 45%,0 45%)"],
 ];
-const MUT_POOL = ["Plush Pepe|Ninja Mike", "Loot Bag|Pepe Bag", "Swiss Watch|DeLorean", "Durov's Cap|RGB Glitch",
-  "Ion Gem|", "Jelly Bunny|", "Homemade Cake|", "Signet Ring|", "Toy Bear|", "Magic Potion|"];
 let mutLive = 0;
 function mutateArts(root){
   if(!NUKED) return;
@@ -4992,20 +4990,23 @@ function mutateArts(root){
     // в игре подарок должен быть узнаваемым; чужой кусок мутанта сам не мутирует
     if(el.closest(".gstage") || el.closest(".mutpart")) return;
     el.dataset.mut = "1";
-    const own = `${el.dataset.ac}|${el.dataset.am}`;
-    const pool = MUT_POOL.filter((p) => p !== own);
-    const [coll, model] = pool[Math.floor(Math.random() * pool.length)].split("|");
-    const [mine, theirs] = MUT_SHAPES[Math.floor(Math.random() * MUT_SHAPES.length)];
-    el.style.setProperty("--mclip", theirs);
-    el.classList.add("mutant");
-    const part = document.createElement("div");
-    part.className = "mutpart";
-    part.style.clipPath = mine;
-    part.style.setProperty("--hue", Math.floor(Math.random() * 360) + "deg");
-    part.innerHTML = art(coll, model, "", mutLive < 4);
-    if(mutLive < 4) mutLive++;
-    el.appendChild(part);
-    hydrateArt(part);
+    const coll = el.dataset.ac, own = el.dataset.am || "";
+    // список моделей коллекции - тот же, что в выборе моделей (кэшируется)
+    loadCatalog(coll).then((cat) => {
+      const models = ((cat && cat.models) || []).map((m) => m.name).filter((n) => n && n !== own);
+      if(!models.length || !document.body.contains(el) || el.querySelector(".mutpart")) return;
+      const model = models[Math.floor(Math.random() * models.length)];
+      const [mine, theirs] = MUT_SHAPES[Math.floor(Math.random() * MUT_SHAPES.length)];
+      el.style.setProperty("--mclip", theirs);
+      el.classList.add("mutant");
+      const part = document.createElement("div");
+      part.className = "mutpart";
+      part.style.clipPath = mine;
+      part.innerHTML = art(coll, model, "", mutLive < 4);
+      if(mutLive < 4) mutLive++;
+      el.appendChild(part);
+      hydrateArt(part);
+    }).catch(() => { /* список моделей не загрузился - подарок остаётся как был */ });
   });
 }
 
@@ -6392,7 +6393,18 @@ document.addEventListener("touchmove", (e) => { if(e.touches.length > 1) e.preve
 
 if(TG){
   TG.ready(); TG.expand();
-  try{ TG.onEvent && TG.onEvent("viewportChanged", moveInd); }catch(e){ /* старый клиент без события */ }
+  /* На весь экран, без шапки Telegram (Telegram 8.0 и новее). Только на телефоне:
+     на компьютере приложение на весь монитор только мешает. Старый Telegram
+     полноэкранного режима не знает - тогда остаётся обычное развёрнутое окно. */
+  try{
+    if(TG.requestFullscreen && TG.isVersionAtLeast && TG.isVersionAtLeast("8.0") &&
+       ["ios", "android"].includes(TG.platform) && !TG.isFullscreen) TG.requestFullscreen();
+  }catch(e){ /* не поддерживается - остаёмся в обычном окне */ }
+  try{
+    if(TG.onEvent){
+      ["viewportChanged", "fullscreenChanged", "safeAreaChanged", "contentSafeAreaChanged"].forEach((ev) => TG.onEvent(ev, moveInd));
+    }
+  }catch(e){ /* старый клиент без событий */ }
   try{ TG.disableVerticalSwipes && TG.disableVerticalSwipes(); }catch(e){}
   try{ TG.setHeaderColor("#000000"); TG.setBackgroundColor("#000000"); TG.setBottomBarColor && TG.setBottomBarColor("#000000"); }catch(e){}
   if(TG.BackButton) TG.BackButton.onClick(() => {
