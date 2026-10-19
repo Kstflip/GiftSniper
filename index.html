@@ -796,6 +796,76 @@ input[type=datetime-local]{display:block;width:100%;min-width:0;max-width:100%;b
   padding:0 12px;border-radius:15px;border:none;background:var(--s1);color:var(--text);font-size:15px;
   color-scheme:dark;-webkit-appearance:none;appearance:none}
 .bnprops input[type=datetime-local],.bnprops input[type=text]{background:var(--s2)}
+/* ---------- технические работы, «назад», маркеты, кнопки портфеля, без анимаций ---------- */
+#maint{position:fixed;inset:0;z-index:400;display:none;align-items:center;justify-content:center;padding:24px;
+  background:radial-gradient(circle at 50% 35%,#0d1a33,#000 70%)}
+#maint.on{display:flex}
+#maint .mt-box{display:flex;flex-direction:column;align-items:center;text-align:center;gap:10px;max-width:320px}
+#maint .mt-logo{width:96px;height:96px;margin-bottom:8px;animation:bob 3s ease-in-out infinite}
+#maint .mt-logo svg{width:100%;height:100%}
+#maint b{font-size:24px;font-weight:850;letter-spacing:-.4px}
+#maint span{color:var(--muted);font-size:15px;line-height:1.45}
+#maint .btn{margin-top:14px;width:auto;padding:0 22px}
+.x.back{right:auto;left:16px}
+.grid.mk .opt .mk{width:30px;height:30px;flex:0 0 30px;border-radius:50%;overflow:hidden;display:grid;place-items:center;
+  -webkit-line-clamp:unset;max-width:none}
+.grid.mk .opt .mk img,.grid.mk .opt .mk svg{width:100%;height:100%}
+.grid.mk .opt>span:not(.mk){flex:1;min-width:0;text-align:left;-webkit-line-clamp:2;font-size:13.5px;line-height:1.2}
+.pfbtns .btn{min-width:0;padding:0 10px;gap:7px;font-size:15px}
+.pfbtns .btn span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+.ndot{width:8px;height:8px;border-radius:50%;background:var(--s4);flex:0 0 8px}
+.ndot.on{background:var(--green);box-shadow:0 0 8px var(--green)}
+.noanim *,.noanim *::before,.noanim *::after{animation:none!important;transition:none!important}
+.delta+.since,.since{font-style:normal;font-size:11px;color:var(--muted);font-weight:600;margin-left:4px}
+#hh-chart svg{height:120px}
+/* ---------- вкладка «Оценка» ---------- */
+nav{grid-template-columns:repeat(6,1fr)}
+.tab{font-size:10px;letter-spacing:-.2px}
+.tab .ico{width:23px;height:23px}
+.evin input{margin-bottom:10px}
+.evres{margin-top:4px}
+.evhero{position:relative;border-radius:var(--r-l);overflow:hidden;text-align:center;padding:16px 12px 14px;
+  background:radial-gradient(circle at 50% 40%,var(--c1),var(--c2) 75%)}
+.evhero .art{width:170px;height:170px;margin:0 auto;position:relative;z-index:1;filter:drop-shadow(0 14px 24px rgba(0,0,0,.4))}
+.evhero b{display:block;position:relative;z-index:1;font-size:22px;font-weight:850;margin-top:6px;text-shadow:0 2px 6px rgba(0,0,0,.4)}
+.evhero small{position:relative;z-index:1;color:rgba(255,255,255,.75);font-size:13px}
+.evpat{position:absolute;inset:0;opacity:.18;background-image:var(--pat);background-size:44px 44px;background-repeat:repeat;
+  background-position:center;filter:brightness(0) invert(1);-webkit-mask-image:radial-gradient(circle at 50% 40%,transparent 22%,#000 46%);
+  mask-image:radial-gradient(circle at 50% 40%,transparent 22%,#000 46%)}
+.evattrs{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:8px}
+.evc{display:flex;align-items:center;gap:6px;background:var(--s1);border-radius:14px;padding:7px 7px;min-width:0}
+.evc .art.mini,.evc .evsw,.evc .evpi{width:28px;height:28px;flex:0 0 28px}
+.evc .evsw{border-radius:50%;display:block}
+.evc .evpi{object-fit:contain;filter:brightness(0) invert(.85)}
+.evc span{display:flex;flex-direction:column;min-width:0;line-height:1.15}
+.evc small{font-size:10px;color:var(--muted)}
+.evc b{font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.evc i{font-style:normal;font-size:11px;color:#ffd60a;font-weight:700}
+.chip.mono .ico{color:var(--green)}
+.simbd{font-style:normal;font-size:11px;color:var(--orange);font-weight:600}
+.srow .t span{white-space:normal}
+/* ---------- блоки экранов (правка владельцем) ---------- */
+.blk-hidden{display:none!important}
+.blk-dim{opacity:.3}
+.blkbar{display:flex;align-items:center;gap:6px;margin:14px 0 4px;padding:6px 8px 6px 12px;border-radius:12px;
+  background:rgba(64,200,224,.14);box-shadow:inset 0 0 0 1px rgba(64,200,224,.45);font-size:12px;color:#9be7f5}
+.blkbar.off{background:rgba(255,69,58,.12);box-shadow:inset 0 0 0 1px rgba(255,69,58,.45);color:#ff8a80}
+.blkbar span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:600}
+.blkbar button{width:30px;height:30px;border-radius:9px;background:rgba(255,255,255,.1);display:grid;place-items:center}
+.blkbar button:disabled{opacity:.3}
+.blkbar .ico{width:16px;height:16px}
+#blkdone{position:fixed;left:12px;right:12px;top:calc(10px + var(--tg-safe-area-inset-top,0px) + var(--tg-content-safe-area-inset-top,0px));
+  z-index:130;display:none;align-items:center;gap:10px;padding:10px 10px 10px 14px;border-radius:16px;background:#0f3b44;
+  box-shadow:0 8px 30px rgba(0,0,0,.5);font-size:13px}
+#blkdone span{flex:1}
+#blkdone button{height:34px;padding:0 14px;border-radius:11px;background:#40c8e0;color:#000;font-weight:700}
+body.blkedit main{padding-top:calc(70px + var(--tg-safe-area-inset-top,0px) + var(--tg-content-safe-area-inset-top,0px))}
+/* узкий экран: подсказка у логотипа сжимается, а не выталкивает баланс за край */
+.brandrow.home{min-width:0}
+.brandrow.home>b{flex:0 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.brandrow .taphint{flex:0 1 auto;min-width:0;overflow:hidden;white-space:nowrap;font-size:11px}
+.brandrow .starpill,.brandrow .nukebtn,.brandrow .lgbtn{flex-shrink:0}
+.who-row .t span{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 /* ---------- прибыль, оценка подарка, слежка ---------- */
 .pnl{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:center;gap:4px 8px;margin:-6px 0 14px;font-size:15px}
 .pnl b{font-size:17px}
@@ -1023,6 +1093,7 @@ body.nuked .brandrow b{color:#ffb347;text-shadow:0 0 12px rgba(255,90,20,.7)}
   <symbol id="i-ban" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.6"/><path d="m6 6 12 12"/></symbol>
   <symbol id="i-users" viewBox="0 0 24 24"><circle cx="9" cy="8.4" r="3.3"/><path d="M3 19.5c.7-3.4 3.1-5.1 6-5.1s5.3 1.7 6 5.1"/><path d="M16 5.5a3.3 3.3 0 0 1 0 6.3M17.4 14.8c2 .7 3.3 2.3 3.7 4.7"/></symbol>
   <symbol id="i-card" viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="12.4" rx="2.6"/><path d="M3 10.2h18M6.5 14.6h3.5"/></symbol>
+  <symbol id="i-gem" viewBox="0 0 24 24"><path d="M7 4h10l4 5-9 11L3 9z"/><path d="M3 9h18M9.5 4 8 9l4 11 4-11-1.5-5"/></symbol>
   <symbol id="i-nuke" viewBox="0 0 24 24"><circle cx="12" cy="12" r="2"/><path d="M10.4 9.4 7 3.6A9.5 9.5 0 0 1 17 3.6l-3.4 5.8a3 3 0 0 0-3.2 0z"/><path d="M10.4 9.4 7 3.6A9.5 9.5 0 0 1 17 3.6l-3.4 5.8a3 3 0 0 0-3.2 0z" transform="rotate(120 12 12)"/><path d="M10.4 9.4 7 3.6A9.5 9.5 0 0 1 17 3.6l-3.4 5.8a3 3 0 0 0-3.2 0z" transform="rotate(240 12 12)"/></symbol>
   <symbol id="i-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.6"/><circle cx="12" cy="12" r="4.6"/><circle cx="12" cy="12" r="1"/></symbol>
   <symbol id="i-medal" viewBox="0 0 24 24"><path d="M8 3h8l-2.4 6.2M8 3l2.4 6.2"/><circle cx="12" cy="14.6" r="5.8"/><path d="m12 11.6 1 2 2.2.3-1.6 1.5.4 2.2-2-1-2 1 .4-2.2-1.6-1.5 2.2-.3z"/></symbol>
@@ -1048,6 +1119,7 @@ body.nuked .brandrow b{color:#ffb347;text-shadow:0 0 12px rgba(255,90,20,.7)}
   <section class="view on" id="v-home"></section>
   <section class="view" id="v-sniper"></section>
   <section class="view" id="v-flip"></section>
+  <section class="view" id="v-eval"></section>
   <section class="view" id="v-portfolio"></section>
   <section class="view" id="v-profile"></section>
   <section class="view" id="v-settings"></section>
@@ -1061,6 +1133,7 @@ body.nuked .brandrow b{color:#ffb347;text-shadow:0 0 12px rgba(255,90,20,.7)}
   <button class="tab on" data-go="home"><svg class="ico"><use href="#i-home"/></svg>Главная</button>
   <button class="tab" data-go="sniper"><svg class="ico"><use href="#i-scope"/></svg>Улучшения</button>
   <button class="tab" data-go="flip"><svg class="ico"><use href="#i-flip"/></svg>Листинги</button>
+  <button class="tab" data-go="eval"><svg class="ico"><use href="#i-gem"/></svg>Оценка</button>
   <button class="tab" data-go="portfolio"><svg class="ico"><use href="#i-case"/></svg>Портфель</button>
   <button class="tab" data-go="profile"><span class="me" id="tab-me"><svg class="ico" style="width:18px;height:18px"><use href="#i-user"/></svg></span>Профиль</button>
 </nav>
@@ -1089,7 +1162,20 @@ if(P.get("shots") === "1"){
   };
   window.cancelAnimationFrame = (id) => clearTimeout(id);
 }
-const REDUCED = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+/* Без движения: системное «уменьшить движение» или переключатель «Анимации» в
+   настройках приложения (хранится на этом устройстве). Тогда подарки - картинками,
+   без искр, вспышек и плавных переходов. */
+let ANIM_OFF = false;
+try{ ANIM_OFF = localStorage.getItem("gs_anim") === "0"; }catch(e){ ANIM_OFF = false; }
+let REDUCED = ANIM_OFF || !!(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches);
+if(ANIM_OFF) document.documentElement.classList.add("noanim");
+function setAnimOff(off){
+  ANIM_OFF = !!off;
+  try{ localStorage.setItem("gs_anim", off ? "0" : "1"); }catch(e){ /* не запомнится - только до перезагрузки */ }
+  REDUCED = ANIM_OFF || !!(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches);
+  document.documentElement.classList.toggle("noanim", ANIM_OFF);
+  if(ANIM_OFF) ART.live.forEach((el) => { if(el._anim) el._anim.pause(); });
+}
 
 const $ = (id) => document.getElementById(id);
 const esc = (s) => String(s == null ? "" : s).replace(/[&<>"']/g,
@@ -1382,6 +1468,8 @@ function art(coll, model, cls, anim){
    больше LIVE_MAX: каждая Lottie - отдельная SVG-сцена, и десяток сразу заметно
    тормозил телефон. Ушёл с экрана - пауза. */
 const LIVE_MAX = 5;
+// после ядерного взрыва у каждого подарка две анимации (своя и чужой модели)
+const liveMax = () => (typeof NUKED !== "undefined" && NUKED ? 10 : LIVE_MAX);
 const ioArt = "IntersectionObserver" in window ? new IntersectionObserver((list) => {
   list.forEach((en) => {
     const el = en.target;
@@ -1463,10 +1551,10 @@ function getJson(u){
   return ART.json.get(u);
 }
 async function playArt(el){
-  if(!el._json || !window.lottie || !document.body.contains(el)) return;
+  if(!el._json || !window.lottie || !document.body.contains(el) || REDUCED) return;
   if(el._anim){
     el._anim.play(); ART.live.add(el);
-    if(ART.live.size > LIVE_MAX){
+    if(ART.live.size > liveMax()){
       const old = [...ART.live].find((x) => x !== el && !x.closest(".shero"));
       if(old && old._anim){ old._anim.pause(); ART.live.delete(old); }
     }
@@ -1492,7 +1580,7 @@ async function playArt(el){
     el._anim.addEventListener("data_failed", () => { box.remove(); el._anim = null; });
     ART.live.add(el);
     // Одновременно играет ограниченное число: телефону тяжело больше.
-    if(ART.live.size > LIVE_MAX){
+    if(ART.live.size > liveMax()){
       const old = [...ART.live].find((x) => x !== el && !x.closest(".shero"));
       if(old && old._anim){ old._anim.pause(); ART.live.delete(old); }
     }
@@ -1528,6 +1616,40 @@ function toast(text, icon){
 }
 
 /* ===================== СВЯЗЬ ===================== */
+/* Экран «Идут технические работы»: бот не отвечает. Раз в 10 секунд пробуем снова и,
+   как только бот ответил, сами возвращаемся к приложению. */
+let MAINT = false, maintTimer = 0;
+function maintenance(on){
+  if(on === MAINT) return;
+  MAINT = on;
+  let el = $("maint");
+  if(on){
+    if(!el){
+      el = document.createElement("div");
+      el.id = "maint";
+      el.innerHTML = `<div class="mt-box"><div class="mt-logo">${BRAND.svg}</div><b>Идут технические работы</b>
+        <span>Скоро всё заработает. Приложение откроется само, как только бот вернётся.</span>
+        <button class="btn" id="mt-retry">${ic("clock")}Попробовать сейчас</button></div>`;
+      document.body.appendChild(el);
+      $("mt-retry").onclick = () => { haptic(); maintRetry(); };
+    }
+    el.classList.add("on");
+    clearInterval(maintTimer);
+    maintTimer = setInterval(maintRetry, 10000);
+  } else {
+    clearInterval(maintTimer);
+    if(el) el.classList.remove("on");
+  }
+}
+async function maintRetry(){
+  try{
+    const d = await call("state", {});
+    if(d){
+      setState(d.uid ? d : (d.state || S));
+      if(typeof bootDone !== "undefined" && !bootDone) location.reload(); else render();
+    }
+  }catch(e){ /* всё ещё недоступен - экран остаётся */ }
+}
 async function call(action, payload){
   if(DEMO){
     // демо отвечает тем же видом, что и бот: новое состояние применяем так же
@@ -1535,13 +1657,20 @@ async function call(action, payload){
     if(d && d.state) setState(d.state);
     return d;
   }
-  const res = await fetch(`${API}/api/${action}`, {
-    method: "POST", headers: { "Content-Type": "text/plain;charset=UTF-8" },
-    body: JSON.stringify({ initData: TG ? TG.initData : "", payload: payload || {} })
-  });
+  let res;
+  try{
+    res = await fetch(`${API}/api/${action}`, {
+      method: "POST", headers: { "Content-Type": "text/plain;charset=UTF-8" },
+      body: JSON.stringify({ initData: TG ? TG.initData : "", payload: payload || {} })
+    });
+  }catch(e){ maintenance(true); throw new Error("Идут технические работы"); }
   let data = null;
   try{ data = await res.json(); }catch(e){ data = null; }
+  // Бот выключен: туннель отвечает своей страницей (не нашим JSON) или 5xx. Человеку
+  // это показываем как технические работы, без слов про сеть, туннель и адреса.
+  if(!data && (res.status >= 500 || res.status === 404)){ maintenance(true); throw new Error("Идут технические работы"); }
   if(!res.ok) throw new Error((data && data.error) || `ошибка ${res.status}`);
+  if(MAINT) maintenance(false);
   if(data && data.state) setState(data.state);
   return data;
 }
@@ -1553,6 +1682,7 @@ function setState(st){
   if(S.effects) applyEffects(S.effects);
   if(S.lang) setLang(S.lang);
   if(S.texts) setTexts(S.texts);
+  if(S.layout && typeof S.layout === "object") LAYOUT = S.layout;
   txEditMode(TXEDIT);
 }
 async function save(action, payload, msg){
@@ -1593,7 +1723,7 @@ function startRefresh(){
 }
 
 /* ===================== НАВИГАЦИЯ ===================== */
-const ORDER = ["home", "sniper", "flip", "portfolio", "profile"];
+const ORDER = ["home", "sniper", "flip", "eval", "portfolio", "profile"];
 function moveInd(){
   const tab = document.querySelector(`nav .tab[data-go="${ORDER.includes(VIEW) ? VIEW : "profile"}"]`);
   const ind = $("ind");
@@ -1752,9 +1882,10 @@ function render(){
   }
   if(pend) document.querySelector('nav .tab[data-go="sniper"]').insertAdjacentHTML("beforeend",
     `<span class="badge">${pend}</span>`);
-  const paint = { home: renderHome, sniper: renderSniper, flip: renderFlip, portfolio: renderPortfolio,
+  const paint = { home: renderHome, sniper: renderSniper, flip: renderFlip, eval: renderEval, portfolio: renderPortfolio,
      profile: renderProfile, settings: renderSettings, admin: renderAdmin }[VIEW] || renderHome;
   keepArts($("v-" + VIEW), paint);
+  applyLayout(VIEW);
   after($("v-" + VIEW));
 }
 /* Перерисовка экрана без перезагрузки картинок. Экран собирается заново целиком
@@ -2029,7 +2160,8 @@ function celebrateSlot(){
    Стоимость считает бот раз в час, в начале часа и одинаково для всех. Добавление
    подарка не рисует ступеньку: портфель не подорожал, в него положили ещё один
    подарок. «За 24 часа» - от того же часа вчера. */
-const CH_W = 340, CH_H = 150, CH_PAD = 8;     // размеры графика; перекрестие считает по ним же
+const CH_W = 340, CH_H = 150, CH_PAD = 8;
+let CH_N = 0;     // размеры графика; перекрестие считает по ним же
 function chartSvg(points, marks){
   if(!points || points.length < 2) return "";
   const W = CH_W, H = CH_H, pad = CH_PAD;
@@ -2051,10 +2183,12 @@ function chartSvg(points, marks){
       esc(m.title || "добавлен подарок")}</title></circle>`;
   }).join("");
   const last = points[points.length - 1];
+  // у каждого графика свой id градиента: на странице их бывает два (портфель и подарок)
+  const gid = "pg" + (++CH_N);
   return `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none">
-    <defs><linearGradient id="pg" x1="0" y1="0" x2="0" y2="1">
+    <defs><linearGradient id="${gid}" x1="0" y1="0" x2="0" y2="1">
       <stop offset="0" stop-color="${col}" stop-opacity=".32"/><stop offset="1" stop-color="${col}" stop-opacity="0"/></linearGradient></defs>
-    <path d="${area}" fill="url(#pg)"/>
+    <path d="${area}" fill="url(#${gid})"/>
     <path class="cline" d="${line}" fill="none" stroke="${col}" stroke-width="2.6" stroke-linejoin="round"
       stroke-linecap="round" vector-effect="non-scaling-stroke"/>
     ${dots}<circle cx="${px(last.t).toFixed(1)}" cy="${py(last.v).toFixed(1)}" r="4.5" fill="#fff"/></svg>`;
@@ -2062,6 +2196,31 @@ function chartSvg(points, marks){
 let portRange = "24h", portShown = null;
 const RANGES = { "24h": 24 * 3600e3, "week": 7 * 86400e3, "month": 30 * 86400e3 };
 const RANGE_NAMES = { "24h": "24 часа", "week": "Неделя", "month": "Месяц" };
+/* Точки истории - раз в час, но бывают пропуски (бот был выключен): тогда тянем
+   последнее значение на каждый час, чтобы график и перекрестие показывали любой
+   прошлый час, а не только моменты изменения цены. */
+/* Изменение подарка за выбранный на графике срок. Лежит в портфеле меньше срока -
+   изменение с момента добавления и подпись «за 3 дн.». */
+function holdChange(h){
+  const c = (h.changes || {})[portRange];
+  if(c && c.pct != null) return { pct: c.pct, since: c.since };
+  return portRange === "24h" ? { pct: h.change_24h, since: null } : { pct: null, since: null };
+}
+function sinceLabel(ts){
+  const s = Date.now() / 1000 - ts;
+  return s < 86400 ? `за ${Math.max(1, Math.round(s / 3600))} ч` : `за ${Math.round(s / 86400)} дн.`;
+}
+function fillHours(points){
+  if(!points || points.length < 2) return points || [];
+  const H = 3600e3, out = [];
+  for(let i = 0; i < points.length; i++){
+    out.push(points[i]);
+    const next = points[i + 1];
+    if(!next) break;
+    for(let t = points[i].t + H; t < next.t - H / 2 && out.length < 2000; t += H) out.push({ t, v: points[i].v });
+  }
+  return out;
+}
 function cutRange(points, key){
   const span = RANGES[key];
   if(!points || !points.length || !span) return points || [];
@@ -2081,7 +2240,12 @@ function bindCrosshair(box, points){
      уезжала за экран. Подсказка - над точкой, у верхнего края - под ней, и никогда
      не выходит за края графика. */
   const show = (clientX) => {
-    const r = svg.getBoundingClientRect();
+    // Всё - в собственных размерах графика, без масштаба страницы: после ядерного
+    // взрыва экран уменьшен, и точка от экранных размеров уезжала мимо линии.
+    const rb = box.getBoundingClientRect(), k = box.offsetWidth / (rb.width || 1);
+    const rs = svg.getBoundingClientRect();
+    const r = { left: rb.left, width: rs.width * k, height: rs.height * k };
+    clientX = rb.left + (clientX - rb.left) * k;
     const padX = CH_PAD / CH_W * r.width, padYpx = CH_PAD / CH_H * r.height;
     const iw = r.width - padX * 2, ih = r.height - padYpx * 2;
     const x = Math.min(Math.max(clientX - r.left - padX, 0), iw);
@@ -2130,7 +2294,7 @@ async function renderPortfolio(useCache){
 }
 function paintPortfolio(p){
   const items = p.items || [], all = p.chart || [];
-  const pts = cutRange(all, portRange);
+  const pts = fillHours(cutRange(all, portRange));
   const vals = pts.map((x) => x.v);
   const lo = vals.length ? Math.min(...vals) : 0, hi = vals.length ? Math.max(...vals) : 0;
   const enough = all.length > 1 && (all[all.length - 1].t - all[0].t) >= RANGES[portRange] * .5;
@@ -2152,9 +2316,9 @@ function paintPortfolio(p){
       ${all.length > 1 && !enough ? `<div class="hint">Данных за этот срок ещё мало - показываю всё, что накопилось.</div>` : ""}
       <div class="minmax"><div class="lo"><span>минимум</span><b class="num">${fmtTon(lo)}</b></div>
         <div class="hi"><span>максимум</span><b class="num">${fmtTon(hi)}</b></div></div>
-      <div class="two" style="margin-top:12px"><button class="btn" id="pf-ntf">${ic("bell")}Уведомления ${
-        (p.notify && p.notify.on) ? `<span class="chip on" style="height:24px">вкл</span>` : `<span class="chip off" style="height:24px">выкл</span>`}</button>
-        ${items.length ? `<button class="btn" id="pf-share">${ic("share")}Поделиться</button>` : ""}</div>
+      <div class="two pfbtns" style="margin-top:12px"><button class="btn" id="pf-ntf">${ic("bell")}<span>Уведомления</span><i class="ndot ${
+        (p.notify && p.notify.on) ? "on" : ""}"></i></button>
+        ${items.length ? `<button class="btn" id="pf-share">${ic("share")}<span>Поделиться</span></button>` : ""}</div>
     </div>
     ${items.length ? `<div class="sec big">Мои подарки<span class="muted" style="font-size:15px;font-weight:500">${items.length}</span></div>
       <div class="ggrid">${items.map((h) => `
@@ -2163,19 +2327,18 @@ function paintPortfolio(p){
           <div class="nm">${esc(h.title || h.slug)}</div>
           <div class="sb">${esc(h.model || "любая модель")} · ${h.qty} шт.</div>
           <div class="pr"><span>${ic("ton")}${fmtTon(h.value)}</span></div>
-          <div class="pr dlrow"><span class="dl">${deltaHtml(h.change_24h)}</span>${h.pnl != null
+          <div class="pr dlrow"><span class="dl">${(() => { const c = holdChange(h);
+            return c.pct == null ? `<span class="delta">-</span>` : deltaHtml(c.pct) + (c.since ? `<i class="since">${sinceLabel(c.since)}</i>` : ""); })()}</span>${h.pnl != null
             ? `<span class="dl ${h.pnl >= 0 ? "pup" : "pdn"}">${h.pnl >= 0 ? "+" : ""}${fmtTon(h.pnl)}</span>` : ""}</div>
         </button>`).join("")}</div>`
       : `<div class="empty" style="margin-top:12px"><div class="art">${BRAND.svg}</div><b>Портфель пуст</b>
-         Добавь подарки - посчитаю общую стоимость и изменение за сутки.</div>`}
-    ${watchesBlockHtml()}`;
+         Добавь подарки - посчитаю общую стоимость и изменение за сутки.</div>`}`;
   countTo($("pf-total"), p.total, portShown);
   portShown = p.total;
   $("v-portfolio").querySelectorAll("[data-hold]").forEach((el) => el.onclick = () =>
     editHolding(items.find((x) => String(x.id) === el.dataset.hold), el.querySelector(".art")));
   $("pf-ntf").onclick = () => portfolioNotify(p.notify || {});
   if($("pf-share")) $("pf-share").onclick = () => shareCard("portfolio");
-  bindWatches();
   bindSeg("rng", (k) => {
     portRange = k;
     const box = $("v-portfolio").querySelector(".chart");
@@ -2244,11 +2407,22 @@ function renderSettings(){
     <div class="sec">Язык</div>
     ${segHtml("lang", [["ru", "Русский"], ["en", "English"]], S.lang)}
     ${quietHtml((S.settings || {}).quiet)}
+    <div class="sec">Экран</div>
+    <div class="group plain"><div class="row"><span class="t"><b>Анимации</b>
+      <span>подарки, искры, вспышки и плавные переходы. Выключи на слабом телефоне</span></span>
+      <button class="tgl ${ANIM_OFF ? "" : "on"}" id="st-anim"></button></div></div>
     <div class="sec">Отчёт</div>
     <div class="group plain"><div class="row"><span class="t"><b>Еженедельный отчёт</b>
       <span>в воскресенье в 19:00: портфель за неделю, находки бота, движения рынка</span></span>
       <button class="tgl ${(S.settings || {}).digest !== false ? "on" : ""}" id="st-digest"></button></div></div>`;
   bindGo($("v-settings"));
+  $("st-anim").onclick = () => {
+    const on = !$("st-anim").classList.contains("on");
+    $("st-anim").classList.toggle("on", on); haptic();
+    setAnimOff(!on);
+    toast(on ? "Анимации включены" : "Анимации выключены");
+    if(on) setTimeout(() => after(document), 50);
+  };
   $("st-digest").onclick = async () => {
     const on = !$("st-digest").classList.contains("on");
     $("st-digest").classList.toggle("on", on); haptic();
@@ -2272,6 +2446,7 @@ function renderAdmin(){
     ["bcast", "blue", "share", "Рассылка", "сообщение всем"],
     ["fx", "indigo", "spark", "Эффекты", `включено ${onCount} из ${FX_KEYS.length}`],
     ["banners", "purple", "mega", "Баннеры", S.banners_on === false ? "выключены" : `своих ${(S.banners || []).length}`],
+    ["layout", "teal", "chart", "Блоки экранов", BLKEDIT ? "режим правки включён" : "скрыть и переставить блоки"],
     ["texts", "teal", "edit", "Надписи", TXEDIT ? "режим правки включён"
       : Object.keys(TX).length ? `изменено ${Object.keys(TX).length}` : "поменять любой текст"],
     ["ntf", "red", "bell", "Уведомления владельцу",
@@ -2293,7 +2468,7 @@ function renderAdmin(){
   bindGo($("v-admin"));
   const map = { colls: adminCollections, bcast: adminBroadcast, promo: adminPromo, ban: adminBans,
     give: adminGive, price: adminPrice, notice: adminNotice, ntf: adminNtf, tickets: adminTickets, fx: adminEffects,
-    texts: adminTexts, banners: adminBanners };
+    texts: adminTexts, banners: adminBanners, layout: adminLayout };
   $("v-admin").querySelectorAll("[data-adm]").forEach((b) => b.onclick = () => {
     const fn = map[b.dataset.adm];
     // Строку добавили, а экран забыли - говорим прямо, а не «скоро появится».
@@ -2310,9 +2485,13 @@ let sheetTimer = 0;
 /* Проверка перед закрытием: карточка коллекции сохраняет изменения сама, когда её
    закрывают. Вернула false - ошибка, окно остаётся открытым и показывает причину. */
 let SHEET_GUARD = null;
+/* Шаг назад: история цен и ценовой алерт, открытые из карточки, возвращают в неё
+   (кнопка со стрелкой и системная «назад» Telegram). */
+let SHEET_BACK = null;
 function openSheet(html){
   clearTimeout(sheetTimer);
   SHEET_GUARD = null;
+  SHEET_BACK = null;
   $("panel").innerHTML = `<div class="grip"></div>` + html;
   $("panel").scrollTop = 0;
   $("sheet").classList.remove("closing");
@@ -2639,7 +2818,8 @@ async function pickCollection(done, title){
     if(!box) return;
     if(COLLS === null){ box.innerHTML = `<div class="hint" style="grid-column:1/-1">Список коллекций недоступен - попробуй позже.</div>`; return; }
     const q = (f || "").toLowerCase();
-    const list = COLLS.filter((x) => !q || String(x.name || x).toLowerCase().includes(q)).slice(0, 90);
+    // все коллекции: раньше показывались первые 90 по цене, и дешёвые пропадали
+    const list = COLLS.filter((x) => !q || String(x.name || x).toLowerCase().includes(q));
     box.innerHTML = list.length ? list.map((x) => {
       const n = x.name || x;
       const f = (FLOORS || {})[norm(n)];
@@ -2704,7 +2884,7 @@ async function editColl(cid){
   const s1 = mp.bind(), s2 = bp.bind();
   const numOf = bindNumber(), monoOf = bindMonoRow(name, models.map((m) => m.name));
   modelFloors(name, models, mp.redraw, mp.isOpen);
-  bindHistAlert("c", name, () => (mp.value().length ? mp.value() : models.slice(0, 3).map((m) => m.name)));
+  bindHistAlert("c", name, () => (mp.value().length ? mp.value() : models.slice(0, 3).map((m) => m.name)), () => editColl(cid));
   let en = c.enabled;
   $("c-en").onclick = () => { en = !en; $("c-en").classList.toggle("on", en);
     $("c-en").innerHTML = ic("power") + (en ? "включено" : "выключено"); haptic(); };
@@ -2764,8 +2944,8 @@ async function editFlip(fid){
     <div class="hint" id="mode-note"></div>
     <label>Максимальная цена, TON</label>
     <input type="number" id="mx" class="num" step="0.1" min="0" value="${f.max_price ?? ""}" placeholder="без порога">
-    <label>Минимальная скидка от продаж, %</label>
-    <input type="number" id="dc" class="num" min="0" max="99" value="${f.min_discount || ""}" placeholder="0">
+    <div id="dc-box"><label>Минимальная скидка от оценки, %</label>
+    <input type="number" id="dc" class="num" min="0" max="99" value="${f.min_discount || ""}" placeholder="0"></div>
     ${monoRow(f.mono_min)}
     ${numberBlock(f.number)}
     <div class="err" id="err"></div>
@@ -2775,11 +2955,14 @@ async function editFlip(fid){
   const s1 = mp.bind(), s2 = bp.bind();
   const numOf = bindNumber(), monoOf = bindMonoRow(f.slug, models.map((m) => m.name));
   modelFloors(f.slug, models, mp.redraw, mp.isOpen);
-  bindHistAlert("f", f.slug, () => (mp.value().length ? mp.value() : models.slice(0, 3).map((m) => m.name)));
+  bindHistAlert("f", f.slug, () => (mp.value().length ? mp.value() : models.slice(0, 3).map((m) => m.name)), () => editFlip(fid));
   let mode = f.mode === "all" ? "all" : "deals", en = f.enabled;
-  const note = () => { $("mode-note").textContent = mode === "all"
-    ? "Все новые листинги под фильтр - для тех, кто сам отправляет офферы."
-    : "Только лоты со скидкой от последних продаж. Нужен порог: цена или скидка."; };
+  const note = () => {
+    $("mode-note").textContent = mode === "all"
+      ? "Все новые листинги под фильтр - для тех, кто сам отправляет офферы."
+      : "Только лоты дешевле оценки подарка (по продажам такой же модели и фона, затем похожих фонов) на выбранную скидку.";
+    $("dc-box").style.display = mode === "all" ? "none" : "block";
+  };
   note();
   bindSeg("fmode", (k) => { mode = k; note(); });
   $("f-en").onclick = () => { en = !en; $("f-en").classList.toggle("on", en);
@@ -2847,12 +3030,15 @@ function editHolding(h){
     `${esc(h.model || "любая модель")} · ${h.qty} шт.`) + `
     <div class="group kv">
       <div class="row"><span class="k">Стоимость</span><span class="v">${ic("ton")}${fmtTon(h.value)}</span></div>
-      <div class="row"><span class="k">За сутки</span><span class="v">${deltaHtml(h.change_24h)}</span></div>
+      <div class="row"><span class="k">${{ "24h": "За сутки", week: "За неделю", month: "За месяц" }[portRange]}</span><span class="v">${(() => {
+        const c = holdChange(h); return c.pct == null ? "-" : deltaHtml(c.pct) + (c.since ? ` <i class="since">${sinceLabel(c.since)}</i>` : ""); })()}</span></div>
       <div class="row"><span class="k">Рыночная цена</span><span class="v">${h.market_price ? fmtTon(h.market_price) + " TON" : "-"}</span></div>
       <div class="row"><span class="k">Фон</span><span class="v">${esc(h.backdrop || "любой")}</span></div>
       ${h.pnl != null ? `<div class="row"><span class="k">Прибыль</span><span class="v ${h.pnl >= 0 ? "pup" : "pdn"}">${h.pnl >= 0 ? "+" : ""}${fmtTon(h.pnl)} TON${
         h.pnl_pct != null ? ` (${h.pnl >= 0 ? "+" : ""}${Number(h.pnl_pct).toFixed(1)}%)` : ""}</span></div>` : ""}
     </div>
+    <div class="card hcard"><div class="hhead"><small>Стоимость с момента добавления</small></div>
+      <div class="chart" id="hh-chart"><div class="skel" style="height:120px"></div></div></div>
     <label>Количество</label>
     <input type="number" id="hq" class="num" min="1" max="9999" value="${h.qty}">
     <label>Своя цена за штуку, TON</label>
@@ -2867,6 +3053,15 @@ function editHolding(h){
     <div class="hint center">Изменения сохраняются сами, когда закрываешь карточку.</div>`);
   popHero();
   $("x").onclick = () => closeSheet();
+  // свой график подарка: стоимость позиции по часам с момента добавления
+  call("holding_history", { id: h.id }).then((d) => {
+    const box = $("hh-chart");
+    if(!box) return;
+    const pts = fillHours((d && d.points) || []);
+    if(pts.length < 2){ box.innerHTML = `<div class="hint" style="margin:6px 0 4px">График появится через пару часов: цены считаются раз в час.</div>`; return; }
+    box.innerHTML = chartSvg(pts) + `<div class="cross"><div class="vline"></div><div class="dot"></div><div class="tip"></div></div>`;
+    bindCrosshair(box, pts);
+  }).catch(() => { const box = $("hh-chart"); if(box) box.innerHTML = `<div class="hint">График не загрузился.</div>`; });
   // как карточка коллекции: сохраняем при закрытии и только если что-то поменялось
   const read = () => ({ id: h.id, qty: Number($("hq").value || 1), own_price: $("hp").value, buy_price: $("hb").value });
   const was = JSON.stringify(read());
@@ -3223,6 +3418,12 @@ async function loadHome(force){
 }
 async function loadNewColls(){
   if(NEWC) return;
+  // Сначала - у бота: он знает и новые подарки, у которых ещё нет улучшений (их нет
+  // в открытом каталоге, и раньше сверху стояли те, у кого недавно вышли улучшения).
+  if(!DEMO) try{
+    const r = await call("new_collections", {});
+    if(r && r.items && r.items.length){ NEWC = r.items.slice(0, 8); paintHomeExtra(); return; }
+  }catch(e){ /* бот не ответил - берём открытый каталог */ }
   try{
     const r = await fetch(`${API_ART}/dates`);
     const list = r.ok ? await r.json() : [];
@@ -3239,6 +3440,7 @@ function paintHomeExtra(){
   const box = $("home-extra");
   if(!box || VIEW !== "home") return;
   keepArts(box, () => { box.innerHTML = homeExtraHtml(); });
+  applyLayout("home");
   bindHomeExtra(box);
   after(box);
 }
@@ -3256,6 +3458,7 @@ function homeExtraHtml(){
       <div class="hint">Цены появятся, когда к боту подключён ключ Gift Satellite.</div>`;
   }
   out += trendsHomeHtml(h.trends);
+  out += evalsHomeHtml(h.evals);
   out += `<div class="sec big">Последние находки</div>`;
   out += (h.finds && h.finds.length) ? `<div class="group">${h.finds.map((f, i) => `
       <button class="row" data-find="${i}">${art(collName(f.slug), f.model, "mini")}
@@ -3295,6 +3498,8 @@ function statusHtml(st){
 }
 function bindHomeExtra(box){
   bindTrendRows(box);
+  bindEvalRows(box);
+  box.querySelectorAll("[data-goeval]").forEach((b) => b.onclick = () => { haptic(); go("eval"); });
   box.querySelectorAll("[data-mk]").forEach((b) => b.onclick = () => openHistory(b.dataset.mk, []));
   box.querySelectorAll("[data-find]").forEach((b) => b.onclick = () => {
     const f = (HOME.finds || [])[+b.dataset.find];
@@ -3340,13 +3545,14 @@ async function modelFloors(slug, items, redraw, isOpen){
 }
 
 /* ---------- история цен ---------- */
-async function openHistory(slug, models){
+async function openHistory(slug, models, back){
   const name = collName(slug);
   const opts = [["", "Коллекция"]].concat((models || []).slice(0, 6).map((m) => [m, m]));
   openSheet(sheroHtml(name, "", "", name, "история цен") + `
     ${opts.length > 1 ? segHtml("hm", opts, "").replace('class="seg"', 'class="seg wrap chips"') : ""}
     <div id="hbody"><div class="skel" style="height:160px"></div></div>`);
   $("x").onclick = closeSheet;
+  backButton(back);
   let model = "";
   const draw = async () => {
     $("hbody").innerHTML = `<div class="skel" style="height:160px"></div>`;
@@ -3369,9 +3575,21 @@ function histAlertRow(p){
   return `<div class="duo"><button class="duo-b" id="${p}-hist"><span class="tile teal">${ic("chart")}</span>История цен</button>
     <button class="duo-b" id="${p}-alert"><span class="tile red">${ic("bell")}</span>Ценовой алерт</button></div>`;
 }
-function bindHistAlert(p, slug, models){
-  $(p + "-hist").onclick = () => openHistory(slug, models());
-  $(p + "-alert").onclick = () => newAlert(slug, "");
+function bindHistAlert(p, slug, models, back){
+  // карточка сохраняется (как при закрытии), и из истории/алерта можно вернуться в неё
+  const leave = async (fn) => {
+    if(SHEET_GUARD){ const ok = await SHEET_GUARD(); if(ok === false) return; }
+    fn();
+  };
+  $(p + "-hist").onclick = () => leave(() => openHistory(slug, models(), back));
+  $(p + "-alert").onclick = () => leave(() => newAlert(slug, "", back));
+}
+function backButton(back){
+  if(!back) return;
+  SHEET_BACK = () => { haptic(); back(); };
+  const x = $("x");
+  if(x) x.insertAdjacentHTML("beforebegin", `<button class="x back" id="sh-back">${ic("chev", "flipx")}</button>`);
+  if($("sh-back")) $("sh-back").onclick = SHEET_BACK;
 }
 
 /* ---------- ценовые алерты ---------- */
@@ -3408,11 +3626,12 @@ async function openAlerts(){
     } else act(a.active ? "alert_del" : "alert_rearm", a.active ? "Алерт удалён" : "Алерт включён");
   });
 }
-async function newAlert(slug, model){
+async function newAlert(slug, model, back){
   const name = collName(slug);
   openSheet(sheroHtml(name, model, "", name, "ценовой алерт") + `
     <div id="nbody"><div class="skel"></div></div>`);
   $("x").onclick = closeSheet;
+  backButton(back);
   const cat = await loadCatalog(slug);
   if(!$("sheet").classList.contains("on")) return;
   const items = (cat.models || []).map((m) => ({ name: m.name, pct: m.pct }));
@@ -3440,7 +3659,8 @@ async function newAlert(slug, model){
     if(!(price > 0)){ $("aerr").textContent = "Укажи цену в TON"; return; }
     try{
       await call("alert_add", { slug, model: mp.value()[0] || "", price });
-      hapticOk(); toast("Алерт создан", "bell"); openAlerts();
+      hapticOk(); toast("Алерт создан", "bell");
+      if(back) back(); else openAlerts();
     }catch(e){ $("aerr").textContent = e.message; }
   };
 }
@@ -5154,7 +5374,7 @@ function mutShapes(){
   const outer = [[0, 46], [0, 0], [100, 0], [100, 100], [0, 100], [0, 46]];
   return [pts(blob), pts(outer.concat(blob.slice().reverse()))];
 }
-let mutLive = 0, mutShowAt = 0;
+let mutShowAt = 0;
 /* Готовим мутации заранее, ещё пока падает бомба: список моделей и картинки чужих
    частей грузятся в это время. Часть показывается, только когда её картинка
    загрузилась и подошло время (облако рассеялось) - раньше модели появлялись
@@ -5230,8 +5450,8 @@ function mutateArts(root, force){
       const part = document.createElement("div");
       part.className = "mutpart";
       part.style.clipPath = mine;
-      part.innerHTML = art(coll, model, "", mutLive < 4);
-      if(mutLive < 4) mutLive++;
+      // чужая часть играет свою анимацию, как и сам подарок (видимые - до liveMax разом)
+      part.innerHTML = art(coll, model, "", true);
       el.appendChild(part);
       hydrateArt(part);
       mutReveal(el, part);
@@ -5289,76 +5509,152 @@ async function openTrends(){
   load();
 }
 
-/* ---------- оценка подарка ---------- */
+/* ---------- вкладка «Оценка» ----------
+   Ссылка на подарок или на лот маркета -> редкость модели, фона и узора, монохромность,
+   примерная цена по продажам (свой фон, потом похожие), последние продажи. Ниже -
+   недавно оценённые и слежка за подарками. */
 const NUM_TAGS = { short: "короткий номер", mirror: "зеркальный номер", repeat: "повтор цифр",
   sequence: "цифры подряд", round: "круглый номер" };
 const ATTR_NAMES = { model: "Модель", backdrop: "Фон", pattern: "Узор" };
-function openGiftEval(link){
-  openSheet(`<h2><span class="tile indigo">${ic("search")}</span>Оценка подарка</h2>
-    <p class="sub">Вставь ссылку на подарок: покажу редкость модели, фона и узора и примерную цену по продажам.</p>
-    <input type="text" id="ge-link" placeholder="t.me/nft/PlushPepe-123" value="${esc(link || "")}">
-    <div class="err" id="ge-err"></div>
-    <button class="btn blue" style="margin-top:6px" id="ge-go">${ic("search")}Оценить</button>`);
-  const go = async () => {
-    const v = $("ge-link").value.trim();
-    if(!v){ $("ge-err").textContent = "Вставь ссылку на подарок"; return; }
-    $("ge-go").disabled = true;
-    $("ge-go").innerHTML = `${ic("clock")}Считаю...`;
-    try{ showGiftEval(await call("gift_info", { link: v })); }
-    catch(e){ if($("ge-err")){ $("ge-err").textContent = e.message; $("ge-go").disabled = false; $("ge-go").innerHTML = `${ic("search")}Оценить`; } }
-  };
-  $("ge-go").onclick = go;
-  $("ge-link").onkeydown = (e) => { if(e.key === "Enter") go(); };
-  if(link) go();
+let EVAL_LAST = null;
+function patternUrl(coll, pattern){
+  return `${CDN}/patterns/${encodeURIComponent(collName(coll))}/png/${encodeURIComponent(pattern)}.png`;
 }
-function showGiftEval(r){
+function renderEval(){
+  $("v-eval").innerHTML = `
+    <div class="top"><h1>Оценка<small>редкость, цена и слежка за подарками</small></h1></div>
+    <div class="card evin">
+      <input type="text" id="ev-link" placeholder="ссылка на подарок или лот" data-notx>
+      <button class="btn blue" id="ev-go">${ic("search")}Оценить</button>
+      <div class="hint" style="margin:8px 2px 0">Подойдут ссылки t.me/nft, Fragment, Portals, Tonnel, MRKT и Getgems.</div>
+      <div class="err" id="ev-err"></div></div>
+    <div id="ev-out">${EVAL_LAST ? evalHtml(EVAL_LAST) : ""}</div>
+    <div class="sec big">Недавно оценённые</div>
+    <div id="ev-hist"><div class="skel" style="height:64px"></div></div>
+    ${watchesBlockHtml()}`;
+  $("ev-go").onclick = () => runEval($("ev-link").value.trim());
+  $("ev-link").onkeydown = (e) => { if(e.key === "Enter") runEval($("ev-link").value.trim()); };
+  if(EVAL_LAST) bindEval(EVAL_LAST);
+  loadEvals();
+  bindWatches();
+  fab(null);
+}
+async function runEval(link){
+  if(!$("ev-go")) return;
+  if(!link){ $("ev-err").textContent = "Вставь ссылку на подарок"; return; }
+  $("ev-err").textContent = "";
+  $("ev-go").disabled = true; $("ev-go").innerHTML = `${ic("clock")}Считаю...`;
+  try{
+    const r = await call("gift_info", { link });
+    EVAL_LAST = r;
+    if(!$("ev-out")) return;
+    keepArts($("ev-out"), () => { $("ev-out").innerHTML = evalHtml(r); });
+    bindEval(r);
+    after($("ev-out"));
+    $("ev-out").scrollIntoView({ behavior: REDUCED ? "auto" : "smooth", block: "start" });
+    loadEvals();
+  }catch(e){ if($("ev-err")) $("ev-err").textContent = e.message; }
+  finally{ if($("ev-go")){ $("ev-go").disabled = false; $("ev-go").innerHTML = `${ic("search")}Оценить`; } }
+}
+/* Открыть оценку из других мест (главная, слежка): вкладка «Оценка» с этой ссылкой. */
+function openGiftEval(link){
+  closeSheet(true);
+  go("eval");
+  setTimeout(() => { if($("ev-link")){ $("ev-link").value = link || ""; if(link) runEval(link); } }, 60);
+}
+function evalHtml(r){
   const est = r.estimate || {};
-  const basis = est.basis === "sales" ? `по ${est.sales} ${plural(est.sales, "продаже", "продажам", "продажам")} такой же модели и фона за 30 дней${est.full ? "" : " - продаж мало, оценка неполная"}`
+  const sim = (est.similar || []).slice(0, 3).join(", ");
+  const basis = est.basis === "sales" ? `по ${est.sales} ${plural(est.sales, "продаже", "продажам", "продажам")} с этим фоном за 30 дней${est.full ? "" : " - продаж мало, оценка неполная"}`
+    : est.basis === "similar" ? `продаж с этим фоном ${est.sales}, добавлены похожие фоны (${sim}): ещё ${est.sales_similar}${est.full ? "" : " - оценка неполная"}`
     : est.basis === "listing" ? "по самому дешёвому такому же лоту: продаж за месяц почти не было"
-    : est.basis === "model" ? "только по флору модели: такой же модели с таким фоном сейчас нет"
-    : "мало данных: продаж и лотов такой модели и фона нет";
-  const bar = (pm) => pm ? `<i class="rbar"><b style="width:${Math.max(4, Math.min(100, 100 - Math.log10(pm) * 33))}%"></b></i>` : "";
-  openSheet(sheroHtml(r.title, r.model, r.backdrop, `${r.title} #${r.num}`,
-    r.total ? `выпущено ${r.issued || r.total} из ${r.total}` : "") + `
-    <div class="sec">Редкость</div>
-    <div class="group kv">${(r.attrs || []).map((a) => `
-      <div class="row"><span class="k">${ATTR_NAMES[a.kind] || a.kind}</span>
-        <span class="v"><b data-notx>${esc(a.name)}</b>${a.permille ? ` <span class="rp">${(a.permille / 10).toFixed(1)}%</span>` : ""}</span>${bar(a.permille)}</div>`).join("")}
-      ${r.combo ? `<div class="row"><span class="k">Сочетание</span><span class="v"><b>1 из ${Number(r.combo.one_in).toLocaleString("ru-RU")}</b></span></div>` : ""}
+    : est.basis === "model" ? "только по флору модели: такой же модели с таким или похожим фоном сейчас нет"
+    : "мало данных: продаж и лотов такой модели и похожих фонов нет";
+  const attr = (kind) => (r.attrs || []).find((a) => a.kind === kind);
+  const cell = (kind, pic) => {
+    const a = attr(kind);
+    if(!a) return "";
+    return `<div class="evc">${pic}<span><small>${ATTR_NAMES[kind]}</small><b data-notx>${esc(a.name)}</b>
+      ${a.permille ? `<i>${(a.permille / 10).toFixed(1)}%</i>` : ""}</span></div>`;
+  };
+  const hx = bdHex(r.backdrop) || {};
+  const ch = r.cheapest;
+  const sales = r.sales_list || [];
+  return `<div class="evres">
+    <div class="evhero" style="${bdVars(r.backdrop)}">${sparkles(9, .5)}
+      ${r.pattern ? `<div class="evpat" style="--pat:url('${esc(patternUrl(r.title || r.slug, r.pattern))}')"></div>` : ""}
+      ${art(r.title || r.slug, r.model, "", true)}
+      <b data-notx>${esc(r.title)} #${r.num}</b>
+      <small>${r.total ? `выпущено ${r.issued || r.total} из ${r.total}` : ""}</small></div>
+    <div class="evattrs">
+      ${cell("model", art(r.title || r.slug, r.model, "mini"))}
+      ${cell("backdrop", `<i class="evsw" style="background:radial-gradient(circle at 50% 40%,${hx.c1 || "#555"},${hx.c2 || "#222"})"></i>`)}
+      ${cell("pattern", r.pattern ? `<img class="evpi" alt="" src="${esc(patternUrl(r.title || r.slug, r.pattern))}">` : "")}
     </div>
-    ${(r.num_tags || []).length ? `<div class="gtags">${r.num_tags.map((t) => `<span class="chip">${ic("hash")}${NUM_TAGS[t] || t}</span>`).join("")}</div>
-      <div class="hint">Насколько красивый номер поднимает цену, по данным сказать нельзя - в оценку он не входит.</div>` : ""}
-    <div class="sec">Цена</div>
+    <div class="gtags">
+      ${r.combo ? `<span class="chip">${ic("star")}1 из ${Number(r.combo.one_in).toLocaleString("ru-RU")}</span>` : ""}
+      ${r.mono != null ? `<span class="chip mono">${ic("mono")}моно ${r.mono}%${r.mono_partial ? " (неполная)" : ""}</span>` : ""}
+      ${(r.num_tags || []).map((t) => `<span class="chip">${ic("hash")}${NUM_TAGS[t] || t}</span>`).join("")}</div>
     <div class="card gest"><div class="gev">${est.value ? `${ic("ton")}<b class="num">~${fmtTon(est.value)}</b>` : `<b>нет оценки</b>`}</div>
       ${est.value && est.low != null && est.high != null && est.high > est.low ? `<div class="hint" style="margin:4px 0 0">от ${fmtTon(est.low)} до ${fmtTon(est.high)} TON</div>` : ""}
       <div class="hint" style="margin:6px 0 0">${basis}</div></div>
     <div class="group kv">
-      <div class="row"><span class="k">Дешевле всего такой же</span><span class="v">${r.floor_mb ? fmtTon(r.floor_mb) + " TON" : "-"}</span></div>
+      <div class="row"><span class="k">Дешевле всего сейчас</span><span class="v">${ch ? `${fmtTon(ch.price)} TON${ch.similar
+        ? ` <small class="simbd">фон ${esc(ch.backdrop)}</small>` : ""}` : "-"}</span></div>
       <div class="row"><span class="k">Флор модели</span><span class="v">${r.floor_model ? fmtTon(r.floor_model) + " TON" : "-"}</span></div>
     </div>
+    ${sales.length ? `<div class="sec">Последние продажи</div><div class="group">${sales.map((s) => `
+      <div class="row srow"><span class="t"><b class="num">${fmtTon(s.price)} TON</b>
+        <span>${s.similar ? `<em class="simbd">похожий фон</em> ` : ""}${esc(s.backdrop || "")} · ${esc(marketName(s.market))} · ${ago(s.ts)}</span></span></div>`).join("")}</div>`
+      : `<div class="hint">Продаж этой модели за 30 дней с таким или похожим фоном нет.</div>`}
     <div class="two" style="margin-top:12px">
       <button class="btn ${r.watched ? "" : "blue"}" id="ge-watch" ${r.watched ? "disabled" : ""}>${ic("bell")}${r.watched ? "Уже следишь" : "Следить"}</button>
       <button class="btn" id="ge-share">${ic("share")}Поделиться</button></div>
-    <button class="btn ghost" id="ge-open">${ic("gift")}Открыть в Telegram</button>`);
-  popHero();
-  $("x").onclick = () => closeSheet();
+    <button class="btn ghost" id="ge-open">${ic("gift")}Открыть в Telegram</button></div>`;
+}
+function bindEval(r){
+  if(!$("ge-open")) return;
   $("ge-open").onclick = () => openUrl(r.link);
   $("ge-share").onclick = () => shareCard("gift", r.link);
   $("ge-watch").onclick = async () => {
     try{
       await call("watch_add", { link: r.link });
+      r.watched = true;
       hapticOk(); toast("Слежу: напишу, когда выставят или поменяют цену", "bell");
       $("ge-watch").disabled = true; $("ge-watch").innerHTML = `${ic("bell")}Уже следишь`;
-      if(VIEW === "portfolio") loadWatches();
+      loadWatches();
     }catch(e){ toast(e.message, "help"); }
   };
 }
+function evalRow(e){
+  return `<button class="row" data-ev="${esc(`https://t.me/nft/${e.slug}-${e.num}`)}">${art(e.title || e.slug, e.model, "mini")}
+    <span class="t"><b data-notx>${esc(e.title || e.slug)} #${e.num}</b><span>${esc(e.model || "")}${e.backdrop ? " · " + esc(e.backdrop) : ""} · ${ago(e.ts)}</span></span>
+    <span class="v w"><b class="num">${e.value ? "~" + fmtTon(e.value) + " TON" : "-"}</b></span></button>`;
+}
+function bindEvalRows(box){
+  box.querySelectorAll("[data-ev]").forEach((b) => b.onclick = () => openGiftEval(b.dataset.ev));
+}
+async function loadEvals(){
+  let d = null;
+  try{ d = await call("evals", {}); }catch(e){ d = null; }
+  const box = $("ev-hist");
+  if(!box) return;
+  const items = (d && d.items) || [];
+  box.innerHTML = items.length ? `<div class="group">${items.map(evalRow).join("")}</div>`
+    : `<div class="hint">Здесь появятся подарки, которые ты оценишь.</div>`;
+  bindEvalRows(box);
+  after(box);
+}
+function evalsHomeHtml(list){
+  if(!list || !list.length) return "";
+  return `<div class="sec big">Последние оценённые<button data-goeval>Все ${ic("chev")}</button></div>
+    <div class="group">${list.map(evalRow).join("")}</div>`;
+}
 
-/* ---------- слежка за подарками (на экране портфеля) ---------- */
+/* ---------- слежка за подарками (во вкладке «Оценка») ---------- */
 function watchesBlockHtml(){
   return `<div class="sec big">Слежка за подарками<button id="w-add">${ic("plus")}Следить</button></div>
-    <div id="pf-watch"><div class="skel" style="height:64px"></div></div>
-    <button class="btn" style="margin-top:10px" id="g-eval">${ic("search")}Оценить подарок по ссылке</button>`;
+    <div id="pf-watch"><div class="skel" style="height:64px"></div></div>`;
 }
 async function loadWatches(){
   const box = $("pf-watch");
@@ -5396,13 +5692,12 @@ function marketName(m){
 }
 function bindWatches(){
   if($("w-add")) $("w-add").onclick = () => openWatchAdd();
-  if($("g-eval")) $("g-eval").onclick = () => openGiftEval("");
   loadWatches();
 }
 function openWatchAdd(){
   openSheet(`<h2><span class="tile blue">${ic("bell")}</span>Следить за подарком</h2>
-    <p class="sub">Вставь ссылку на подарок. Раз в 20 минут проверяю маркеты и пишу в чат, если его выставили, поменяли цену или он пропал с продажи.</p>
-    <input type="text" id="wa-link" placeholder="t.me/nft/PlushPepe-123">
+    <p class="sub">Вставь ссылку на подарок или на лот маркета. Раз в 20 минут проверяю маркеты и пишу в чат, если его выставили, поменяли цену или он пропал с продажи.</p>
+    <input type="text" id="wa-link" placeholder="ссылка на подарок или лот" data-notx>
     <div class="err" id="wa-err"></div>
     <button class="btn blue" style="margin-top:6px" id="wa-go">${ic("plus")}Следить</button>`);
   $("wa-go").onclick = async () => {
@@ -5430,6 +5725,137 @@ async function shareCard(kind, link){
     } else toast("Картинка в чате с ботом - перешли её друзьям", "share");
   }catch(e){ toast(e.message, "help"); }
   finally{ sharing = false; }
+}
+
+/* ===================== БЛОКИ ЭКРАНОВ =====================
+   Владелец прячет блоки и меняет их порядок прямо на экранах: Админка -> Блоки
+   экранов -> режим правки. Блок - заголовок раздела вместе со всем, что под ним до
+   следующего заголовка, или отдельная крупная часть (баннеры, плитки, сводка).
+   Раскладка лежит у бота (настройка layout) и приходит всем в state.layout:
+   {экран: {order: [id], hidden: [id]}}. Переименовать блок можно уже готовым
+   инструментом «Надписи». */
+let LAYOUT = {}, BLKEDIT = false;
+const BLK_LABEL = { brandrow: "Шапка с логотипом", bnrs: "Баннеры", hero: "Плитка", half: "Две плитки", top: "Заголовок экрана",
+  sum: "Сводка", evin: "Поле для ссылки", "ev-out": "Результат оценки", stats: "Цифры", "me-hero": "Профиль", group: "Список" };
+function blkLabel(id){
+  if(id.startsWith("sec:")) return id.slice(4);
+  const [head, ...rest] = id.replace(/^#/, "").split(":");
+  return (BLK_LABEL[head] || head) + (rest.length ? " " + rest.join(":") : "");
+}
+const BLK_VIEWS = ["home", "sniper", "flip", "eval", "portfolio", "profile"];
+function blkId(el){
+  if(el.id && el.id !== "home-extra") return "#" + el.id;
+  if(el.classList.contains("sec")){
+    const t = [...el.childNodes].filter((n) => n.nodeType === 3).map((n) => n.textContent).join("").trim();
+    return "sec:" + t.slice(0, 40);
+  }
+  const h = el.querySelector("h1, h2, b");
+  return (el.className.split(" ")[0] || el.tagName.toLowerCase()) + (h ? ":" + h.textContent.trim().slice(0, 30) : "");
+}
+/* Группы контейнера: [{id, nodes}]. Заголовок раздела забирает всё до следующего. */
+function blkGroups(box){
+  const out = [];
+  let cur = null;
+  [...box.children].forEach((el) => {
+    if(el.id === "home-extra" || el.classList.contains("blkbar")) return;
+    if(el.classList.contains("sec") || !cur || !cur.sec){
+      cur = { id: blkId(el), nodes: [el], sec: el.classList.contains("sec") };
+      out.push(cur);
+    } else cur.nodes.push(el);
+  });
+  // одинаковые id (два блока с одним заголовком) - нумеруем
+  const seen = {};
+  out.forEach((g) => { seen[g.id] = (seen[g.id] || 0) + 1; if(seen[g.id] > 1) g.id += "#" + seen[g.id]; });
+  return out;
+}
+function blkContainers(view){
+  const root = $("v-" + view);
+  if(!root) return [];
+  const list = [root];
+  const extra = root.querySelector("#home-extra");
+  if(extra) list.push(extra);
+  return list;
+}
+function applyLayout(view){
+  if(!BLK_VIEWS.includes(view)) return;
+  const cfg = LAYOUT[view] || {};
+  const hidden = new Set(cfg.hidden || []), order = cfg.order || [];
+  blkContainers(view).forEach((box) => {
+    const groups = blkGroups(box);
+    if(order.length){
+      const pos = (g) => { const i = order.indexOf(g.id); return i < 0 ? 1000 + groups.indexOf(g) : i; };
+      const anchor = box.querySelector(":scope > #home-extra");
+      [...groups].sort((a, b) => pos(a) - pos(b)).forEach((g) => g.nodes.forEach((n) => box.insertBefore(n, anchor && box === $("v-" + view) ? anchor : null)));
+    }
+    groups.forEach((g) => g.nodes.forEach((n) => n.classList.toggle("blk-hidden", hidden.has(g.id) && !BLKEDIT)));
+    if(BLKEDIT) blkControls(view, box, groups, hidden);
+  });
+}
+function blkControls(view, box, groups, hidden){
+  box.querySelectorAll(":scope > .blkbar").forEach((x) => x.remove());
+  groups.forEach((g, i) => {
+    const bar = document.createElement("div");
+    bar.className = "blkbar" + (hidden.has(g.id) ? " off" : "");
+    bar.innerHTML = `<span>${esc(blkLabel(g.id))}</span>
+      <button data-b="up" ${i ? "" : "disabled"}>${ic("up")}</button><button data-b="dn" ${i < groups.length - 1 ? "" : "disabled"}>${ic("down")}</button>
+      <button data-b="eye">${ic(hidden.has(g.id) ? "plus" : "cross")}</button>`;
+    box.insertBefore(bar, g.nodes[0]);
+    g.nodes.forEach((n) => n.classList.toggle("blk-dim", hidden.has(g.id)));
+    bar.querySelectorAll("button").forEach((b) => b.onclick = (e) => {
+      e.stopPropagation(); haptic();
+      const cfg = LAYOUT[view] = LAYOUT[view] || { order: [], hidden: [] };
+      const ids = groups.map((x) => x.id);
+      if(b.dataset.b === "eye"){
+        const hs = new Set(cfg.hidden || []);
+        if(hs.has(g.id)) hs.delete(g.id); else hs.add(g.id);
+        cfg.hidden = [...hs];
+      } else {
+        const j = i + (b.dataset.b === "up" ? -1 : 1);
+        [ids[i], ids[j]] = [ids[j], ids[i]];
+        // порядок двух контейнеров главной хранится одним списком
+        const other = (cfg.order || []).filter((x) => !ids.includes(x));
+        cfg.order = other.concat(ids);
+      }
+      saveLayout();
+      render();
+    });
+  });
+}
+let layoutTimer = 0;
+function saveLayout(){
+  clearTimeout(layoutTimer);
+  layoutTimer = setTimeout(async () => {
+    try{ await call("admin", { layout: LAYOUT }); }catch(e){ toast(e.message, "help"); }
+  }, 500);
+}
+function blkEditMode(on){
+  BLKEDIT = !!on;
+  document.body.classList.toggle("blkedit", BLKEDIT);
+  let bar = $("blkdone");
+  if(BLKEDIT && !bar){
+    bar = document.createElement("div");
+    bar.id = "blkdone";
+    bar.innerHTML = `<span>Блоки: стрелки - порядок, крестик - скрыть. Переключай вкладки снизу.</span><button>Готово</button>`;
+    document.body.appendChild(bar);
+    bar.querySelector("button").onclick = () => { blkEditMode(false); toast("Раскладка сохранена"); };
+  }
+  if(bar) bar.style.display = BLKEDIT ? "flex" : "none";
+  if(!BLKEDIT) document.querySelectorAll(".blkbar").forEach((x) => x.remove());
+  if(BLKEDIT && !BLK_VIEWS.includes(VIEW)) go("home"); else render();
+}
+function adminLayout(){
+  const n = Object.values(LAYOUT).reduce((a, v) => a + ((v && v.hidden) || []).length, 0);
+  openSheet(`<h2><span class="tile teal">${ic("chart")}</span>Блоки экранов</h2>
+    <p class="sub">Спрячь лишнее и поставь блоки в нужном порядке на любой вкладке. Видят все пользователи.</p>
+    <button class="btn blue" id="bl-on">${ic("edit")}Режим правки</button>
+    <button class="btn ghost" id="bl-reset" style="margin-top:8px">${ic("history")}Вернуть как было</button>
+    <div class="hint">${n ? `Скрыто блоков: ${n}.` : "Пока всё как задумано."} Названия блоков меняются в «Надписях».</div>`);
+  $("bl-on").onclick = () => { closeSheet(true); blkEditMode(true); };
+  $("bl-reset").onclick = async () => {
+    LAYOUT = {};
+    try{ await call("admin", { layout: {} }); toast("Раскладка как была"); closeSheet(true); render(); }
+    catch(e){ toast(e.message, "help"); }
+  };
 }
 
 /* ===================== АНГЛИЙСКИЙ =====================
@@ -6187,7 +6613,63 @@ const EN_DICT = {
 "Итог недели по портфелю приходит в еженедельном отчёте - его включают в настройках": "The weekly portfolio summary comes in the weekly report - turn it on in the settings",
 "По ней считается прибыль или убыток. Пусто - позиция в прибыль не входит": "Profit or loss is calculated from it. Empty - the item is not counted in profit",
 "Цена покупки за штуку": "Purchase price per item",
-"за сколько купил": "what you paid"
+"за сколько купил": "what you paid",
+"Идут технические работы": "Maintenance in progress",
+"Попробовать сейчас": "Try now",
+"Скоро всё заработает. Приложение откроется само, как только бот вернётся": "Everything will be back soon. The app will open by itself as soon as the bot is back",
+"Анимации": "Animations",
+"Анимации включены": "Animations are on",
+"Анимации выключены": "Animations are off",
+"Экран": "Screen",
+"за": "in",
+"дн.": "d",
+"подарки, искры, вспышки и плавные переходы. Выключи на слабом телефоне": "gifts, sparks, flashes and smooth transitions. Turn off on a slow phone",
+"График не загрузился": "The chart didn't load",
+"График появится через пару часов: цены считаются раз в час": "The chart will appear in a couple of hours: prices are calculated every hour",
+"За месяц": "This month",
+"Минимальная скидка от оценки, %": "Minimum discount from the estimate, %",
+"Стоимость с момента добавления": "Value since added",
+"Только лоты дешевле оценки подарка (по продажам такой же модели и фона, затем похожих фонов) на выбранную скидку": "Only listings cheaper than the gift estimate (by sales of the same model and backdrop, then similar backdrops) by the chosen discount",
+"не нашёл этот лот: пришли ссылку на сам подарок (t.me/nft/...)": "couldn't find this listing: send the link to the gift itself (t.me/nft/...)",
+"Оценка": "Rating",
+"Вставь ссылку на подарок или на лот маркета. Раз в 20 минут проверяю маркеты и пишу в чат, если его выставили, поменяли цену или он пропал с продажи": "Paste a link to a gift or a marketplace listing. Every 20 minutes I check the marketplaces and message you if it gets listed, its price changes or it disappears from sale",
+"Дешевле всего сейчас": "Cheapest right now",
+"Здесь появятся подарки, которые ты оценишь": "Gifts you rate will appear here",
+"Недавно оценённые": "Recently rated",
+"Подойдут ссылки t.me/nft, Fragment, Portals, Tonnel, MRKT и": "Links from t.me/nft, Fragment, Portals, Tonnel, MRKT and",
+"Последние оценённые": "Recently rated",
+"Продаж этой модели за 30 дней с таким или похожим фоном нет": "No sales of this model with this or a similar backdrop in 30 days",
+"добавлены похожие фоны": "similar backdrops added",
+"ещё": "more",
+"мало данных: продаж и лотов такой модели и похожих фонов нет": "not enough data: no sales or listings of this model and similar backdrops",
+"моно": "mono",
+"неполная": "incomplete",
+"оценка неполная": "the estimate is incomplete",
+"похожий фон": "similar backdrop",
+"продаж с этим фоном": "sales with this backdrop",
+"редкость, цена и слежка за подарками": "rarity, price and gift watching",
+"с этим фоном за 30 дней": "with this backdrop in 30 days",
+"ссылка на подарок или лот": "gift or listing link",
+"только по флору модели: такой же модели с таким или похожим фоном сейчас нет": "by the model floor only: there is no such model with this or a similar backdrop right now",
+"фон": "backdrop",
+"Блоки экранов": "Screen blocks",
+"скрыть и переставить блоки": "hide and reorder blocks",
+"Блоки: стрелки - порядок, крестик - скрыть. Переключай вкладки снизу": "Blocks: arrows - order, cross - hide. Switch tabs below",
+"Названия блоков меняются в «Надписях»": "Block names are changed in «Texts»",
+"Пока всё как задумано": "Everything is as designed so far",
+"Раскладка как была": "Layout restored",
+"Раскладка сохранена": "Layout saved",
+"Скрыто блоков": "Hidden blocks",
+"Спрячь лишнее и поставь блоки в нужном порядке на любой вкладке. Видят все пользователи": "Hide what's unneeded and put blocks in the order you want on any tab. All users see it",
+"нужна раскладка блоков": "a block layout is needed",
+"Шапка с логотипом": "Header with logo",
+"Плитка": "Tile",
+"Две плитки": "Two tiles",
+"Заголовок экрана": "Screen title",
+"Поле для ссылки": "Link field",
+"Результат оценки": "Rating result",
+"Цифры": "Numbers",
+"Список": "List"
 };
 const EN_RX = [
 [
@@ -6601,6 +7083,7 @@ async function demoCall(action, payload){
       { kind: "listing", slug: "SwissWatch", model: "Iced Out", num: 77, price: 38, ts: now - 9000, link: "" }],
     trends: { total: 42, up: [{ key: "plushpepe", floor: 1240, pct: 6.2 }, { key: "durovscap", floor: 512, pct: 3.4 }],
       down: [{ key: "iongem", floor: 88, pct: -4.1 }] },
+    evals: [{ slug: "PlushPepe", num: 777, title: "Plush Pepe", model: "Midas Pepe", backdrop: "Pure Gold", value: 608.5, ts: now - 600 }],
     status: { uptime: 52 * 3600, sniper: { collections: 4, last_pass: now - 40 },
       flip: { enabled: true, tracked: 2, subscribed: 2, notify_chat: true },
       gsb: { keys: 2, dead: 0 }, floors_at: now - 1500, users: 184 } };
@@ -6671,8 +7154,16 @@ async function demoCall(action, payload){
     model: "Midas Pepe", backdrop: "Pure Gold", pattern: "Crown", issued: 5000, total: 6000,
     attrs: [{ kind: "model", name: "Midas Pepe", permille: 5 }, { kind: "backdrop", name: "Pure Gold", permille: 12 },
       { kind: "pattern", name: "Crown", permille: 4 }], combo: { one_in: 4166667, approx: .001 }, num_tags: ["short", "mirror", "repeat"],
-    estimate: { value: 608.5, low: 598, high: 640, basis: "sales", full: true, sales: 3 }, floor_mb: 605, floor_model: 400,
+    estimate: { value: 608.5, low: 598, high: 640, basis: "similar", full: true, sales: 2, sales_similar: 4,
+      similar: ["Satin Gold", "Gold"] }, floor_mb: 590, floor_model: 400,
+    cheapest: { price: 590, backdrop: "Satin Gold", similar: true }, mono: 78, mono_partial: false,
+    sales_list: [{ price: 640, backdrop: "Pure Gold", market: "portals", ts: Math.floor(Date.now() / 1000) - 7200, similar: false },
+      { price: 598, backdrop: "Pure Gold", market: "tonnel", ts: Math.floor(Date.now() / 1000) - 86400 * 3, similar: false },
+      { price: 571, backdrop: "Satin Gold", market: "mrkt", ts: Math.floor(Date.now() / 1000) - 86400 * 5, similar: true }],
     watched: (DEMO_S.watches || []).some((w) => w.num === 777) };
+  if(action === "evals") return { items: [
+    { slug: "PlushPepe", num: 777, title: "Plush Pepe", model: "Midas Pepe", backdrop: "Pure Gold", value: 608.5, ts: Math.floor(Date.now() / 1000) - 600 },
+    { slug: "SwissWatch", num: 4021, title: "Swiss Watch", model: "DeLorean", backdrop: "Black", value: 46, ts: Math.floor(Date.now() / 1000) - 86400 }] };
   if(action === "watch_list") return { items: DEMO_S.watches || (DEMO_S.watches = [
     { id: 1, slug: "SwissWatch", num: 4021, title: "Swiss Watch", model: "DeLorean", backdrop: "", markets: { portals: { price: 46.5 } } },
     { id: 2, slug: "IonGem", num: 118, title: "Ion Gem", model: "", backdrop: "", markets: {} }]) };
@@ -6715,6 +7206,7 @@ async function demoCall(action, payload){
   }
   if(action === "admin"){
     if(payload.texts_reset) DEMO_S.texts = {};
+    if(payload.layout) DEMO_S.layout = payload.layout;
     // как на сервере: пустая замена или равная исходной - вернуть как было
     Object.entries(payload.texts || {}).forEach(([k, v]) => {
       const key = txKey(k), val = txKey(v);
@@ -6723,6 +7215,12 @@ async function demoCall(action, payload){
     });
     if(payload.effects) Object.assign(DEMO_S.admin.effects, payload.effects);
     Object.assign(DEMO_S.effects, DEMO_S.admin.effects); return { ok: true, state: DEMO_S }; }
+  if(action === "holding_history"){
+    const hour = 3600e3, now = Math.floor(Date.now() / hour) * hour, pts = [];
+    let v = 600;
+    for(let i = 24 * 9; i >= 0; i -= 3){ v += Math.sin(i / 7) * 5 + (Math.random() - .4) * 6; pts.push({ t: now - i * hour, v: Math.round(v * 100) / 100 }); }
+    return { points: pts, added: Math.floor((now - 9 * 86400e3) / 1000) };
+  }
   if(action === "portfolio"){
     const hour = 3600e3, now = Math.floor(Date.now() / hour) * hour, pts = [];
     let v = 900;
@@ -6896,15 +7394,14 @@ async function boot(){
     if(anim) await sleep(Math.max(0, BOOT_FLY + 700 - (performance.now() - t0)));
     await bootHide(anim);
     moveInd();
+    bootDone = true;
   }catch(e){
-    $("boot-sub").textContent = "Нет связи с ботом";
-    await sleep(900);
     await bootHide(false);
-    $("v-home").innerHTML = `<div class="empty" style="margin-top:40px"><b>Не соединился с ботом</b>
-      ${esc(e.message)}<br><br>Адрес данных: <span class="num">${esc(API || "не задан")}</span><br>
-      Проверь, что бот запущен: <span class="num">${esc(API)}/api/ping</span> должен ответить «ok».</div>`;
+    // бот не ответил: экран технических работ (сам вернёт приложение, когда бот заработает)
+    maintenance(true);
   }
 }
+var bootDone = false;   // var: читается из maintRetry (3a_core) и до этой строки
 
 /* ===================== ЗАПУСК ===================== */
 document.querySelectorAll("nav [data-go]").forEach((b) => b.onclick = () => { haptic(); go(b.dataset.go); });
@@ -6941,7 +7438,8 @@ if(TG){
   try{ TG.disableVerticalSwipes && TG.disableVerticalSwipes(); }catch(e){}
   try{ TG.setHeaderColor("#000000"); TG.setBackgroundColor("#000000"); TG.setBottomBarColor && TG.setBottomBarColor("#000000"); }catch(e){}
   if(TG.BackButton) TG.BackButton.onClick(() => {
-    if($("sheet").classList.contains("on")) closeSheet(); else if(!ORDER.includes(VIEW)) go("profile");
+    if($("sheet").classList.contains("on")){ if(SHEET_BACK) SHEET_BACK(); else closeSheet(); }
+    else if(!ORDER.includes(VIEW)) go("profile");
   });
   const sp = String((TG.initDataUnsafe && TG.initDataUnsafe.start_param) || "").toLowerCase();
   if(["sniper", "flip", "portfolio", "profile", "settings"].includes(sp)) VIEW = sp;
